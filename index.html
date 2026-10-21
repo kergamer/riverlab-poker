@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RIVERLAB | Poker Room v0.3</title>
+<style>
+:root{--bg:#0a1119;--panel:#131f2a;--panel2:#192934;--line:#30414a;--text:#f0efe9;--muted:#a2b3bb;--muted2:#748c95;--gold:#c6a56c;--felt:#175246;--felt2:#0e3c34;--danger:#e18b75;--good:#83c1a9;font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--text);color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 76% 22%,#182c35 0%,#0a1119 60%);font-size:14px}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.34;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.shell{max-width:1500px;margin:auto;padding:22px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:22px;min-height:100vh}.sidebar{border:1px solid #273944;border-radius:18px;background:#111d27;padding:23px 16px;display:flex;flex-direction:column;gap:20px;align-self:start;position:sticky;top:18px;min-height:calc(100vh - 44px)}.brand{display:flex;gap:12px;align-items:center;padding:5px 10px 17px;border-bottom:1px solid var(--line)}.brand-mark{font-size:34px;color:var(--gold);line-height:1}.brand-name{font-size:18px;font-weight:800;letter-spacing:1.5px}.brand-sub{font-size:10px;letter-spacing:2px;color:var(--gold);margin-top:4px}.side-label,.eyebrow{font-size:10px;letter-spacing:1.8px;color:var(--muted2);font-weight:800}.nav{display:grid;gap:7px}.nav-btn{display:flex;align-items:center;gap:10px;border-radius:10px;border:1px solid transparent;background:transparent;color:#b7c5ca;padding:13px 12px;text-align:left;width:100%;font-weight:650}.nav-btn.active{background:#273c43;color:#fff;border-color:#46685f}.nav-ico{font-size:16px;color:var(--gold)}.side-divider{height:1px;background:var(--line)}.stats-list{display:grid;gap:12px}.stat-line{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--muted);font-size:12px}.stat-line strong{color:#f4f0e8;font-size:14px;font-variant-numeric:tabular-nums}.status-pill{background:#203e36;border:1px solid #3b6658;color:#a9dbbd;border-radius:99px;padding:7px 9px;font-size:11px;display:inline-flex;gap:7px;align-items:center;width:max-content}.status-dot{background:#78c7a4;width:7px;height:7px;border-radius:50%}.sidebar-foot{margin-top:auto;color:var(--muted2);font-size:11px;line-height:1.6;padding:0 8px}.main{min-width:0;display:flex;flex-direction:column;gap:14px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 4px}.topbar h1{font-size:24px;line-height:1.15;letter-spacing:-.7px;margin:5px 0 0}.top-right{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.muted-tag{background:#192b34;border:1px solid #344853;border-radius:8px;padding:10px 12px;color:#c8d3d4;font-size:11px}.gold-tag{color:#e0c99f}.btn{border:1px solid #3e505a;background:#2b404a;border-radius:9px;color:var(--text);font-weight:700;padding:11px 15px;transition:background .2s,transform .12s}.btn:hover:not(:disabled){background:#3b5660}.btn:active:not(:disabled){transform:translateY(1px)}.btn.gold{background:#b58d54;border-color:#c49d65;color:#121e25}.btn.gold:hover:not(:disabled){background:#d2ae74}.btn.ghost{background:transparent}.btn.ghost:hover{background:#223640}.btn.small{padding:8px 10px;font-size:11px}.main-card{background:#111e29;border:1px solid #2d414b;border-radius:18px;padding:18px;box-shadow:0 20px 60px #0003}.room-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:2px 5px 14px}.room-name{font-size:12px;font-weight:800;letter-spacing:1.1px}.room-meta{font-size:11px;color:#a3b6bc;margin-top:5px}.room-actions{display:flex;gap:7px}.room-action{background:#23343f;border:1px solid #40545c;color:#cdd7d8;border-radius:8px;padding:8px 11px;font-size:11px;font-weight:700}
+.table-area{height:490px;position:relative;margin:3px auto 5px;max-width:930px;min-width:0}.felt-shadow{position:absolute;inset:18% 3% 13%;border-radius:48% / 45%;background:#070d13;box-shadow:0 18px 28px #000a}.felt-rail{position:absolute;inset:17% 3.5% 14%;border-radius:49% / 46%;background:linear-gradient(145deg,#6a6454,#a88c60 12%,#19292c 18%,#112324 83%,#806e4e 92%,#585341);border:2px solid #9b845c;box-shadow:inset 0 0 15px #0009,0 9px 23px #0007}.felt{position:absolute;inset:20% 6% 17%;border-radius:50% / 46%;background:radial-gradient(ellipse at 45% 44%,#1d6355 0%,#164b40 55%,#0a302b 100%);border:2px solid #2b7564;box-shadow:inset 0 0 60px #001f19,0 0 0 6px #0c2728}.felt:after{content:"";position:absolute;inset:11% 8%;border-radius:50%;border:1px solid #ffffff15;pointer-events:none}.table-brand{position:absolute;top:70%;left:50%;transform:translate(-50%,-50%);font-weight:800;font-size:16px;letter-spacing:4px;color:#ffffff1a;pointer-events:none;white-space:nowrap}.board-center{position:absolute;top:43%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:13px;z-index:3;width:min(100%,450px)}.pot-display{font-size:12px;background:#10382f;border:1px solid #518474;border-radius:99px;padding:8px 17px;color:#e7dbbd;letter-spacing:.8px;font-weight:800;font-variant-numeric:tabular-nums}.community{display:flex;gap:6px;justify-content:center}.card{width:51px;height:70px;background:#f4f2e8;color:#14252c;border-radius:5px;border:1px solid #fdfdfb;box-shadow:0 2px 8px #0006;position:relative;display:flex;justify-content:center;align-items:center;flex-direction:column;font-weight:800;font-size:20px;line-height:1.1;letter-spacing:-1px}.card.red{color:#c72e3b}.card .suit{font-size:20px}.card.back{background:repeating-linear-gradient(45deg,#1f4151,#1f4151 4px,#34586a 4px,#34586a 7px);border:3px solid #d6d9d2;box-shadow:inset 0 0 0 2px #172f40,0 3px 9px #0008}.card.empty{background:#1e5b4e5c;border:1px solid #6ba09155;box-shadow:inset 0 0 0 1px #164c43;color:#4a9885}.card.empty:after{content:'\2660';font-size:19px}.card.smallcard{width:36px;height:49px;font-size:15px}.card.smallcard .suit{font-size:14px}.card.smallcard.back{border-width:2px}.board-state{font-size:10px;font-weight:700;letter-spacing:1.1px;color:#c3dcd2;text-align:center}.seat{position:absolute;z-index:5;display:flex;align-items:center;flex-direction:column;gap:5px;transform:translate(-50%,-50%);min-width:100px}.seat .player-body{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;background:#20313b;border:1px solid #465760;box-shadow:0 6px 14px #0007;border-radius:11px;min-width:98px;padding:9px 12px 8px}.seat.current .player-body{border-color:#dec084;box-shadow:0 0 0 2px #b99b6070,0 8px 16px #0008}.seat.hero .player-body{background:#2a4940;border-color:#c0a06d}.seat.folded .player-body{opacity:.46}.seat .seat-avatar{font-size:12px;border-radius:50%;background:#4a655c;border:1px solid #8aa393;width:29px;height:29px;display:grid;place-items:center;font-weight:800;color:#edeee8}.seat.hero .seat-avatar{background:#c2a470;border-color:#e2c795;color:#1c2928}.seat-name{font-weight:800;font-size:12px;white-space:nowrap}.seat-stack{color:#e6c995;font-size:11px;font-variant-numeric:tabular-nums;font-weight:700}.seat-pos{position:absolute;top:-10px;right:-15px;font-size:9px;background:#546772;border:1px solid #aab9bb;border-radius:99px;padding:3px 5px;color:#fff;font-weight:750}.seat-pos.dealer{background:#e4d6a9;color:#203029;border-color:#e4d6a9}.seat-action{border-radius:8px;background:#0d1b24df;padding:3px 7px;white-space:nowrap;color:#d4e4e0;font-size:10px;font-weight:700;min-height:17px}.seat-chip{white-space:nowrap;background:#18594a;border:1px solid #b79d68;border-radius:99px;color:#e8d1a0;padding:3px 6px;font-size:10px;font-weight:800}.seat-hole{display:flex;gap:3px;justify-content:center;min-height:46px}.seat.s0{left:50%;top:88%}.seat.s1{left:8%;top:68%}.seat.s2{left:20%;top:17%}.seat.s3{left:50%;top:9%}.seat.s4{left:80%;top:17%}.seat.s5{left:92%;top:68%}.seat.s0 .player-body{min-width:114px}.seat.s0 .seat-hole{margin-top:0}.seat.s0 .seat-pos{right:-25px}.top-notice{position:absolute;z-index:6;top:6%;left:50%;transform:translateX(-50%);background:#e6d7aa;color:#24352f;border-radius:99px;padding:7px 13px;font-weight:800;font-size:11px;white-space:nowrap;box-shadow:0 3px 10px #0007}
+.action-panel{border-radius:13px;background:#1a2b35;border:1px solid #334b53;padding:18px;display:grid;gap:14px;min-height:150px}.turn-top{display:flex;justify-content:space-between;gap:20px;align-items:center}.turn-label{font-size:12px;font-weight:800;letter-spacing:.6px}.turn-hint{font-size:11px;color:#9fb4bb;margin-top:5px}.timer-value{font-size:28px;font-weight:800;text-align:right;color:#e7d7a7;font-variant-numeric:tabular-nums}.timer-desc{font-size:10px;color:#a6b9c0;text-align:right}.timer-track{height:7px;border-radius:10px;background:#334953;overflow:hidden}.timer-fill{height:100%;background:#6eae98;width:100%;transition:width .09s linear}.timer-fill.urgent{background:#d98970}.timer-fill.bank{background:#d2b17a}.actions-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}.action-btn{border:1px solid #53636b;background:#354a55;border-radius:9px;color:#fff;font-weight:800;font-size:14px;padding:15px 9px;min-height:51px}.action-btn:hover:not(:disabled){background:#496570}.action-btn.raise{background:#b58d54;border-color:#caa46f;color:#1c2225}.action-btn.raise:hover:not(:disabled){background:#cfa770}.action-btn.fold{background:#373e49}.raise-controls{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.range-wrap{display:flex;gap:12px;align-items:center;flex:1;min-width:200px}.range-wrap input{accent-color:#c6a56c;min-width:70px;flex:1}.bet-size{font-weight:800;font-variant-numeric:tabular-nums;color:#e7c68f;white-space:nowrap;min-width:88px;text-align:right}.size-presets{display:flex;gap:7px;flex-wrap:wrap}.size-preset{border:1px solid #4b626b;background:#293d46;border-radius:7px;color:#cbd8d9;padding:9px;font-size:11px;font-weight:800}.size-preset:hover:not(:disabled){background:#3d5862}.subnote{color:#91a8b0;font-size:11px;line-height:1.5}.complete-box{border-radius:10px;border:1px solid #537666;background:#243d39;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.complete-box strong{font-size:15px}.complete-box span{display:block;color:#b8d1c7;font-size:11px;margin-top:5px}.waiting{color:#e2d0a8;font-weight:700;display:flex;align-items:center;gap:10px}.pulse{width:9px;height:9px;background:#e0bd7e;border-radius:50%;animation:pulse 1s infinite}@keyframes pulse{50%{opacity:.2}}.bottom-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:14px}.detail-card{background:#111e29;border:1px solid #2d414b;border-radius:14px;padding:18px;min-height:170px}.detail-card h3{font-size:12px;letter-spacing:.7px;margin:0 0 14px}.events{display:grid;gap:9px;max-height:180px;overflow:auto}.event{display:flex;gap:10px;color:#a9bdc2;font-size:11px;line-height:1.35}.event .time{color:#d0b381;font-variant-numeric:tabular-nums}.detail-text{color:#b7c9ca;line-height:1.75;font-size:12px}.history-view{display:grid;gap:14px}.history-card{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:17px;border:1px solid #3b515a;background:#1b2d36;border-radius:12px;text-align:left;width:100%;color:#eef0e9}.history-card:hover{border-color:#b99d6e;background:#273b43}.history-card strong{display:block;font-size:14px}.history-card small{color:#a7bdc0;display:block;margin-top:5px}.history-card .outcome{font-weight:800;color:#d2b782}.empty-state{padding:36px 20px;text-align:center;color:#b2c7c6;line-height:1.8}.footer-help{padding:6px 3px;color:#8199a3;font-size:11px;line-height:1.6}.modal-cover{position:fixed;inset:0;background:#050c11dc;z-index:80;display:flex;align-items:center;justify-content:center;padding:20px}.modal{width:min(640px,100%);max-height:85vh;overflow:auto;background:#172731;border:1px solid #52696b;border-radius:16px;padding:25px;box-shadow:0 20px 100px #000c}.modal-header{display:flex;justify-content:space-between;align-items:center;gap:15px}.modal h2{margin:0;font-size:21px}.modal p{line-height:1.65;color:#b3c8c8}.modal-cards{display:flex;gap:5px;margin:15px 0}.modal-logs{margin-top:14px;border-top:1px solid #3c5058;padding-top:12px;max-height:240px;overflow:auto}.modal-event{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #30424b;color:#bdc9cb;font-size:12px}.modal-event strong{min-width:55px;color:#d1ba8c}.intro-text{color:#b4c7ca;line-height:1.65;margin:7px 0 18px;max-width:700px}.highlight{color:#e5c691;font-weight:800}.visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media(max-width:1120px){.shell{grid-template-columns:190px minmax(0,1fr);padding:14px;gap:12px}.sidebar{padding:17px 12px}.table-area{height:450px}.seat.s1{left:8%}.seat.s5{left:92%}.card{width:44px;height:62px}.card.smallcard{width:30px;height:41px}.topbar h1{font-size:20px}}
+@media(max-width:800px){.shell{display:block;padding:10px}.sidebar{min-height:0;position:static;display:block;margin-bottom:10px;padding:10px}.brand{display:inline-flex;border:0;padding:6px}.sidebar .nav{display:inline-flex;margin-left:12px;vertical-align:middle}.nav-btn{width:auto;padding:9px}.side-divider,.sidebar .side-label,.sidebar .stats-list,.sidebar-foot,.sidebar .status-pill{display:none}.main-card{padding:9px}.table-area{height:410px}.seat .player-body{min-width:72px;padding:7px 6px}.seat.s0 .player-body{min-width:95px}.seat .seat-avatar{display:none}.seat.s1{left:11%;top:67%}.seat.s5{left:89%;top:67%}.seat.s2{left:18%;top:19%}.seat.s4{left:82%;top:19%}.room-head{padding:8px}.bottom-grid{grid-template-columns:1fr}.topbar{padding:12px 8px}.topbar h1{font-size:19px}}
+@media(max-width:530px){.room-name{font-size:11px}.room-meta{font-size:9px}.top-right .muted-tag:first-child{display:none}.room-action{padding:7px;font-size:9px}.topbar h1{font-size:17px}.table-area{height:365px}.felt-rail{inset:24% 1% 17%}.felt{inset:27% 3.5% 20%}.felt-shadow{inset:25% 1% 17%}.seat.s0{top:89%}.seat.s1{top:77%;left:12%}.seat.s5{top:77%;left:88%}.seat.s2{top:19%;left:15%}.seat.s3{top:7%}.seat.s4{top:19%;left:85%}.seat .player-body{min-width:65px;padding:6px 4px}.seat-name{font-size:10px}.seat-stack{font-size:10px}.seat-pos{font-size:8px;top:-8px;right:-8px}.seat .seat-hole{min-height:32px}.seat .seat-action{font-size:8px;padding:2px 4px}.seat-chip{font-size:9px}.card{width:34px;height:48px;font-size:15px}.card .suit{font-size:15px}.card.smallcard{width:25px;height:35px;font-size:12px}.card.smallcard .suit{font-size:11px}.board-center{top:47%;gap:7px}.pot-display{font-size:10px;padding:6px 11px}.board-state{font-size:9px}.table-brand{font-size:12px}.action-panel{padding:12px}.actions-row{gap:6px}.action-btn{font-size:12px;padding:12px 5px}.raise-controls{gap:10px}.side-info{display:none}.brand-name{font-size:14px}.brand-mark{font-size:25px}.nav-btn{padding:8px 7px;font-size:11px;gap:4px}.nav-ico{display:none}}
+
+/* V0.3: accessible language selector and opt-in community-card hand hints */
+[hidden]{display:none!important}
+.lang-control{display:inline-flex;align-items:center;gap:7px;border:1px solid #334b53;background:#192b34;border-radius:8px;padding:5px 8px;color:#e6e6e0;font-size:11px;font-weight:700}
+.lang-control select{appearance:auto;background:#263944;border:1px solid #455b63;border-radius:5px;color:#f1f0ec;padding:6px 8px;font-size:12px;min-width:94px}
+.room-actions{flex-wrap:wrap;justify-content:flex-end}
+.room-action.hint-switch{border-color:#72816f;color:#e8dac1;transition:background .2s,color .2s}
+.room-action.hint-switch.enabled{background:#625039;border-color:#d1a96c;color:#fff1d8}
+.hand-hints{margin:1px 0 12px;border:1px solid #537266;background:linear-gradient(105deg,#1a3535,#182e35);border-radius:12px;padding:14px 16px;color:#f0f0ea}
+.hint-header{display:flex;justify-content:space-between;align-items:flex-start;gap:9px;margin-bottom:11px}
+.hint-eyebrow{font-size:10px;font-weight:850;color:#dfc28e;letter-spacing:1.2px}
+.hint-sub{font-size:11px;color:#b9cfc8;margin-top:4px}
+.hint-phase{padding:5px 9px;color:#bfe1d2;border-radius:99px;border:1px solid #436b5f;background:#194b40;font-size:10px;font-weight:700;white-space:nowrap}
+.hint-content{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.hint-main{flex:1;min-width:180px}
+.hint-strength{font-size:19px;font-weight:850;color:#f9edcf;line-height:1.24}
+.hint-explanation,.hint-message{color:#c4d8d3;line-height:1.45;font-size:12px;margin-top:7px}
+.hint-best{display:grid;gap:8px}
+.hint-five{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.hint-card{border:1px solid #618579;background:#284f4b;border-radius:6px;min-width:45px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px 6px;gap:3px}
+.hint-card.from-hole{border-color:#d6af70;background:#493f35}
+.hint-card>span{font-size:16px;font-weight:900;color:#f5f0e5}
+.hint-card>small{font-size:8px;letter-spacing:.3px;color:#d6ddd8;font-weight:650;white-space:nowrap}
+.hint-draws{color:#e4cfa6;font-size:11px;max-width:325px;line-height:1.5}
+.hint-disclaimer{border-top:1px solid #4c6b62;padding-top:9px;margin-top:12px;font-size:11px;line-height:1.4;color:#a9c0b9}
+@media(max-width:800px){.topbar{flex-wrap:wrap}.top-right{justify-content:flex-start}.room-actions{justify-content:flex-start}}
+@media(max-width:530px){.room-head{display:flex;flex-direction:column;align-items:flex-start;gap:11px}.room-actions{width:100%;justify-content:flex-start;gap:7px}.room-action{padding:8px 10px;font-size:10px}.table-area{margin-top:14px}.hand-hints{padding:12px 10px}.hint-strength{font-size:16px}.hint-card{min-width:40px;padding:5px 4px}.hint-card>span{font-size:14px}.lang-control{padding:4px 6px}.room-action.hint-switch{font-size:10px}}
+
+/* V0.3: persistent session, instant hand reading, interactive replay and performance center */
+.hero-hand-badge{max-width:180px;padding:4px 9px;border-radius:99px;background:#7d653f;border:1px solid #d6b986;color:#fff8e4;font-size:10px;font-weight:800;text-align:center;box-shadow:0 3px 10px #0008;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.analytics-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.metric-card{border:1px solid #3c5259;background:#1c2f38;padding:15px;border-radius:12px}.metric-label{color:#a4bbc0;font-size:11px;line-height:1.4}.metric-value{font-weight:850;font-size:24px;color:#f2e7d0;margin-top:8px;font-variant-numeric:tabular-nums}.metric-detail{color:#9eb8b9;font-size:10px;margin-top:5px}.analytics-subhead{font-size:13px;font-weight:800;color:#e4eae6;margin:23px 0 11px}.chart-card{padding:14px;border:1px solid #3b535a;border-radius:12px;background:#14262f}.chart-card svg{display:block;width:100%;height:auto;max-height:260px}.chart-legend{color:#a9bebc;font-size:11px;margin-top:10px}.stat-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #30444b;padding:10px 0;color:#b8cbd0;font-size:12px}.stat-row strong{color:#eed4a4}.action-inline{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap}.replay-summary{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;background:#213940;border:1px solid #4b6967;border-radius:12px;padding:13px;margin:15px 0}.replay-info{color:#c5d7d5;font-size:11px;line-height:1.7}.replay-card-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.replay-nav{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:12px 0}.replay-step{border-radius:8px;border:1px solid #455d66;padding:11px 12px;background:#243843;color:#f0eae0;font-weight:750;font-size:12px}.replay-step.hero-step{background:#463e30;border-color:#bf9e6d}.replay-points{display:flex;gap:6px;flex-wrap:wrap;max-height:94px;overflow:auto;padding:9px 0}.replay-dot{border:1px solid #45606b;background:#263943;color:#d4dcda;border-radius:7px;padding:6px 9px;font-size:10px;cursor:pointer}.replay-dot.active{border-color:#d5b47a;background:#75603e;color:#fff}.replay-dot.hero{box-shadow:inset 0 0 0 1px #9d8561}.settings-grid{display:grid;gap:15px}.setting-block{border:1px solid #3e565e;border-radius:10px;padding:13px;background:#1e323a}.setting-block label{display:block;color:#f0ede5;font-weight:750;font-size:13px;margin-bottom:8px}.setting-block p{margin:5px 0 0;font-size:11px}.setting-block select{width:100%;border:1px solid #526970;background:#2e444d;color:#f5f3ea;border-radius:8px;padding:11px}.kpi-bar{height:8px;background:#253b43;border-radius:50px;overflow:hidden}.kpi-fill{background:#ad9267;height:100%;border-radius:50px}.replay-modal{width:min(820px,100%)}.stats-footer{color:#9dafb3;font-size:11px;margin:14px 0;line-height:1.6}.action-panel .action-btn:focus-visible{outline-offset:2px}.settings-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:8px}
+.seat.s0{top:84%}
+@media(max-width:980px){.analytics-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:530px){.seat.s0{top:83%}.hero-hand-badge{font-size:8px;max-width:126px;padding:3px 5px}.analytics-grid{gap:7px}.metric-card{padding:10px}.metric-value{font-size:19px}.replay-step{padding:10px 8px;font-size:10px}.replay-summary{padding:10px}.replay-nav{gap:5px}.sidebar .nav{margin-left:2px}.nav-btn{font-size:10px!important}}
+</style>
+<meta name="theme-color" content="#0a1119">
+<meta name="description" content="RIVERLAB: juega al poker Texas Hold'em 6-max y analiza tus manos. Fichas virtuales, sin dinero real.">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RIVERLAB">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+<link rel="manifest" href="./manifest.webmanifest">
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="brand"><span class="brand-mark">&#9824;</span><div><div class="brand-name">RIVERLAB</div><div class="brand-sub">PLAY. ANALYZE. EVOLVE.</div></div></div>
+  <div><div class="side-label" style="margin:0 0 10px 10px" data-i18n="experience">EXPERIENCIA</div><nav class="nav"><button id="nav-table" class="nav-btn active" onclick="showView('table')"><span class="nav-ico">&#9827;</span> <span data-i18n="pokerRoom">Sala de póker</span></button><button id="nav-history" class="nav-btn" onclick="showView('history')"><span class="nav-ico">&#9776;</span> <span data-i18n="history">Historial</span></button><button id="nav-analytics" class="nav-btn" onclick="showView('analytics')"><span class="nav-ico">◈</span> <span data-i18n="analytics">Rendimiento</span></button></nav></div>
+  <div class="side-divider"></div>
+  <div class="side-info"><div class="side-label" style="margin-bottom:13px" data-i18n="mySession">MI SESIÓN</div><div class="stats-list" id="sidebar-stats"></div></div>
+  <div class="side-divider"></div>
+  <div class="status-pill"><span class="status-dot"></span> <span data-i18n="engineReady">Motor local activo</span></div>
+  <div class="sidebar-foot" data-i18n="prototypeFoot">PROTOTIPO V0.3 · Fichas ficticias · Sin dinero real</div>
+</aside>
+<main class="main">
+  <div class="topbar"><div><div class="eyebrow">RIVERLAB / POKER EXPERIENCE</div><h1 id="page-title">Cash Games <span style="color:#c6a56c">6-max</span></h1></div>
+    <div class="top-right"><label class="lang-control" for="language-select"><span data-i18n="languageLabel">Idioma</span><select id="language-select" onchange="setLanguage(this.value)" aria-label="Idioma / Language"><option value="es">Español</option><option value="en">English</option></select></label><div class="muted-tag" data-i18n="noRealMoney">SIN DINERO REAL</div><div class="muted-tag gold-tag" id="hand-counter">MANO #1</div></div>
+  </div>
+  <section id="table-view">
+    <div class="main-card">
+      <div class="room-head"><div><div class="room-name" data-i18n="theFelt">THE FELT / NO-LIMIT HOLD'EM</div><div class="room-meta" data-i18n="roomMeta">0,5 / 1 BB · 100 BB iniciales · 6 jugadores</div></div>
+        <div class="room-actions"><button class="room-action hint-switch" id="hint-toggle" type="button" aria-pressed="false" onclick="toggleHints()">PISTAS: DESACTIVADAS</button><button class="room-action" onclick="openSettings()" data-i18n="settings">AJUSTES</button><button class="room-action" onclick="openInstructions()" data-i18n="rules">REGLAS</button><button class="room-action" id="auto-button" onclick="toggleAuto()">AUTO: ON</button></div>
+      </div>
+      <div class="table-area" id="table-area" aria-live="off"><div class="felt-shadow"></div><div class="felt-rail"></div><div class="felt"><div class="table-brand">RIVERLAB</div></div><div id="board" class="board-center"></div><div id="seats"></div><div id="winner-banner"></div></div>
+      <div class="hand-hints" id="hand-hints" aria-live="polite" aria-label="Pistas de tu mano" hidden></div>
+      <div id="action-panel" class="action-panel"></div>
+    </div>
+    <div class="bottom-grid" style="margin-top:14px"><div class="detail-card"><h3>● &nbsp; <span data-i18n="activity">ACTIVIDAD DE LA MANO</span></h3><div id="events" class="events"></div></div><div class="detail-card"><h3 data-i18n="studyWhilePlaying">APRENDE MIENTRAS JUEGAS</h3><div class="detail-text" data-i18n="learningIntro">Después de cada mano puedes repasar las cartas comunitarias y tus decisiones.</div><div style="margin-top:14px"><button class="btn ghost small" onclick="showView('history')" data-i18n="seeHistory">VER HISTORIAL →</button></div></div></div>
+  </section>
+  <section id="history-view" class="history-view" style="display:none"><div class="main-card"><div class="eyebrow" data-i18n="historyEyebrow">HAND LAB / REGISTRO DE LA SESIÓN</div><h2 style="margin:7px 0 8px" data-i18n="historyTitle">Historial de manos</h2><p class="intro-text" data-i18n="historyIntro">Reconstruye las manos disputadas y repasa tus decisiones.</p><div id="history-list"></div></div></section>
+  <section id="analytics-view" class="history-view" style="display:none"><div class="main-card"><div class="eyebrow">RIVERLAB / PERFORMANCE CENTER</div><h2 style="margin:7px 0 8px" data-i18n="analyticsTitle">Tu evolución</h2><p class="intro-text" data-i18n="analyticsIntro">Analiza tus resultados y decisiones en partidas con fichas ficticias.</p><div id="analytics-content"></div></div></section>
+  <div class="footer-help" data-i18n="footer">RIVERLAB es un prototipo de prueba sin dinero real.</div>
+</main>
+</div>
+<div id="modal-root"></div>
+<script>
+
+'use strict';
+// Game currency is integer HALF big blinds. SB=1 unit, BB=2 units, buy-in=200 units.
+const BB=2, SB=1, BUYIN=200, N=6, RANKS='23456789TJQKA', SUITS=['s','h','d','c'];
+const SYMBOL={s:'\u2660',h:'\u2665',d:'\u2666',c:'\u2663'};
+// RIVERLAB V0.3 — all user-facing strings are centralized here.
+const I18N = {
+ es: {
+  experience:'EXPERIENCIA', pokerRoom:'Sala de póker', history:'Historial', mySession:'MI SESIÓN', engineReady:'Motor local activo',
+  prototypeFoot:'PROTOTIPO V0.3 · Fichas ficticias · Sin dinero real', noRealMoney:'SIN DINERO REAL',
+  theFelt:'THE FELT / NO-LIMIT HOLD\'EM', roomMeta:'0,5 / 1 BB · 100 BB iniciales · 6 jugadores',
+  rules:'REGLAS', hintsOn:'PISTAS: ACTIVADAS', hintsOff:'PISTAS: DESACTIVADAS',
+  activity:'ACTIVIDAD DE LA MANO', studyWhilePlaying:'APRENDE MIENTRAS JUEGAS',
+  learningIntro:'Después de cada mano puedes repasar las cartas comunitarias, tus decisiones y el reparto del bote. Las pistas de mano explican qué jugada has formado; no indican si debes apostar o retirarte.',
+  seeHistory:'VER HISTORIAL →', historyEyebrow:'HAND LAB / REGISTRO DE LA SESIÓN', historyTitle:'Historial de manos',
+  historyIntro:'Reconstruye las manos disputadas y repasa tus decisiones. Se guardan en este dispositivo para que puedas consultarlas después.',
+  footer:'RIVERLAB es un prototipo de prueba. Los rivales usan heurísticas, no estrategias GTO. No hay cuentas, apuestas con dinero real ni multijugador en red.',
+  hand:'MANO', pot:'BOTE', noCommunity:'sin cartas comunitarias', noFlop:'No se llegó al flop',
+  handEnded:'MANO FINALIZADA', rebuyRequired:'RECARGA NECESARIA',
+  yourTurn:'TU TURNO', bankActive:'TIME BANK ACTIVO', timeBank:'TIME BANK',
+  toCall:'Para continuar, iguala {value}', mayCheck:'Puedes pasar sin aportar fichas',
+  fold:'FOLD', check:'CHECK', call:'CALL', bet:'BET', raise:'RAISE', allin:'ALL-IN',
+  halfPot:'1/2 BOTE', threePot:'3/4 BOTE', fullPot:'BOTE',
+  betSize:'Cantidad de subida', cannotRaise:'No puedes subir en esta situación. Puedes igualar, pasar o retirarte.',
+  waiting:'Esperando decisión', botTurn:'TURNO DE {name}', preparing:'PREPARANDO MESA',
+  botLimit:'Los rivales deben actuar en menos de 5 segundos.',
+  outOfChips:'Te has quedado sin fichas', rebuyInfo:'Recarga 100 BB ficticias para seguir jugando.', rebuy:'RECARGAR 100 BB',
+  handComplete:'Mano #{n} completada. {continuation}', nextSoon:'La siguiente comienza en unos segundos.', nextManual:'Puedes continuar cuando quieras.', analyze:'ANALIZAR', nextHand:'SIGUIENTE MANO →',
+  handsPlayed:'Manos jugadas', handsWon:'Manos ganadas', result:'Resultado',
+  historyWon:'GANADA', historyEnded:'FINALIZADA', historyBoard:'Mesa', emptyHistory:'Todavía no hay manos completadas. Juega una mano para empezar a construir tu historial.',
+  potSplit:'BOTE REPARTIDO', wins:'{name} GANA',
+  streetPreflop:'PREFLOP', streetFlop:'FLOP', streetTurn:'TURN', streetRiver:'RIVER',
+  noLogs:'Preparando la primera mano...', you:'TÚ', hiddenCard:'Carta oculta', noCard:'Sin carta',
+  action_postSB:'publica la ciega pequeña', action_postBB:'publica la ciega grande', action_bet:'apuesta',action_raise:'sube hasta',
+  action_call:'iguala', action_check:'pasa', action_fold:'se retira', action_autoFold:'se retira por tiempo', action_win:'gana el bote',
+  uncontested:'{name} gana {amount} (los demás se retiran)', showdownResult:'{name} gana {amount}',
+  withoutShowdown:'sin showdown',
+  hintHeading:'PISTA DE TU MANO', hintSub:'Lectura automática de tus cartas y las comunitarias',
+  preflopHeading:'TUS CARTAS INICIALES',
+  preflopExplanation:'Aún no hay cartas comunitarias. Tu jugada de cinco cartas se identificará automáticamente en el flop.',
+  startPocket:'Pareja de mano: {rank}', startSuited:'{cards} · cartas del mismo palo',startConnected:'{cards} · cartas consecutivas',startOther:'{cards} · cartas iniciales',
+  hintFolded:'Te has retirado de esta mano. Las pistas se reanudarán en la siguiente.',
+  hintTwo:'La combinación utiliza tus dos cartas privadas.',hintOne:'La mejor combinación utiliza una de tus cartas privadas.',hintBoard:'La mejor jugada ya está formada por las cinco cartas comunitarias; tus cartas no la mejoran.',
+  hintYourCards:'TUS CARTAS',hintBoardCards:'MESA',
+  hintNotAdvice:'Información sobre tu jugada actual; no es una recomendación de apostar, igualar o retirarte.',
+  hintDraws:'Posibilidades a completar',drawFlush:'Proyecto de color (falta una carta)',drawStraight:'Proyecto de escalera (falta una carta)',
+  highCard:'Carta alta: {rank}', onePair:'Pareja de {rank}',twoPair:'Dobles parejas: {a} y {b}',trips:'Trío de {rank}',straight:'Escalera hasta {rank}',
+  flush:'Color de {suit}',fullHouse:'Full house: {a} sobre {b}',quads:'Póker de {rank}',straightFlush:'Escalera de color hasta {rank}',royalFlush:'Escalera real',
+  suit_s:'picas',suit_h:'corazones',suit_d:'diamantes',suit_c:'tréboles',
+  rankA:'as',rankK:'rey',rankQ:'dama',rankJ:'jota',rankT:'diez',
+  pA:'ases',pK:'reyes',pQ:'damas',pJ:'jotas',pT:'dieces',
+  handNames:['Carta alta','Pareja','Dobles parejas','Trío','Escalera','Color','Full house','Póker','Escalera de color'],
+  modalClose:'CERRAR ✕', modalHand:'MANO #{n}', modalSummary:'{reason}. Bote total: {amount}.', modalMyCards:'TUS CARTAS', modalCommunity:'CARTAS COMUNITARIAS',modalVisible:'CARTAS VISIBLES',modalActions:'ACCIONES',
+  noMadeHand:'No hay suficientes cartas para formar una jugada de cinco cartas.',
+  rulesTitle:'REGLAS DEL PROTOTIPO',
+  rulesP1:'Cash Games No-Limit Texas Hold’em, 6 participantes. Cada jugador comienza con 100 BB; las ciegas son 0,5/1 BB y las posiciones rotan tras cada mano.',
+  rulesP2:'Tienes 20 segundos por decisión más una reserva total de 20 segundos (Time Bank) para la sesión. Si se agota, se ejecuta CHECK cuando sea legal o FOLD si hay una apuesta pendiente.',
+  rulesP3:'Los rivales virtuales tienen un límite de 5 segundos y usan estrategias heurísticas. No conocen las cartas ocultas de los demás ni juegan GTO. Si agotan sus fichas, recargan automáticamente.',
+  rulesP4:'Las pistas opcionales explican tu mejor jugada y distinguen cartas propias y comunitarias. Se actualizan al salir el flop, turn y river. No recomiendan acciones ni garantizan ganar.',
+  rulesP5:'El historial muestra las acciones, las manos reveladas, los botes secundarios y los empates. Las manos completadas y el progreso se guardan localmente cuando el navegador lo permite.',
+  languageLabel:'Idioma',hintAria:'Activar o desactivar pistas de la mano',hintStatusOn:'Las pistas están activadas',hintStatusOff:'Las pistas están desactivadas',
+  analytics:'Rendimiento',analyticsTitle:'Tu evolución',analyticsIntro:'Estadísticas y resultados basados en manos con fichas ficticias. No es un análisis GTO.',
+  settings:'AJUSTES',settingsTitle:'AJUSTES DE LA MESA',settingsSpeed:'Velocidad de los rivales',settingsSpeedHelp:'Cambia la rapidez de respuesta de la IA; el límite máximo sigue siendo cinco segundos.',speedNormal:'Normal · Ritmo natural',speedFast:'Rápido · Más manos',autoNext:'AUTO',autoNextHelp:'Comenzar la siguiente mano automáticamente.',
+  settingsHint:'Pistas de mano',settingsHintHelp:'Muestra la mejor combinación junto a tus cartas y en el panel explicativo.',on:'Activado',off:'Desactivado',settingsLang:'Idioma de la aplicación',settingsReset:'Reiniciar sesión',resetWarning:'¿Eliminar el historial, las estadísticas y las fichas de esta sesión? Esta acción no se puede deshacer.',resetDone:'Sesión reiniciada',settingsData:'Datos de la sesión',export:'EXPORTAR MANOS JSON',exportHelp:'Descarga el historial registrado para estudiarlo o compartirlo voluntariamente. No incluye cartas ocultas de manos sin showdown.',
+  sessionStorage:'PROGRESO GUARDADO EN ESTE DISPOSITIVO',sessionNotSaved:'ALMACENAMIENTO NO DISPONIBLE',sessionRecovered:'Se ha restaurado la última mano completada; una mano interrumpida no se recupera.',
+  completedHands:'Manos finalizadas',sessionResults:'Resultado acumulado',playedBoard:'Llegaste al showdown',winAtShowdown:'Showdowns ganados',myDecisions:'Mis decisiones',trend:'EVOLUCIÓN DE FICHAS (BB)',lastHands:'Últimas manos',analyticsSample:'Son estadísticas descriptivas; una muestra pequeña no permite sacar conclusiones fiables.',voluntary:'Participación voluntaria preflop',preflopRaise:'Subida preflop',actionCounts:'Apuestas y decisiones',foldCount:'Retiradas',callCount:'Igualadas',raiseCount:'Apuestas / Subidas',checkCount:'Checks', noPerformance:'Completa alguna mano para activar el análisis.', netPositive:'Positivo',netNegative:'Negativo',netNeutral:'Igualado',
+  replay:'REPRODUCIR',replayStep:'ACCIÓN {step} DE {total}',replayStart:'INICIO DE MANO',replayEnd:'RESULTADO DE LA MANO',replayBefore:'Bote antes',replayAfter:'Bote después',replayPotOdds:'Pot odds para pagar',replayActionCost:'Cantidad pendiente',replayStack:'Stack previo',replayAction:'Acción seleccionada',replayNote:'Datos matemáticos de esta acción, no una valoración de la decisión.',replayHero:'TU DECISIÓN',replayOthers:'RIVAL',replayPrev:'← ANTERIOR',replayNext:'SIGUIENTE →',replayNextHero:'MI SIGUIENTE ACCIÓN',replayProgress:'Navega por cada acción y observa cómo evoluciona el board, el bote y tus decisiones.',replayAll:'Todos los movimientos',replayNoDecision:'Todavía no hay decisiones tuyas en esta mano.',replayCommunity:'Cartas visibles en ese momento',handNet:'Resultado de la mano',storageNote:'Solo se almacena en este navegador. Si eliminas los datos del sitio, puedes perder la sesión.'
+ },
+ en: {
+  experience:'EXPERIENCE', pokerRoom:'Poker Room', history:'Hand History', mySession:'MY SESSION', engineReady:'Local engine running',
+  prototypeFoot:'PROTOTYPE V0.3 · Play-money chips · No real money', noRealMoney:'NO REAL MONEY',
+  theFelt:'THE FELT / NO-LIMIT HOLD\'EM',roomMeta:'0.5 / 1 BB · 100 BB starting stack · 6 players',
+  rules:'RULES',hintsOn:'HINTS: ON',hintsOff:'HINTS: OFF',
+  activity:'HAND ACTIVITY',studyWhilePlaying:'LEARN AS YOU PLAY',
+  learningIntro:'After each hand, review the community cards, your decisions and the pot distribution. Hand hints explain what you have made; they do not tell you whether to bet or fold.',
+  seeHistory:'VIEW HISTORY →',historyEyebrow:'HAND LAB / SESSION RECORD',historyTitle:'Hand history',
+  historyIntro:'Review played hands and your decisions. Your hand history is saved on this device so you can review it later.',
+  footer:'RIVERLAB is an experimental prototype. Opponents use heuristics, not GTO strategies. No accounts, real-money wagering or online multiplayer.',
+  hand:'HAND',pot:'POT',noCommunity:'no community cards',noFlop:'No flop was dealt',
+  handEnded:'HAND COMPLETE',rebuyRequired:'REBUY REQUIRED',
+  yourTurn:'YOUR TURN',bankActive:'TIME BANK ACTIVE',timeBank:'TIME BANK',
+  toCall:'Call {value} to continue',mayCheck:'You can check without adding chips',
+  fold:'FOLD',check:'CHECK',call:'CALL',bet:'BET',raise:'RAISE',allin:'ALL-IN',
+  halfPot:'1/2 POT',threePot:'3/4 POT',fullPot:'POT',
+  betSize:'Raise amount',cannotRaise:'You cannot raise here. You may call, check or fold.',
+  waiting:'Waiting for a decision',botTurn:'{name} TO ACT',preparing:'PREPARING TABLE',
+  botLimit:'Opponents must act within 5 seconds.',
+  outOfChips:'You have run out of chips',rebuyInfo:'Rebuy 100 BB in play-money chips to continue.',rebuy:'REBUY 100 BB',
+  handComplete:'Hand #{n} complete. {continuation}',nextSoon:'The next hand starts shortly.',nextManual:'Continue whenever you like.',analyze:'REVIEW',nextHand:'NEXT HAND →',
+  handsPlayed:'Hands played',handsWon:'Hands won',result:'Net result',
+  historyWon:'WON',historyEnded:'COMPLETED',historyBoard:'Board',emptyHistory:'No completed hands yet. Play a hand to start building your history.',
+  potSplit:'SPLIT POT',wins:'{name} WINS',
+  streetPreflop:'PREFLOP',streetFlop:'FLOP',streetTurn:'TURN',streetRiver:'RIVER',
+  noLogs:'Preparing the first hand...',you:'YOU',hiddenCard:'Hidden card',noCard:'No card',
+  action_postSB:'posts small blind',action_postBB:'posts big blind',action_bet:'bets',action_raise:'raises to',
+  action_call:'calls',action_check:'checks',action_fold:'folds',action_autoFold:'times out and folds',action_win:'wins the pot',
+  uncontested:'{name} wins {amount} (everyone else folds)',showdownResult:'{name} wins {amount}',
+  withoutShowdown:'without showdown',
+  hintHeading:'YOUR HAND HINT',hintSub:'Automatic reading of your cards and the board',
+  preflopHeading:'YOUR STARTING HAND',
+  preflopExplanation:'Community cards have not been dealt yet. Your five-card hand will be identified automatically on the flop.',
+  startPocket:'Pocket pair: {rank}',startSuited:'{cards} · suited cards',startConnected:'{cards} · connected cards',startOther:'{cards} · starting cards',
+  hintFolded:'You have folded this hand. Hints will resume in the next hand.',
+  hintTwo:'The best five-card hand uses both of your hole cards.',hintOne:'The best five-card hand uses one of your hole cards.',hintBoard:'The same best hand is already on the board; your hole cards do not improve it.',
+  hintYourCards:'YOUR CARDS',hintBoardCards:'BOARD',
+  hintNotAdvice:'This is factual hand information, not advice to bet, call or fold.',
+  hintDraws:'Possible draws',drawFlush:'Flush draw (one card away)',drawStraight:'Straight draw (one card away)',
+  highCard:'High card: {rank}',onePair:'Pair of {rank}',twoPair:'Two pair: {a} and {b}',trips:'Three of a kind: {rank}',straight:'Straight to {rank}',
+  flush:'Flush ({suit})',fullHouse:'Full house: {a} full of {b}',quads:'Four of a kind: {rank}',straightFlush:'Straight flush to {rank}',royalFlush:'Royal flush',
+  suit_s:'spades',suit_h:'hearts',suit_d:'diamonds',suit_c:'clubs',
+  rankA:'ace',rankK:'king',rankQ:'queen',rankJ:'jack',rankT:'ten',
+  pA:'aces',pK:'kings',pQ:'queens',pJ:'jacks',pT:'tens',
+  handNames:['High card','One pair','Two pair','Three of a kind','Straight','Flush','Full house','Four of a kind','Straight flush'],
+  modalClose:'CLOSE ✕',modalHand:'HAND #{n}',modalSummary:'{reason}. Total pot: {amount}.',modalMyCards:'YOUR CARDS',modalCommunity:'COMMUNITY CARDS',modalVisible:'VISIBLE CARDS',modalActions:'ACTIONS',
+  noMadeHand:'Not enough cards to make a five-card poker hand.',
+  rulesTitle:'PROTOTYPE RULES',
+  rulesP1:'Six-player No-Limit Texas Hold’em cash game. Each player starts with 100 BB. Blinds are 0.5/1 BB and positions rotate after each hand.',
+  rulesP2:'You have 20 seconds per decision plus a 20-second session-wide Time Bank. When both expire, the engine checks if legal or folds when facing a bet.',
+  rulesP3:'Computer opponents have a 5-second cap and use heuristic strategies. They never see opponents’ hole cards and do not play GTO. They automatically rebuy when out of chips.',
+  rulesP4:'Optional hints explain your strongest current hand and distinguish hole cards from community cards. They update after the flop, turn and river. They do not recommend actions or guarantee a win.',
+  rulesP5:'Hand history shows actions, exposed hands, side pots and ties. Completed hands and progress are saved locally whenever browser storage is available.',
+  languageLabel:'Language',hintAria:'Enable or disable hand hints',hintStatusOn:'Hand hints are enabled',hintStatusOff:'Hand hints are disabled',
+  analytics:'Performance',analyticsTitle:'Your progress',analyticsIntro:'Stats and results based on play-money hands. Not a GTO analysis.',
+  settings:'SETTINGS',settingsTitle:'TABLE SETTINGS',settingsSpeed:'Opponent speed',settingsSpeedHelp:'Adjust how fast opponents act; the five-second maximum remains.',speedNormal:'Normal · Natural pace',speedFast:'Fast · More hands',autoNext:'AUTO',autoNextHelp:'Start the next hand automatically.',
+  settingsHint:'Hand hints',settingsHintHelp:'Shows the best made hand next to your cards and in a detailed hint panel.',on:'On',off:'Off',settingsLang:'Application language',settingsReset:'Reset session',resetWarning:'Delete your hand history, statistics and chip stacks? This cannot be undone.',resetDone:'Session reset',settingsData:'Session data',export:'EXPORT HANDS JSON',exportHelp:'Download recorded hand history to review or voluntarily share. Hidden cards from non-showdown hands are excluded.',
+  sessionStorage:'PROGRESS SAVED ON THIS DEVICE',sessionNotSaved:'STORAGE UNAVAILABLE',sessionRecovered:'Restored last completed hand; an interrupted hand is not recovered.',
+  completedHands:'Completed hands',sessionResults:'Cumulative result',playedBoard:'Reached showdown',winAtShowdown:'Showdowns won',myDecisions:'My decisions',trend:'CHIP EVOLUTION (BB)',lastHands:'Recent hands',analyticsSample:'These are descriptive statistics; small samples do not support firm conclusions.',voluntary:'Voluntarily played preflop',preflopRaise:'Preflop raise',actionCounts:'Bets and decisions',foldCount:'Folds',callCount:'Calls',raiseCount:'Bets / Raises',checkCount:'Checks',noPerformance:'Finish a few hands to unlock the analysis.',netPositive:'Positive',netNegative:'Negative',netNeutral:'Even',
+  replay:'REPLAY',replayStep:'ACTION {step} OF {total}',replayStart:'HAND START',replayEnd:'HAND RESULT',replayBefore:'Pot before',replayAfter:'Pot after',replayPotOdds:'Pot odds to call',replayActionCost:'Amount to call',replayStack:'Stack before',replayAction:'Selected action',replayNote:'Mathematical information about this action, not a judgement of its quality.',replayHero:'YOUR DECISION',replayOthers:'OPPONENT',replayPrev:'← PREVIOUS',replayNext:'NEXT →',replayNextHero:'MY NEXT ACTION',replayProgress:'Step through each action to see the board, pot and your decisions.',replayAll:'All actions',replayNoDecision:'No hero decisions in this hand yet.',replayCommunity:'Community cards visible at this point',handNet:'Hand result',storageNote:'Saved only in this browser. Clearing site data may remove your session.'
+ }
+};
+function prefRead(key, fallback){try {const value=localStorage.getItem('riverlab.v03.'+key)??localStorage.getItem('riverlab.v02.'+key);return value===null?fallback:value} catch(e){return fallback}}
+function prefWrite(key,value){try{localStorage.setItem('riverlab.v02.'+key,value)}catch(e){}}
+function tr(key, args={}){let raw=I18N[state.language]?.[key] ?? I18N.es[key] ?? key; if(typeof raw!=='string')return raw;return raw.replace(/\{(\w+)\}/g,(_,name)=>String(args[name]??''))}
+function playerName(seat){return seat===0?tr('you'):state.players[seat].name}
+function titleHand(n){return tr('hand')+' #'+n}
+function getHandName(category){return tr('handNames')[category]}
+function actionTranslation(kind){const keys={'publica SB':'action_postSB','publica BB':'action_postBB','sube hasta':'action_raise','apuesta':'action_bet','iguala':'action_call','pasa':'action_check','se retira':'action_fold','fold automático':'action_autoFold','gana el bote':'action_win'};return tr(keys[kind]||kind)}
+function outcomeText(result){if(!result)return '';if(result.kind==='uncontested')return tr('uncontested',{name:playerName(result.seat),amount:fmt(result.amount)});return result.winners.map(w=>tr('showdownResult',{name:playerName(w.seat),amount:fmt(w.amount)})).join(' · ')}
+function logText(e){if(typeof e==='string')return e;if(e.key==='action')return playerName(e.values.seat)+' '+actionTranslation(e.values.type)+(e.values.detail?' '+(typeof e.values.detail==='number'?fmt(e.values.detail):e.values.detail):'');if(e.key==='street')return tr('street'+e.values.street.charAt(0).toUpperCase()+e.values.street.slice(1))+' '+e.values.cards;if(e.key==='rebuys')return playerName(e.values.seat)+' '+(state.language==='es'?'recarga':'rebuys')+' 100 BB';if(e.key==='winner')return tr('showdownResult',{name:playerName(e.values.seat),amount:fmt(e.values.amount)})+' ('+getHandName(e.values.category)+')';return ''}
+function setLanguage(lang){if(!['es','en'].includes(lang))lang='es';state.language=lang;prefWrite('language',lang);document.documentElement.lang=lang;updateStaticLabels();render();}
+function toggleHints(){state.hintsEnabled=!state.hintsEnabled;prefWrite('hints',state.hintsEnabled?'1':'0');render();}
+function updateStaticLabels(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=tr(el.getAttribute('data-i18n'))});const select=$('language-select');if(select)select.value=state.language;const hints=$('hand-hints');if(hints)hints.setAttribute('aria-label',tr('hintHeading'));const hintButton=$('hint-toggle');if(hintButton){hintButton.textContent=tr(state.hintsEnabled?'hintsOn':'hintsOff');hintButton.setAttribute('aria-pressed',String(state.hintsEnabled));hintButton.setAttribute('aria-label',tr('hintAria'));hintButton.classList.toggle('enabled',state.hintsEnabled)}const auto=$('auto-button');if(auto)auto.textContent=tr('autoNext')+': '+tr(state.autoplay?'on':'off');}
+const PREFS=[
+ {name:'T\u00da',kind:'human',tight:0,agg:0,loose:0,initials:'YO'},
+ {name:'KAI',kind:'loose-passive',tight:5.0,agg:0.08,loose:0.95,initials:'KA'},
+ {name:'MARC',kind:'tight-passive',tight:10.0,agg:0.08,loose:0.05,initials:'MA'},
+ {name:'ALEX',kind:'tag',tight:8.5,agg:0.55,loose:0.18,initials:'AL'},
+ {name:'NOVA',kind:'lag',tight:6.1,agg:0.75,loose:0.76,initials:'NO'},
+ {name:'LEO',kind:'balanced',tight:7.9,agg:0.43,loose:0.42,initials:'LE'}
+];
+const $=id=>document.getElementById(id);
+const SESSION_KEY='riverlab.v03.session';
+function fmt(u){return (u/2).toLocaleString(state.language==='en'?'en-US':'es-ES',{maximumFractionDigits:1})+' BB'}
+function fmtN(u){return (u/2).toLocaleString(state.language==='en'?'en-US':'es-ES',{maximumFractionDigits:1})}
+const state={players:PREFS.map((v,i)=>({...v,seat:i,stack:BUYIN,cards:[],bet:0,invested:0,folded:false,allIn:false,acted:false,actedFacing:0,action:''})),button:5,hand:0,phase:'idle',turn:null,deck:[],board:[],currentBet:0,minRaise:BB,heroBank:20,bankAtStart:20,turnStart:0,logs:[],handEvents:[],handHistory:[],winners:[],stats:{hands:0,wins:0,vpip:0,pfr:0},buyIns:BUYIN,autoplay:prefRead('autoplay','1')!=='0',view:'table',selectedRaise:6,finishedReason:'',resultData:null,didShowdown:false,language:['es','en'].includes(prefRead('language','es'))?prefRead('language','es'):'es',hintsEnabled:prefRead('hints','0')==='1',botSpeed:prefRead('speed','normal')==='fast'?'fast':'normal',heroStartStack:BUYIN,recovered:false};
+let botTimer=null,botFallback=null,heroTimer=null,nextTimer=null,gameToken=0;
+function rand(n){if(globalThis.crypto && crypto.getRandomValues){const arr=new Uint32Array(1);crypto.getRandomValues(arr);return arr[0]%n}return Math.floor(Math.random()*n)}
+function shuffle(){const d=[];for(const r of RANKS)for(const s of SUITS)d.push({r:RANKS.indexOf(r)+2,s});for(let i=d.length-1;i>0;i--){const j=rand(i+1);[d[i],d[j]]=[d[j],d[i]]}return d}
+function next(s){return (s+1)%N}
+function posFor(seat){return ['BTN','SB','BB','UTG','HJ','CO'][(seat-state.button+N)%N]}
+function pot(){return state.players.reduce((a,p)=>a+p.invested,0)}
+function live(){return state.players.filter(p=>!p.folded)}
+function eligible(){return state.players.filter(p=>!p.folded&&!p.allIn)}
+function logMsg(key,values={}){state.logs.unshift({key,values});state.logs=state.logs.slice(0,9)}
+function actionLog(seat,type,detail='',context=null){logMsg('action',{seat,type,detail});state.handEvents.push({seat,street:state.phase,kind:type,details:detail,board:state.board.map(c=>({...c})),pot:pot(),beforePot:context?.beforePot??(pot()-(typeof detail==='number'&&type==='iguala'?detail:0)),toCall:context?.toCall??0,stackBefore:context?.stackBefore??null,currentBetBefore:context?.currentBet??null,at:Date.now()})}
+function clearTimers(){clearTimeout(botTimer);clearTimeout(botFallback);clearInterval(heroTimer);clearTimeout(nextTimer);botTimer=botFallback=heroTimer=nextTimer=null}
+function makeMove(player,amount){const pay=Math.max(0,Math.min(player.stack,amount));player.stack-=pay;player.bet+=pay;player.invested+=pay;if(player.stack===0)player.allIn=true;return pay}
+function newHand(){
+ clearTimers();gameToken++;
+ if(state.players[0].stack===0){state.phase='busted';state.turn=null;render();return}
+ const rebuys=[];state.players.forEach((p,i)=>{if(i>0&&p.stack===0){p.stack=BUYIN;rebuys.push(i)}Object.assign(p,{cards:[],bet:0,invested:0,folded:false,allIn:false,acted:false,actedFacing:0,action:'',actionAmount:0,wasVPIP:false,wasPFR:false})});
+ state.hand++;state.stats.hands++;state.heroStartStack=state.players[0].stack;state.button=next(state.button);state.phase='preflop';state.turn=null;state.board=[];state.logs=[];state.handEvents=[];state.winners=[];state.finishedReason='';state.resultData=null;state.didShowdown=false;rebuys.forEach(seat=>logMsg('rebuys',{seat}));state.deck=shuffle();state.currentBet=BB;state.minRaise=BB;
+ const small=next(state.button),big=next(small);
+ for(let card=0;card<2;card++)for(let i=0,s=small;i<N;i++,s=next(s))state.players[s].cards.push(state.deck.pop());
+ makeMove(state.players[small],SB);actionLog(small,'publica SB',SB,{beforePot:0,toCall:0,stackBefore:state.players[small].stack+SB,currentBet:BB});
+ makeMove(state.players[big],BB);actionLog(big,'publica BB',BB,{beforePot:SB,toCall:0,stackBefore:state.players[big].stack+BB,currentBet:BB});
+ setTurn(next(big));
+}
+function needsAction(p){return !p.folded&&!p.allIn&&(!p.acted||p.bet<state.currentBet)}
+function currentMinRaise(p){return Math.min(p.bet+p.stack,state.currentBet+state.minRaise)}
+function mayRaise(p){return p.bet+p.stack>state.currentBet && (!p.acted||state.currentBet-p.actedFacing>=state.minRaise) && state.players.some(q=>q.seat!==p.seat&&!q.folded&&!q.allIn)}
+function setTurn(seat){
+ clearTimeout(botTimer);clearTimeout(botFallback);clearInterval(heroTimer);
+ state.turn=seat;
+ const p=state.players[seat];if(!needsAction(p)){settleAfter(seat);return}
+ if(seat===0){state.turnStart=Date.now();state.bankAtStart=state.heroBank;heroTimer=setInterval(tick,100);render();tick();}
+ else {render();const t=gameToken;let completed=false;botTimer=setTimeout(()=>{if(completed||t!==gameToken||state.turn!==seat)return;completed=true;clearTimeout(botFallback);try{const a=chooseBotAction(p);act(seat,a.kind,a.target)}catch(e){console.error(e);safeBot(seat)}},state.botSpeed==='fast'?130+rand(300):600+rand(1500));botFallback=setTimeout(()=>{if(completed||t!==gameToken||state.turn!==seat)return;completed=true;clearTimeout(botTimer);safeBot(seat)},5000)}
+}
+function safeBot(seat){const p=state.players[seat];if(state.turn!==seat)return;act(seat,state.currentBet>p.bet?'fold':'check')}
+function bankSnapshot(){if(state.turn!==0)return {normal:0,bank:state.heroBank,using:false};const elapsed=(Date.now()-state.turnStart)/1000;return {normal:Math.max(0,20-elapsed),bank:Math.max(0,state.bankAtStart-Math.max(0,elapsed-20)),using:elapsed>=20}}
+function tick(){if(state.turn!==0 || state.phase==='complete')return;const snap=bankSnapshot();const remaining=snap.using?snap.bank:snap.normal;const el=$('countdown');if(el)el.textContent='00:'+String(Math.max(0,Math.ceil(remaining))).padStart(2,'0');const fill=$('time-fill');if(fill){fill.style.width=Math.max(0,Math.min(100,remaining/20*100))+'%';fill.className='timer-fill'+(remaining<=5?' urgent':snap.using?' bank':'')};const bank=$('bank-count');if(bank)bank.textContent=Math.ceil(snap.bank)+' s';const label=$('time-label');if(label)label.textContent=tr(snap.using?'bankActive':'yourTurn');if(snap.using&&snap.bank<=0){state.heroBank=0;act(0,state.currentBet>state.players[0].bet?'fold':'check',null,true)}}
+function recordHero(player,kind,pay){if(player.seat!==0||state.phase!=='preflop')return;if(pay>0&&['call','raise'].includes(kind)&&!player.wasVPIP){player.wasVPIP=true;state.stats.vpip++}if(kind==='raise'&&!player.wasPFR){player.wasPFR=true;state.stats.pfr++}}
+function act(seat,kind,target=null,forced=false){
+ if(state.turn!==seat||!['preflop','flop','turn','river'].includes(state.phase))return false;
+ const p=state.players[seat],toCall=Math.max(0,state.currentBet-p.bet);
+ const context={beforePot:pot(),toCall,stackBefore:p.stack,currentBet:state.currentBet};
+ if(seat===0){const snap=bankSnapshot();if(!forced&&snap.using&&snap.bank<=0)kind=toCall>0?'fold':'check';state.heroBank=snap.bank;clearInterval(heroTimer)}
+ if(kind==='check'&&toCall>0)return false;
+ if(kind==='raise'&&!mayRaise(p))return false;
+ if(kind==='raise'){
+  const maxTotal=p.bet+p.stack,min=currentMinRaise(p);
+  let t=Number(target);if(!Number.isFinite(t))t=min;t=Math.floor(Math.max(min,Math.min(maxTotal,t)));
+  if(t<=state.currentBet)return false;
+  const previous=state.currentBet,pay=makeMove(p,t-p.bet),increment=t-previous;
+  state.currentBet=t;if(increment>=state.minRaise)state.minRaise=increment;
+  p.acted=true;p.actedFacing=t;p.action='raise';p.actionAmount=t;recordHero(p,'raise',pay);actionLog(seat,previous>0?'sube hasta':'apuesta',t,context);
+ }else if(kind==='call'){
+  if(toCall<=0)kind='check';else{const paid=makeMove(p,toCall);p.acted=true;p.actedFacing=state.currentBet;p.action='call';p.actionAmount=paid;recordHero(p,'call',paid);actionLog(seat,'iguala',paid,context)}
+ }
+ if(kind==='check'){p.acted=true;p.actedFacing=state.currentBet;p.action='check';actionLog(seat,'pasa','',context)}
+ if(kind==='fold'){p.folded=true;p.acted=true;p.actedFacing=state.currentBet;p.action='fold';actionLog(seat,forced?'fold autom\u00e1tico':'se retira','',context)}
+ state.turn=null;settleAfter(seat);return true;
+}
+function settleAfter(from){
+ const remaining=live();if(remaining.length===1){finishUncontested(remaining[0]);return}
+ const capable=eligible();if(capable.length===1&&capable[0].bet>=state.currentBet){advanceStreet();return}
+ const pending=state.players.filter(needsAction);
+ if(pending.length===0){advanceStreet();return}
+ let s=from;for(let j=0;j<N;j++){s=next(s);if(needsAction(state.players[s])){setTurn(s);return}}
+ throw new Error('No next actor despite pending players');
+}
+function burn(){state.deck.pop()}
+function advanceStreet(){
+ if(state.phase==='river'){finishShowdown();return}
+ if(state.phase==='preflop'){burn();for(let i=0;i<3;i++)state.board.push(state.deck.pop());state.phase='flop'}
+ else if(state.phase==='flop'){burn();state.board.push(state.deck.pop());state.phase='turn'}
+ else if(state.phase==='turn'){burn();state.board.push(state.deck.pop());state.phase='river'}
+ state.currentBet=0;state.minRaise=BB;
+ state.players.forEach(p=>{p.bet=0;p.acted=false;p.actedFacing=0;if(!p.folded)p.action=''});
+ logMsg('street',{street:state.phase,cards:state.board.map(cardText).join(' ')});state.handEvents.push({seat:-1,street:state.phase,kind:'deal',details:'',board:state.board.map(c=>({...c})),pot:pot(),beforePot:pot(),toCall:0,at:Date.now()});
+ const capable=eligible();
+ if(capable.length<=1){advanceStreet();return}
+ settleAfter(state.button);
+}
+function straightHigh(sorted){const uniq=[...new Set(sorted)].sort((a,b)=>b-a);if(uniq.includes(14))uniq.push(1);for(let i=0;i<=uniq.length-5;i++)if(uniq[i]-uniq[i+4]===4)return uniq[i];return 0}
+function rank5(cards){
+ const ranks=cards.map(c=>c.r).sort((a,b)=>b-a);const counts=new Map();for(const r of ranks)counts.set(r,(counts.get(r)||0)+1);
+ const groups=[...counts.entries()].map(([r,n])=>({r,n})).sort((a,b)=>b.n-a.n||b.r-a.r);
+ const flush=cards.every(c=>c.s===cards[0].s);const straight=straightHigh(ranks);
+ if(flush&&straight)return [8,straight];
+ if(groups[0].n===4)return [7,groups[0].r,groups[1].r];
+ if(groups[0].n===3&&groups[1].n===2)return [6,groups[0].r,groups[1].r];
+ if(flush)return [5,...ranks];
+ if(straight)return [4,straight];
+ if(groups[0].n===3)return [3,groups[0].r,...groups.slice(1).map(g=>g.r).sort((a,b)=>b-a)];
+ if(groups[0].n===2&&groups[1].n===2)return [2,Math.max(groups[0].r,groups[1].r),Math.min(groups[0].r,groups[1].r),groups[2].r];
+ if(groups[0].n===2)return [1,groups[0].r,...groups.slice(1).map(g=>g.r).sort((a,b)=>b-a)];
+ return [0,...ranks];
+}
+function compareRank(a,b){for(let i=0;i<Math.max(a.length,b.length);i++){const d=(a[i]||0)-(b[i]||0);if(d!==0)return Math.sign(d)}return 0}
+function best7(cards){if(cards.length<5)throw Error('Need at least 5 cards');let best=null;for(let a=0;a<cards.length-4;a++)for(let b=a+1;b<cards.length-3;b++)for(let c=b+1;c<cards.length-2;c++)for(let d=c+1;d<cards.length-1;d++)for(let e=d+1;e<cards.length;e++){const rank=rank5([cards[a],cards[b],cards[c],cards[d],cards[e]]);if(!best||compareRank(rank,best)>0)best=rank}return best}
+const HAND_NAMES=['Carta alta','Pareja','Dobles parejas','Tr\u00edo','Escalera','Color','Full house','P\u00f3ker','Escalera de color'];
+// Handles every distinct investment level. Any uncalled excess is awarded back to its owner.
+function splitPots(players,board,button){
+ const levels=[...new Set(players.map(p=>p.invested).filter(v=>v>0))].sort((a,b)=>a-b);let previous=0;const results=[];
+ for(const level of levels){const contributors=players.filter(p=>p.invested>=level);const amount=(level-previous)*contributors.length;previous=level;
+  if(amount<=0)continue;
+  const participants=contributors.filter(p=>!p.folded);
+  if(!participants.length)throw Error('No eligible winner for a pot');
+  let winners=[participants[0]];
+  if(participants.length>1){let highest=best7(participants[0].cards.concat(board));for(let i=1;i<participants.length;i++){const r=best7(participants[i].cards.concat(board));const cmp=compareRank(r,highest);if(cmp>0){highest=r;winners=[participants[i]]}else if(cmp===0){winners.push(participants[i])}}}
+  const share=Math.floor(amount/winners.length),extra=amount%winners.length;
+  const ordered=winners.slice().sort((a,b)=>(a.seat-button+N-1)%N-(b.seat-button+N-1)%N);
+  const payouts=ordered.map((p,i)=>({seat:p.seat,amount:share+(i<extra?1:0)}));
+  results.push({amount,eligible:participants.map(p=>p.seat),winners:payouts});
+ }
+ return results;
+}
+function finishUncontested(p){clearTimers();state.turn=null;const amount=pot();p.stack+=amount;state.winners=[{seat:p.seat,name:p.name,amount,noShowdown:true}];state.resultData={kind:'uncontested',seat:p.seat,amount};actionLog(p.seat,'gana el bote',amount);finishHand([p.seat]);}
+function finishShowdown(){
+ clearTimers();state.turn=null;state.didShowdown=true;
+ let pots=splitPots(state.players,state.board,state.button);const wins=new Map();
+ for(const sp of pots)for(const w of sp.winners){state.players[w.seat].stack+=w.amount;wins.set(w.seat,(wins.get(w.seat)||0)+w.amount)}
+ const allWinners=[...wins.entries()].sort((a,b)=>b[1]-a[1]);
+ state.winners=allWinners.map(([seat,amount])=>({seat,name:state.players[seat].name,amount,category:best7(state.players[seat].cards.concat(state.board))[0]}));
+ state.resultData={kind:'showdown',winners:state.winners.map(w=>({seat:w.seat,amount:w.amount}))};
+ state.winners.forEach(w=>logMsg('winner',{seat:w.seat,amount:w.amount,category:w.category}));
+ finishHand(allWinners.map(w=>w[0]));
+}
+function finishHand(winnerSeats){state.phase='complete';state.turn=null;if(winnerSeats.includes(0))state.stats.wins++;
+ const hand={number:state.hand,heroCards:state.players[0].cards.map(c=>({...c})),board:state.board.map(c=>({...c})),players:state.players.map(p=>({name:p.name,seat:p.seat,cards:(p.seat===0||state.didShowdown&&!p.folded)?p.cards.map(c=>({...c})):[],folded:p.folded,stack:p.stack,invested:p.invested})),events:state.handEvents.slice(),winners:state.winners.map(x=>({...x})),heroWon:winnerSeats.includes(0),didShowdown:state.didShowdown,pot:pot(),net:state.players[0].stack-state.heroStartStack,cumulative:state.players[0].stack-state.buyIns,reason:state.finishedReason,resultData:JSON.parse(JSON.stringify(state.resultData))};
+ state.handHistory.unshift(hand);state.handHistory=state.handHistory.slice(0,200);saveSession();render();if(state.autoplay&&state.players[0].stack>0){const t=gameToken;nextTimer=setTimeout(()=>{if(t===gameToken&&state.phase==='complete'&&state.view==='table')newHand()},6800)}
+}
+function preflopScore(cards){const a=Math.max(cards[0].r,cards[1].r),b=Math.min(cards[0].r,cards[1].r);const weights={14:10,13:8,12:7,11:6,10:5,9:4.5,8:4,7:3.5,6:3,5:2.5,4:2,3:1.5,2:1};let sc=weights[a];if(a===b)sc=Math.max(5,2*sc);if(cards[0].s===cards[1].s)sc+=2;const gap=a-b-1;if(a!==b)sc-=gap<=0?0:gap===1?1:gap===2?2:gap===3?4:5;if(a<12&&gap<2&&a!==b)sc+=1;return sc}
+function boardStrength(p){const r=best7(p.cards.concat(state.board));let v=[.12,.38,.67,.81,.88,.94,.96,.98,.995][r[0]];
+ if(r[0]===1){const boardMax=Math.max(...state.board.map(c=>c.r));const pairs=p.cards.filter(c=>c.r===r[1]);if(pairs.length){v=r[1]>=boardMax?.75:.57}else v=.26}
+ if(r[0]===2){const privatePair=p.cards.some(c=>r.slice(1,3).includes(c.r));if(!privatePair)v=.44}
+ if(r[0]===0){if(p.cards.some(c=>c.r>=13))v+=.09;const suitCounts={};for(const c of p.cards.concat(state.board))suitCounts[c.s]=(suitCounts[c.s]||0)+1;if(Object.values(suitCounts).some(n=>n===4)&&p.cards.some(c=>suitCounts[c.s]===4))v+=.2}
+ return Math.min(.99,v)}
+function chooseBotAction(p){
+ const toCall=Math.max(0,state.currentBet-p.bet),total=p.bet+p.stack,canRaise=mayRaise(p),stackBB=p.stack/2;
+ const costRatio=toCall/Math.max(1,pot()+toCall),risk=Math.min(3,toCall/Math.max(2,pot()));
+ if(state.phase==='preflop'){
+  let score=preflopScore(p.cards),late=['BTN','CO'].includes(posFor(p.seat))?1.3:['SB','BB'].includes(posFor(p.seat))?.5:0;
+  let threshold=p.tight-late+(state.currentBet>BB?2:0)+(risk>0.5?1:0);const jitter=(rand(100)/100-.5)*1.9;
+  if(toCall>0&&score+jitter<threshold){if(p.kind==='loose-passive'&&toCall<=BB&&rand(100)<30)return {kind:'call'};return {kind:'fold'}}
+  if(canRaise&&score+late>=threshold+2.3&&rand(100)<p.agg*100){const base=state.currentBet>BB?state.currentBet+Math.max(state.minRaise,Math.round(pot()*0.7)):6;return {kind:'raise',target:Math.min(total,Math.max(currentMinRaise(p),base))}}
+  return {kind:toCall>0?'call':'check'};
+ }
+ const strength=boardStrength(p),random=rand(1000)/1000;
+ const callThreshold=Math.min(.82,.20+costRatio*.70+(p.kind==='tight-passive'?.13:0)-p.loose*.10);
+ if(toCall>0&&strength+random*.17<callThreshold){if(p.kind==='lag'&&random<.16&&canRaise){return {kind:'raise',target:Math.min(total,Math.max(currentMinRaise(p),Math.round(state.currentBet+pot()*.55)))}}return {kind:'fold'}}
+ if(canRaise&&strength>=.65&&random<p.agg*(strength-.25)){return {kind:'raise',target:Math.min(total,Math.max(currentMinRaise(p),Math.round(state.currentBet+pot()*(.35+rand(55)/100))))}}
+ if(canRaise&&toCall===0&&strength<.6&&random<(p.agg*.17)){return {kind:'raise',target:Math.min(total,Math.max(currentMinRaise(p),Math.round(pot()*.55)))}}
+ if(stackBB<8&&canRaise&&strength>.7)return {kind:'raise',target:total};
+ return {kind:toCall>0?'call':'check'};
+}
+
+// Beginner-friendly, purely factual hints. Only the player's own cards and the visible board are used.
+const PLURALS={
+ es:{2:'doses',3:'treses',4:'cuatros',5:'cincos',6:'seises',7:'sietes',8:'ochos',9:'nueves',10:'dieces',11:'jotas',12:'damas',13:'reyes',14:'ases'},
+ en:{2:'twos',3:'threes',4:'fours',5:'fives',6:'sixes',7:'sevens',8:'eights',9:'nines',10:'tens',11:'jacks',12:'queens',13:'kings',14:'aces'}
+};
+const SINGULARS={
+ es:{2:'dos',3:'tres',4:'cuatro',5:'cinco',6:'seis',7:'siete',8:'ocho',9:'nueve',10:'diez',11:'jota',12:'dama',13:'rey',14:'as'},
+ en:{2:'two',3:'three',4:'four',5:'five',6:'six',7:'seven',8:'eight',9:'nine',10:'ten',11:'jack',12:'queen',13:'king',14:'ace'}
+};
+function rankPlural(r){return PLURALS[state.language][r]}
+function rankSingular(r){return SINGULARS[state.language][r]}
+function evaluateVisibleHand(hole,board){
+ if(hole.length!==2||board.length<3)return null;
+ const all=hole.map((c,i)=>({...c,origin:'hole',sourceIndex:i})).concat(board.map((c,i)=>({...c,origin:'board',sourceIndex:i})));
+ let winner=null;
+ for(let a=0;a<all.length-4;a++)for(let b=a+1;b<all.length-3;b++)for(let c=b+1;c<all.length-2;c++)for(let d=c+1;d<all.length-1;d++)for(let e=d+1;e<all.length;e++){
+  const cards=[all[a],all[b],all[c],all[d],all[e]];
+  const rank=rank5(cards),holeCount=cards.filter(x=>x.origin==='hole').length;
+  if(!winner||compareRank(rank,winner.rank)>0||(compareRank(rank,winner.rank)===0&&holeCount<winner.holeCount))winner={cards,rank,holeCount};
+ }
+ return winner;
+}
+function handHintLabel(rank,cards){
+ const [kind,first,second]=rank;
+ switch(kind){
+  case 0:return tr('highCard',{rank:rankSingular(first)});
+  case 1:return tr('onePair',{rank:rankPlural(first)});
+  case 2:return tr('twoPair',{a:rankPlural(first),b:rankPlural(second)});
+  case 3:return tr('trips',{rank:rankPlural(first)});
+  case 4:return tr('straight',{rank:rankSingular(first)});
+  case 5:return tr('flush',{suit:tr('suit_'+cards[0].s)});
+  case 6:return tr('fullHouse',{a:rankPlural(first),b:rankPlural(second)});
+  case 7:return tr('quads',{rank:rankPlural(first)});
+  case 8:return first===14?tr('royalFlush'):tr('straightFlush',{rank:rankSingular(first)});
+ }
+}
+function startingHandHint(hole){
+ const cards=hole.map(cardText).join(' ');
+ if(hole[0].r===hole[1].r)return tr('startPocket',{rank:rankPlural(hole[0].r)});
+ if(hole[0].s===hole[1].s)return tr('startSuited',{cards});
+ if(Math.abs(hole[0].r-hole[1].r)===1)return tr('startConnected',{cards});
+ return tr('startOther',{cards});
+}
+function detectHandDraws(hole,board,made){
+ if(board.length<3||board.length>=5)return [];
+ const cards=hole.concat(board),out=[];
+ if(made.rank[0]!==5&&made.rank[0]!==8){
+  const suits={s:0,h:0,d:0,c:0};for(const c of cards)suits[c.s]++;
+  for(const suit of SUITS){if(suits[suit]===4&&hole.some(c=>c.s===suit)){out.push(tr('drawFlush'));break}}
+ }
+ if(![4,8].includes(made.rank[0])){
+  const available=new Set(cards.map(c=>c.r));if(available.has(14))available.add(1);
+  const holeRanks=new Set(hole.map(c=>c.r));if(holeRanks.has(14))holeRanks.add(1);
+  for(let min=1;min<=10;min++){
+   const seq=[min,min+1,min+2,min+3,min+4];const present=seq.filter(r=>available.has(r));
+   if(present.length===4&&present.some(r=>holeRanks.has(r))){out.push(tr('drawStraight'));break}
+  }
+ }
+ return out;
+}
+function renderHandHints(){
+ const panel=$('hand-hints');if(!panel)return;
+ panel.hidden=!state.hintsEnabled;
+ if(!state.hintsEnabled){panel.innerHTML='';return}
+ const hero=state.players[0];let body='';
+ if(hero.folded){body='<div class="hint-message">'+tr('hintFolded')+'</div>'}
+ else if(hero.cards.length===2&&state.board.length<3){
+  body='<div class="hint-main"><div class="hint-strength">'+startingHandHint(hero.cards)+'</div><div class="hint-explanation">'+tr('preflopExplanation')+'</div></div>';
+ }else if(hero.cards.length===2){
+  const made=evaluateVisibleHand(hero.cards,state.board);
+  if(made){
+   const explanation=tr(made.holeCount===0?'hintBoard':made.holeCount===1?'hintOne':'hintTwo');
+   const cards=made.cards.map(c=>'<div class="hint-card '+(c.origin==='hole'?'from-hole':'from-board')+'"><span>'+cardText(c)+'</span><small>'+tr(c.origin==='hole'?'hintYourCards':'hintBoardCards')+'</small></div>').join('');
+   const draws=detectHandDraws(hero.cards,state.board,made);
+   body='<div class="hint-main"><div class="hint-strength">'+handHintLabel(made.rank,made.cards)+'</div><div class="hint-explanation">'+explanation+'</div></div><div class="hint-best"><div class="hint-five">'+cards+'</div>'+(draws.length?'<div class="hint-draws"><b>'+tr('hintDraws')+':</b> '+draws.join(' · ')+'</div>':'')+'</div>';
+  }
+ }
+ panel.innerHTML='<div class="hint-header"><div><div class="hint-eyebrow">✦ '+tr('hintHeading')+'</div><div class="hint-sub">'+tr('hintSub')+'</div></div><span class="hint-phase">'+tr('street'+(state.board.length===0?'Preflop':state.board.length===3?'Flop':state.board.length===4?'Turn':'River'))+'</span></div><div class="hint-content">'+body+'</div><div class="hint-disclaimer">'+tr('hintNotAdvice')+'</div>';
+}
+
+function cardText(c){return RANKS[c.r-2]+SYMBOL[c.s]}
+function cardHTML(c,small=false,back=false,empty=false){
+ const cl='card'+(small?' smallcard':'')+(back?' back':'')+(empty?' empty':'')+(c&&['h','d'].includes(c.s)?' red':'');
+ return '<div class="'+cl+'" aria-label="'+(c?cardText(c):back?tr('hiddenCard'):tr('noCard'))+'">'+(c&&!back?'<span>'+RANKS[c.r-2]+'</span><span class="suit">'+SYMBOL[c.s]+'</span>':'')+'</div>';
+}
+function renderBoard(){
+ const board=state.board.map(c=>cardHTML(c)).join('');
+ const placeholders=Array(5-state.board.length).fill(0).map(()=>cardHTML(null,false,false,true)).join('');
+ const phaseMap={idle:'',preflop:'streetPreflop',flop:'streetFlop',turn:'streetTurn',river:'streetRiver',complete:'handEnded',busted:'rebuyRequired'};
+ $('board').innerHTML='<div class="pot-display">'+tr('pot')+'&nbsp;'+fmt(pot())+'</div><div class="community">'+board+placeholders+'</div><div class="board-state">'+tr(phaseMap[state.phase]||'')+'</div>';
+}
+function formatSeatAction(p){
+ if(!p.action)return p.allIn?tr('allin'):'';
+ if(p.action==='raise')return tr('raise')+' '+fmt(p.actionAmount);
+ if(p.action==='call')return tr('call')+' '+fmt(p.actionAmount);
+ if(p.action==='check')return tr('check');
+ if(p.action==='fold')return tr('fold');
+ return p.action;
+}
+function renderSeats(){
+ $('seats').innerHTML=state.players.map(p=>{
+  const visible=p.seat===0||state.phase==='complete'&&state.didShowdown&&!p.folded;
+  const cards=state.phase==='idle'||state.phase==='busted'?'':p.cards.map(c=>cardHTML(visible?c:null,true,!visible)).join('');
+  const bet=p.bet>0?'<span class="seat-chip">◉ '+fmt(p.bet)+'</span>':'';
+  let pos=posFor(p.seat);const folded=p.folded?' folded':'';const current=state.turn===p.seat?' current':'';let status=formatSeatAction(p);const heroHint=state.hintsEnabled&&p.seat===0&&!p.folded&&p.cards.length===2?(state.board.length>=3?handHintLabel(evaluateVisibleHand(p.cards,state.board).rank,evaluateVisibleHand(p.cards,state.board).cards):startingHandHint(p.cards)):'';const badge=heroHint?'<span class="hero-hand-badge" title="'+heroHint+'">'+heroHint+'</span>':'';
+  return '<div class="seat s'+p.seat+(p.seat===0?' hero':'')+folded+current+'"><div class="seat-hole">'+cards+'</div><div class="player-body"><span class="seat-pos'+(pos==='BTN'?' dealer':'')+'">'+pos+'</span><div class="seat-avatar">'+(p.seat===0?(state.language==='es'?'YO':'ME'):p.initials)+'</div><div class="seat-name">'+playerName(p.seat)+'</div><div class="seat-stack">'+fmt(p.stack)+'</div></div>'+bet+(status?'<div class="seat-action">'+status+'</div>':'')+badge+'</div>';
+ }).join('');
+}
+function setRaise(target){
+ const p=state.players[0];const min=currentMinRaise(p),max=p.bet+p.stack;
+ state.selectedRaise=Math.max(min,Math.min(max,Math.round(target)));
+ const slider=$('raise-slider');if(slider)slider.value=state.selectedRaise;
+ const label=$('raise-amount');if(label)label.textContent=fmt(state.selectedRaise);
+}
+function setPreset(type){
+ const p=state.players[0],call=Math.max(0,state.currentBet-p.bet);
+ if(type==='all')return setRaise(p.bet+p.stack);
+ const factor=type==='half'?.5:type==='three'?.75:1;
+ let want=state.currentBet+Math.round(factor*(pot()+call));
+ if(state.phase==='preflop'&&state.currentBet===BB)want=type==='half'?6:type==='three'?7:8;
+ setRaise(want);
+}
+function renderActions(){
+ const box=$('action-panel'),hero=state.players[0];
+ if(state.phase==='busted'){
+  box.innerHTML='<div class="complete-box"><div><strong>'+tr('outOfChips')+'</strong><span>'+tr('rebuyInfo')+'</span></div><button class="btn gold" onclick="rebuy()">'+tr('rebuy')+'</button></div>';
+  return;
+ }
+ if(state.phase==='complete'){
+  box.innerHTML='<div class="complete-box"><div><strong>'+outcomeText(state.resultData)+'</strong><span>'+tr('handComplete',{n:state.hand,continuation:tr(state.autoplay?'nextSoon':'nextManual')})+'</span></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" onclick="showView(\'history\')">'+tr('analyze')+'</button><button class="btn gold" onclick="newHand()">'+tr('nextHand')+'</button></div></div>';
+  return;
+ }
+ if(state.turn!==0){
+  box.innerHTML='<div class="turn-top"><div><div class="turn-label">'+(state.turn===null?tr('preparing'):tr('botTurn',{name:playerName(state.turn)}))+'</div><div class="turn-hint">'+tr('botLimit')+'</div></div><div class="waiting"><span class="pulse"></span> '+tr('waiting')+'</div></div><div class="timer-track"><div class="timer-fill" style="width:42%"></div></div>';
+  return;
+ }
+ const call=Math.max(0,state.currentBet-hero.bet),canR=mayRaise(hero),min=currentMinRaise(hero),max=hero.bet+hero.stack;
+ const label=call>0?tr('call')+' '+fmt(Math.min(call,hero.stack)):tr('check');
+ if(canR&&(state.selectedRaise<min||state.selectedRaise>max))state.selectedRaise=Math.min(max,Math.max(min,state.currentBet+state.minRaise));
+ box.innerHTML='<div class="turn-top"><div><div class="turn-label" id="time-label">'+tr('yourTurn')+'</div><div class="turn-hint">'+(call>0?tr('toCall',{value:fmt(Math.min(call,hero.stack))}):tr('mayCheck'))+'</div></div><div><div class="timer-value" id="countdown">00:20</div><div class="timer-desc">'+tr('timeBank')+' · <span id="bank-count">'+Math.ceil(state.heroBank)+' s</span></div></div></div><div class="timer-track"><div class="timer-fill" id="time-fill"></div></div><div class="actions-row"><button id="fold-button" class="action-btn fold" onclick="act(0,\'fold\')">'+tr('fold')+'</button><button id="call-button" class="action-btn" onclick="act(0,\''+(call>0?'call':'check')+'\')">'+label+'</button><button id="raise-button" class="action-btn raise" '+(canR?'':'disabled')+' onclick="act(0,\'raise\',state.selectedRaise)">'+tr(state.currentBet===0?'bet':'raise')+'</button></div>'+(canR?'<div class="raise-controls"><div class="range-wrap"><label class="visually-hidden" for="raise-slider">'+tr('betSize')+'</label><input id="raise-slider" type="range" min="'+min+'" max="'+max+'" step="1" value="'+state.selectedRaise+'" oninput="setRaise(Number(this.value))"><span id="raise-amount" class="bet-size">'+fmt(state.selectedRaise)+'</span></div><div class="size-presets"><button class="size-preset" onclick="setPreset(\'half\')">'+tr('halfPot')+'</button><button class="size-preset" onclick="setPreset(\'three\')">'+tr('threePot')+'</button><button class="size-preset" onclick="setPreset(\'pot\')">'+tr('fullPot')+'</button><button class="size-preset" onclick="setPreset(\'all\')">'+tr('allin')+'</button></div></div>':'<div class="subnote">'+tr('cannotRaise')+'</div>');
+ tick();
+}
+function renderEvents(){
+ const rows=state.logs;
+ $('events').innerHTML=rows.length?rows.map((l,i)=>'<div class="event"><span class="time">'+String(i+1).padStart(2,'0')+'</span><span>'+logText(l)+'</span></div>').join(''):'<div class="detail-text">'+tr('noLogs')+'</div>';
+}
+function renderStats(){
+ const st=state.stats;
+ $('sidebar-stats').innerHTML=[[tr('handsPlayed'),st.hands],[tr('handsWon'),st.wins],['VPIP',st.hands?(100*st.vpip/st.hands).toFixed(0)+' %':'—'],['PFR',st.hands?(100*st.pfr/st.hands).toFixed(0)+' %':'—'],[tr('result'),(state.players[0].stack-state.buyIns>=0?'+':'')+fmt(state.players[0].stack-state.buyIns)],[tr('timeBank'),Math.ceil(state.heroBank)+' s']].map(([k,v])=>'<div class="stat-line"><span>'+k+'</span><strong>'+v+'</strong></div>').join('');
+}
+
+function derivedPerformance(){
+ const records=state.handHistory;
+ const st=state.stats,hands=Math.max(1,st.hands);
+ const actions={fold:0,call:0,raise:0,check:0};
+ for(const h of records)for(const e of h.events){if(e.seat!==0)continue;if(e.kind==='se retira'||e.kind==='fold automático')actions.fold++;
+ else if(e.kind==='iguala')actions.call++;else if(e.kind==='sube hasta'||e.kind==='apuesta')actions.raise++;else if(e.kind==='pasa')actions.check++;}
+ const showdown=records.filter(h=>h.didShowdown&&!h.players[0].folded);
+ const showdownWins=showdown.filter(h=>h.heroWon).length;
+ return {hands:st.hands,completed:st.hands-(['preflop','flop','turn','river'].includes(state.phase)?1:0),vpip:st.hands?100*st.vpip/hands:0,pfr:st.hands?100*st.pfr/hands:0,showdown:showdown.length,showdownWins,actions};
+}
+function drawPerformance(){
+ const chronological=state.handHistory.slice().reverse().filter(h=>Number.isFinite(h.net));if(!chronological.length)return '';
+ const h=210,w=840,margin={l:44,r:18,t:16,b:30},points=[chronological[0].cumulative!==undefined?(chronological[0].cumulative-chronological[0].net)/2:0,...chronological.map(h=>(h.cumulative??0)/2)];
+ const lo=Math.min(...points),hi=Math.max(...points),span=Math.max(5,hi-lo),scaleX=i=>margin.l+i*(w-margin.l-margin.r)/Math.max(1,points.length-1),scaleY=v=>margin.t+(hi-v)/span*(h-margin.t-margin.b);
+ const d=points.map((v,i)=>(i?'L':'M')+scaleX(i).toFixed(1)+' '+scaleY(v).toFixed(1)).join(' ');
+ const zero=scaleY(0).toFixed(1),col=points.at(-1)>=points[0]?'#9ccdb6':'#dba394';
+ return '<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+tr('trend')+'">'+
+  '<line x1="'+margin.l+'" y1="'+zero+'" x2="'+(w-margin.r)+'" y2="'+zero+'" stroke="#68817e" stroke-dasharray="5 7" />'+
+  '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />'+
+  '<circle cx="'+scaleX(points.length-1)+'" cy="'+scaleY(points.at(-1))+'" r="5" fill="'+col+'" />'+
+  '<text x="8" y="'+(scaleY(hi)+4)+'" fill="#a3bdc0" font-size="12">'+hi.toFixed(0)+'</text><text x="8" y="'+(scaleY(lo)+4)+'" fill="#a3bdc0" font-size="12">'+lo.toFixed(0)+'</text>'+
+  '<text x="'+margin.l+'" y="202" fill="#a3bdc0" font-size="11">'+(chronological[0].number-1)+'</text><text x="'+(w-margin.r)+'" y="202" text-anchor="end" fill="#a3bdc0" font-size="11">'+chronological.at(-1).number+'</text></svg>';
+}
+function renderAnalytics(){
+ const panel=$('analytics-content');if(!panel)return;
+ const m=derivedPerformance(),saved=state.handHistory[0],total=saved?.cumulative??0;
+ const card=(label,value,detail)=>'<div class="metric-card"><div class="metric-label">'+label+'</div><div class="metric-value">'+value+'</div>'+(detail?'<div class="metric-detail">'+detail+'</div>':'')+'</div>';
+ const pct=n=>(n||0).toLocaleString(state.language==='es'?'es-ES':'en-US',{maximumFractionDigits:1})+' %';
+ const stat=(label,v,total)=>'<div class="stat-row"><span>'+label+'</span><strong>'+v+'</strong></div>'+(total!==undefined?'<div class="kpi-bar"><div class="kpi-fill" style="width:'+Math.max(0,Math.min(100,total))+'%"></div></div>':'');
+ panel.innerHTML='<div class="analytics-grid">'+card(tr('completedHands'),m.completed)+card('VPIP',pct(m.vpip),tr('voluntary'))+card('PFR',pct(m.pfr),tr('preflopRaise'))+card(tr('sessionResults'),(total>=0?'+':'')+fmt(total))+'</div>'+
+ '<div class="analytics-subhead">'+tr('trend')+'</div><div class="chart-card">'+(saved?drawPerformance():'<div class="empty-state">'+tr('noPerformance')+'</div>')+'<div class="chart-legend">'+tr('lastHands')+': '+Math.min(200,state.handHistory.length)+' · '+tr('analyticsSample')+'</div></div>'+
+ '<div class="analytics-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px">'+
+ '<div class="metric-card"><div class="analytics-subhead" style="margin:0 0 10px">'+tr('actionCounts')+'</div>'+stat(tr('foldCount'),m.actions.fold)+stat(tr('callCount'),m.actions.call)+stat(tr('raiseCount'),m.actions.raise)+stat(tr('checkCount'),m.actions.check)+'</div>'+
+ '<div class="metric-card"><div class="analytics-subhead" style="margin:0 0 10px">SHOWDOWN</div>'+stat(tr('playedBoard'),m.showdown)+stat(tr('winAtShowdown'),m.showdownWins)+'<p class="stats-footer">'+tr('analyticsSample')+'</p></div></div>'+
+ '<div class="settings-actions" style="margin-top:19px"><button class="btn gold" onclick="showView(\'history\')">'+tr('seeHistory')+'</button><button class="btn" onclick="downloadSession()">'+tr('export')+'</button></div>';
+}
+
+function renderHistory(){
+ const rows=state.handHistory;
+ $('history-list').innerHTML=rows.length?rows.map(h=>'<button class="history-card" onclick="openHand('+h.number+')"><span><strong>'+titleHand(h.number)+' · '+h.heroCards.map(cardText).join(' ')+'</strong><small>BOARD: '+(h.board.map(cardText).join(' ')||tr('noCommunity'))+' · '+tr('pot')+': '+fmt(h.pot)+'</small></span><span class="outcome">'+(h.net===undefined?tr(h.heroWon?'historyWon':'historyEnded'):(h.net>=0?'+':'')+fmt(h.net))+' →</span></button>').join(''):'<div class="empty-state">'+tr('emptyHistory')+'</div>';
+}
+function render(){
+ updateStaticLabels();renderBoard();renderSeats();renderActions();renderHandHints();renderEvents();renderStats();
+ $('hand-counter').textContent=titleHand(state.hand);
+ const banner=$('winner-banner');
+ banner.innerHTML=state.phase==='complete'?'<div class="top-notice">'+(state.winners.length>1?tr('potSplit'):tr('wins',{name:playerName(state.winners[0]?.seat??0)}))+'</div>':'';
+ if(state.view==='history')renderHistory();if(state.view==='analytics')renderAnalytics();
+}
+function showView(v){
+ state.view=v;
+ $('table-view').style.display=v==='table'?'block':'none';$('history-view').style.display=v==='history'?'grid':'none';$('analytics-view').style.display=v==='analytics'?'grid':'none';
+ $('page-title').innerHTML=v==='table'?'Cash Games <span style="color:#c6a56c">6-max</span>':v==='history'?'Hand Lab <span style="color:#c6a56c">/ '+tr('history')+'</span>':tr('analyticsTitle');
+ $('nav-table').classList.toggle('active',v==='table');$('nav-history').classList.toggle('active',v==='history');$('nav-analytics').classList.toggle('active',v==='analytics');
+ if(v!=='table'){clearTimeout(nextTimer);if(v==='history')renderHistory();else renderAnalytics()}else if(state.phase==='complete'&&state.autoplay){clearTimeout(nextTimer);nextTimer=setTimeout(()=>newHand(),3500)}
+}
+function toggleAuto(){state.autoplay=!state.autoplay;prefWrite('autoplay',state.autoplay?'1':'0');updateStaticLabels();clearTimeout(nextTimer);if(state.autoplay&&state.phase==='complete'&&state.view==='table')nextTimer=setTimeout(()=>newHand(),3800);renderActions();}
+
+function saveSession(){
+ try{
+  const data={version:3,hand:state.hand,button:state.button,stacks:state.players.map(p=>p.stack),heroBank:state.heroBank,stats:state.stats,buyIns:state.buyIns,hands:state.handHistory,autoplay:state.autoplay,savedAt:Date.now()};
+  localStorage.setItem(SESSION_KEY,JSON.stringify(data));return true;
+ }catch(e){return false}
+}
+function restoreSession(){
+ try{
+  const raw=localStorage.getItem(SESSION_KEY);if(!raw)return false;
+  const s=JSON.parse(raw);if(s.version!==3||!Number.isSafeInteger(s.hand)||s.hand<0||!Array.isArray(s.stacks)||s.stacks.length!==N||s.stacks.some(x=>!Number.isSafeInteger(x)||x<0)||!Array.isArray(s.hands)||!Number.isInteger(s.button)||s.button<0||s.button>=N)return false;
+  if(!Number.isSafeInteger(s.buyIns)||s.buyIns<BUYIN)return false;
+  state.players.forEach((p,i)=>p.stack=s.stacks[i]);state.hand=s.hand;state.button=s.button;state.buyIns=s.buyIns;
+  state.heroBank=Math.max(0,Math.min(20,Number(s.heroBank)||0));state.stats={hands:0,wins:0,vpip:0,pfr:0,...s.stats};
+  state.handHistory=s.hands.slice(0,200);state.autoplay=s.autoplay!==false;state.recovered=true;
+  return true;
+ }catch(e){return false}
+}
+function changeSpeed(value){state.botSpeed=value==='fast'?'fast':'normal';prefWrite('speed',state.botSpeed);const sel=$('speed-choice');if(sel)sel.value=state.botSpeed}
+function updateSettingHint(value){const enabled=value==='yes';if(state.hintsEnabled!==enabled)toggleHints();const sel=$('hint-choice');if(sel)sel.value=state.hintsEnabled?'yes':'no'}
+function settingsAuto(value){state.autoplay=value==='yes';prefWrite('autoplay',state.autoplay?'1':'0');updateStaticLabels();if(state.phase==='complete'){clearTimeout(nextTimer);if(state.autoplay&&state.view==='table')nextTimer=setTimeout(()=>newHand(),6800)}}
+function resetSession(){if(!confirm(tr('resetWarning')))return;clearTimers();gameToken++;try{localStorage.removeItem(SESSION_KEY)}catch(e){}state.players.forEach(p=>p.stack=BUYIN);state.hand=0;state.button=5;state.heroBank=20;state.stats={hands:0,wins:0,vpip:0,pfr:0};state.buyIns=BUYIN;state.handHistory=[];state.recovered=false;closeModal();showView('table');newHand()}
+function downloadSession(){
+ const data={app:'RIVERLAB',version:'0.3',exportedAt:new Date().toISOString(),blinds:{small:0.5,big:1},units:'half_big_blind',stats:state.stats,hands:state.handHistory};
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='RIVERLAB_session_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+function openSettings(){
+ const speed='<div class="setting-block"><label for="speed-choice">'+tr('settingsSpeed')+'</label><select id="speed-choice" onchange="changeSpeed(this.value)"><option value="normal">'+tr('speedNormal')+'</option><option value="fast">'+tr('speedFast')+'</option></select><p>'+tr('settingsSpeedHelp')+'</p></div>';
+ const hints='<div class="setting-block"><label for="hint-choice">'+tr('settingsHint')+'</label><select id="hint-choice" onchange="updateSettingHint(this.value)"><option value="no">'+tr('off')+'</option><option value="yes">'+tr('on')+'</option></select><p>'+tr('settingsHintHelp')+'</p></div>';
+ const data='<div class="setting-block"><strong>'+tr('settingsData')+'</strong><p>'+tr('storageNote')+'</p><p>'+tr('exportHelp')+'</p><div class="settings-actions"><button class="btn" onclick="downloadSession()">'+tr('export')+'</button><button class="btn ghost" onclick="resetSession()">'+tr('settingsReset')+'</button></div></div>';
+ openModal('<h2>'+tr('settingsTitle')+'</h2><p>'+tr('sessionStorage')+'</p><div class="settings-grid">'+speed+hints+data+'</div>');$('speed-choice').value=state.botSpeed;$('hint-choice').value=state.hintsEnabled?'yes':'no';
+}
+
+function rebuy(){if(state.players[0].stack>0)return;state.players[0].stack=BUYIN;state.buyIns+=BUYIN;newHand()}
+function openInstructions(){
+ openModal('<h2>'+tr('rulesTitle')+'</h2>'+['rulesP1','rulesP2','rulesP3','rulesP4','rulesP5'].map(k=>'<p>'+tr(k)+'</p>').join(''));
+}
+let activeReplayHand=null,activeReplayIndex=0;
+function replayEventLabel(h,e){
+ if(e.kind==='deal')return tr('street'+e.street.charAt(0).toUpperCase()+e.street.slice(1));
+ const name=e.seat===0?tr('you'):(h.players[e.seat]?.name||tr('you'));
+ return name+' '+actionTranslation(e.kind)+(e.details?' '+(typeof e.details==='number'?fmt(e.details):e.details):'');
+}
+function replayMath(h,e){
+ if(e.seat!==0||['publica SB','publica BB','gana el bote'].includes(e.kind)||e.kind==='deal')return '';
+ const callCost=Math.max(0,e.toCall||0),effectiveCall=Math.min(callCost,e.stackBefore||0);
+ const ratio=callCost>0&&effectiveCall===callCost&&Number.isFinite(e.beforePot)?(100*callCost/(e.beforePot+callCost)).toFixed(1)+' %':'—';
+ return '<div class="replay-summary">'+
+  '<div class="replay-info"><strong>'+tr('replayBefore')+'</strong><div>'+fmt(e.beforePot??0)+'</div></div>'+
+  '<div class="replay-info"><strong>'+tr('replayActionCost')+'</strong><div>'+fmt(effectiveCall)+'</div></div>'+
+  '<div class="replay-info"><strong>'+tr('replayPotOdds')+'</strong><div>'+ratio+'</div></div>'+
+  '<div class="replay-info"><strong>'+tr('replayStack')+'</strong><div>'+fmt(e.stackBefore??0)+'</div></div></div><p class="stats-footer">'+tr('replayNote')+'</p>';
+}
+function renderReplay(){
+ const h=state.handHistory.find(x=>x.number===activeReplayHand);if(!h)return;
+ const e=activeReplayIndex>=0&&activeReplayIndex<h.events.length?h.events[activeReplayIndex]:null;
+ const board=activeReplayIndex<0?[]:e?e.board:h.board;
+ const potValue=activeReplayIndex<0?0:e?e.pot:h.pot;
+ const info=activeReplayIndex<0?tr('replayStart'):e?replayEventLabel(h,e):tr('replayEnd')+': '+outcomeText(h.resultData);
+ const street=activeReplayIndex<0?tr('streetPreflop'):e?tr('street'+e.street.charAt(0).toUpperCase()+e.street.slice(1)):tr('replayEnd');
+ const hero=e?.seat===0&&!['publica SB','publica BB','gana el bote'].includes(e.kind);
+ const max=h.events.length,steps=activeReplayIndex+1;
+ const dots=h.events.map((ev,i)=>'<button class="replay-dot'+(activeReplayIndex===i?' active':'')+(ev.seat===0?' hero':'')+'" onclick="changeReplay('+i+')" aria-label="'+tr('replayStep',{step:i+1,total:max})+'">'+(ev.kind==='deal'?'◆':ev.seat===0?'●':'·')+' '+(i+1)+'</button>').join('');
+ const renderCards=x=>x.map(c=>cardHTML(c,true)).join('');
+ const allCards=renderCards(board)+Array(5-board.length).fill(0).map(()=>cardHTML(null,true,false,true)).join('');
+ $('replay-content').innerHTML='<h2>'+tr('modalHand',{n:h.number})+'</h2><p>'+tr('replayProgress')+'</p>'+
+ '<div class="replay-summary"><div><div class="eyebrow">'+street+'</div><strong>'+tr('pot')+': '+fmt(potValue)+'</strong></div><div><div class="eyebrow">'+tr('handNet')+'</div><strong>'+(h.net>=0?'+':'')+fmt(h.net??0)+'</strong></div></div>'+
+ '<div class="eyebrow">'+tr('modalMyCards')+'</div><div class="replay-card-row">'+renderCards(h.heroCards)+'</div>'+
+ '<div class="eyebrow" style="margin-top:15px">'+tr('replayCommunity')+'</div><div class="replay-card-row" style="margin:8px 0 14px">'+allCards+'</div>'+
+ '<div class="replay-step'+(hero?' hero-step':'')+'"><span class="eyebrow">'+(activeReplayIndex<0?tr('replayStart'):e?tr('replayStep',{step:steps,total:max}):tr('replayEnd'))+(hero?' · '+tr('replayHero'):'')+'</span><div style="font-size:14px;margin-top:6px">'+info+'</div></div>'+
+ (e?replayMath(h,e):'')+
+ '<div class="replay-nav"><button class="btn small" onclick="changeReplay('+(activeReplayIndex-1)+')" '+(activeReplayIndex<0?'disabled':'')+'>'+tr('replayPrev')+'</button><button class="btn small gold" onclick="changeReplay('+(activeReplayIndex+1)+')" '+(activeReplayIndex>=max?'disabled':'')+'>'+tr('replayNext')+'</button><button class="btn small ghost" onclick="jumpHero()">'+tr('replayNextHero')+'</button></div>'+
+ '<div class="eyebrow">'+tr('replayAll')+'</div><div class="replay-points">'+dots+'</div>';
+}
+function changeReplay(step){const h=state.handHistory.find(x=>x.number===activeReplayHand);if(!h)return;activeReplayIndex=Math.min(h.events.length,Math.max(-1,step));renderReplay()}
+function jumpHero(){const h=state.handHistory.find(x=>x.number===activeReplayHand);if(!h)return;let found=h.events.findIndex((e,i)=>i>activeReplayIndex&&e.seat===0&&!['publica SB','publica BB','gana el bote'].includes(e.kind));if(found<0)found=h.events.findIndex(e=>e.seat===0&&!['publica SB','publica BB','gana el bote'].includes(e.kind));if(found>=0)changeReplay(found)}
+function openHand(n){
+ const h=state.handHistory.find(x=>x.number===n);if(!h)return;
+ activeReplayHand=n;activeReplayIndex=-1;openModal('<div id="replay-content"></div>');$('modal-root').querySelector('.modal').classList.add('replay-modal');renderReplay();
+}
+function openModal(content){clearTimeout(nextTimer);$('modal-root').innerHTML='<div class="modal-cover" onclick="closeModal(event)"><div class="modal" role="dialog" aria-modal="true"><div class="modal-header"><div class="eyebrow">RIVERLAB / V0.3</div><button class="btn small ghost" onclick="closeModal()">'+tr('modalClose')+'</button></div>'+content+'</div></div>'}
+function closeModal(ev){if(ev&&ev.target!==ev.currentTarget)return;$('modal-root').innerHTML='';if(state.autoplay&&state.phase==='complete'&&state.view==='table'){clearTimeout(nextTimer);nextTimer=setTimeout(()=>newHand(),3500)}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('modal-root').innerHTML)closeModal()});
+window.__riverlab={state,rank5,best7,compareRank,splitPots,act,newHand,showView,fmt,chooseBotAction,evaluateVisibleHand,handHintLabel,detectHandDraws,startingHandHint,setLanguage,toggleHints,changeSpeed,openHand,changeReplay,jumpHero,derivedPerformance,saveSession,restoreSession,resetSession,renderAnalytics};
+restoreSession();newHand();
+</script>
+<script>
+// Only HTTPS (or localhost) can register offline support; core poker logic remains local.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function () {
+      // The app works online even if offline support is unavailable.
+    });
+  });
+}
+</script>
+</body>
+</html>
