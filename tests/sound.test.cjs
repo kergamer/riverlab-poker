@@ -29,7 +29,7 @@ class FakeAudioContext {
   createBufferSource(){recorded.noises++;return new SoundNode();}
   createBiquadFilter(){return new SoundNode();}
   createBuffer(_ch,len){return {getChannelData:()=>new Float32Array(len)};}
-  resume(){this.state='running';return Promise.resolve();}
+  resume(){if(FakeAudioContext.deferNextResume){return new Promise(resolve=>{FakeAudioContext.pendingResume=()=>{this.state='running';FakeAudioContext.deferNextResume=false;if(this.onstatechange)this.onstatechange();resolve();};});}this.state='running';if(this.onstatechange)this.onstatechange();return Promise.resolve();}
 }
 function makeContext(initial={}){
  const storage=new Map(Object.entries(initial));
@@ -56,7 +56,7 @@ function makeContext(initial={}){
 test('PWA incluye sonido sintetizado offline y carga antes del motor',()=>{
  assert.ok(html.includes('<script src="./sound.js"></script>\n<script>'));
  assert.ok(sw.includes("'./sound.js'"));
- assert.ok(sw.includes('riverlab-v033'));
+ assert.ok(sw.includes('riverlab-v034'));
 });
 test('Sonido no se reproduce sin gesto del usuario',async()=>{
  const e=makeContext();
@@ -107,4 +107,49 @@ test('La navegación de juego emite audio solo tras un gesto',async()=>{
  const before=recorded.noises+recorded.oscillators;
  assert.equal(e.sandbox.window.__riverlab.act(0,'fold'),true);
  assert.ok(recorded.noises+recorded.oscillators>before,'fold has an acoustic signal');
+});
+
+test('La prueba espera a que Safari active su AudioContext antes de sonar', async()=>{
+ const before=recorded.oscillators+recorded.noises;
+ FakeAudioContext.deferNextResume=true;
+ const e=makeContext();
+ const audio=e.sandbox.window.RiverlabAudio;
+ assert.equal(audio.status,'locked');
+ assert.equal(audio.preview(),false);
+ assert.equal(audio.status,'suspended');
+ assert.equal(recorded.oscillators+recorded.noises,before,'no se debe perder el sonido ni emitir antes de activar');
+ assert.equal(typeof FakeAudioContext.pendingResume,'function');
+ FakeAudioContext.pendingResume();
+ await Promise.resolve();
+ assert.equal(audio.status,'ready');
+ assert.ok(recorded.oscillators+recorded.noises>before,'al activarse debe reproducir el sonido pendiente');
+});
+test('El indicador ON no se muestra hasta que el audio esté listo',async()=>{
+ const e=makeContext();
+ const button=e.nodes['sound-toggle'];
+ assert.equal(button.textContent,'♫ ACTIVAR');
+ assert.equal(e.sandbox.window.RiverlabAudio.status,'locked');
+ const before=recorded.audioObjects;
+ e.listeners.pointerdown[0]({});
+ await Promise.resolve();
+ assert.equal(recorded.audioObjects,before+1);
+ vm.runInContext('updateSoundUI()',e.sandbox);
+ assert.equal(button.textContent,'♫ ON');
+ e.sandbox.window.RiverlabAudio.setVolume(0);
+ vm.runInContext('updateSoundUI()',e.sandbox);
+ assert.equal(button.textContent,'♫ 0 %');
+});
+test('Una interrupción de Safari puede reanudarse mediante una nueva interacción',async()=>{
+ const e=makeContext();
+ e.listeners.pointerdown[0]({});
+ await Promise.resolve();
+ const audio=e.sandbox.window.RiverlabAudio;
+ assert.equal(audio.status,'ready');
+ instance.state='interrupted';
+ assert.equal(audio.status,'interrupted');
+ const before=recorded.oscillators+recorded.noises;
+ audio.preview();
+ await Promise.resolve();
+ assert.equal(audio.status,'ready');
+ assert.ok(recorded.oscillators+recorded.noises>before);
 });
