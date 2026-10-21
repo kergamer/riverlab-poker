@@ -18,9 +18,12 @@
   function clamp(n, low, high) { return Math.min(high, Math.max(low, n)); }
 
   let enabled = read(KEY_ON, '1') !== '0';
-  let volume = clamp(Number(read(KEY_VOL, '38')) || 0, 0, 100);
+  let volume = clamp(Number(read(KEY_VOL, '55')) || 0, 0, 100);
   let ctx = null, master = null, noiseBuffer = null;
   let scheduledUntil = 0;
+  let pendingPreviewAt = 0;
+  let lastResumeAttempt = 0;
+  let lastContextRestart = 0;
   const lastPlayed = Object.create(null);
   const cooldown = {
     ui: 85, chip: 85, check: 100, call: 110, raise: 130,
@@ -28,8 +31,33 @@
     showdown: 230, win: 450, pot: 200, refund: 170
   };
 
-  function masterLevel() { return enabled ? (volume / 100) * 0.43 : 0; }
+  function masterLevel() { return enabled ? (volume / 100) * 0.64 : 0; }
+  function status() {
+    if (!(window.AudioContext || window.webkitAudioContext)) return 'unsupported';
+    if (!enabled) return 'off';
+    if (volume <= 0) return 'zero';
+    if (!ctx) return 'locked';
+    if (ctx.state === 'running') return 'ready';
+    if (ctx.state === 'interrupted') return 'interrupted';
+    if (ctx.state === 'suspended') return 'suspended';
+    return 'unavailable';
+  }
+  function notify() {
+    try {
+      if (typeof window.dispatchEvent === 'function' && typeof window.Event === 'function') {
+        window.dispatchEvent(new window.Event('riverlab-audio-state'));
+      }
+    } catch (e) { /* diagnostics should not interrupt the game */ }
+  }
+  function configureOutput() {
+    // Explicitly enabling game audio may require an active playback category on iOS.
+    try {
+      const audioSession = window.navigator && window.navigator.audioSession;
+      if (audioSession && audioSession.type !== 'playback') audioSession.type = 'playback';
+    } catch (e) { /* unsupported browser */ }
+  }
   function makeContext() {
+    if (ctx && ctx.state === 'closed') { ctx = null; master = null; noiseBuffer = null; }
     if (ctx || !enabled) return ctx;
     const Constructor = window.AudioContext || window.webkitAudioContext;
     if (!Constructor) return null;
@@ -38,22 +66,56 @@
       master = ctx.createGain();
       master.gain.value = masterLevel();
       master.connect(ctx.destination);
-
       const length = Math.ceil(ctx.sampleRate * 0.43);
       noiseBuffer = ctx.createBuffer(1, length, ctx.sampleRate);
       const data = noiseBuffer.getChannelData(0);
       for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * 0.78;
-    } catch (e) { ctx = null; master = null; noiseBuffer = null; }
+      ctx.onstatechange = function () {
+        notify();
+        if (ctx && ctx.state === 'running') flushPreview();
+      };
+    } catch (e) { ctx = null; master = null; noiseBuffer = null; notify(); }
     return ctx;
   }
+  function flushPreview() {
+    if (!pendingPreviewAt || !ctx || ctx.state !== 'running') return;
+    const elapsed = Date.now() - pendingPreviewAt;
+    pendingPreviewAt = 0;
+    // Never play an old preview after returning to the app much later.
+    if (elapsed > 2500 || document.hidden || !enabled || volume <= 0) return;
+    play('call', { preview: true, intensity: 0.88 });
+  }
   function unlock() {
-    if (!enabled) return;
-    const audio = makeContext();
-    if (!audio) return;
-    if (audio.state === 'suspended') {
-      try { const task = audio.resume(); if (task && typeof task.catch === 'function') task.catch(() => {}); }
-      catch (e) { /* browser did not accept gesture */ }
+    if (!enabled || volume <= 0 || document.hidden) { notify(); return false; }
+    configureOutput();
+    let audio = makeContext();
+    if (!audio) { notify(); return false; }
+    if (audio.state === 'running') { flushPreview(); notify(); return true; }
+    const now = Date.now();
+    // A pending Safari resume can hang after a PWA returns from background.
+    // Restart only on a *later* user interaction, never in a background loop.
+    if (lastResumeAttempt && now - lastResumeAttempt > 1900 &&
+        now - lastContextRestart > 1900 &&
+        (audio.state === 'suspended' || audio.state === 'interrupted')) {
+      try { if (typeof audio.close === 'function') audio.close().catch?.(() => {}); } catch (e) {}
+      ctx = null; master = null; noiseBuffer = null; scheduledUntil = 0;
+      lastContextRestart = now;
+      audio = makeContext();
+      if (!audio) { notify(); return false; }
     }
+    lastResumeAttempt = now;
+    try {
+      const task = audio.resume();
+      if (task && typeof task.then === 'function') {
+        task.then(function () {
+          if (audio !== ctx) return;
+          notify();
+          flushPreview();
+        }).catch(function () { notify(); });
+      }
+    } catch (e) { notify(); }
+    notify();
+    return audio.state === 'running';
   }
   function setMaster() {
     if (!ctx || !master) return;
@@ -179,23 +241,45 @@
   function setEnabled(next) {
     enabled = !!next;
     write(KEY_ON, enabled ? '1' : '0');
-    if (enabled) unlock();
+    if (!enabled) {
+      pendingPreviewAt = 0;
+      // Revert to the normal device audio policy when the user mutes the game.
+      try {
+        const session = window.navigator && window.navigator.audioSession;
+        if (session && session.type === 'playback') session.type = 'auto';
+      } catch (e) {}
+    } else unlock();
     setMaster();
+    notify();
     return enabled;
   }
   function setVolume(next) {
     volume = clamp(Math.round(Number(next) || 0), 0, 100);
     write(KEY_VOL, volume);
     setMaster();
+    if (enabled && volume > 0) unlock();
+    notify();
     return volume;
   }
   function preview() {
-    unlock();
-    return play('call', { preview: true, intensity: 0.8 });
+    if (!enabled || volume <= 0) { notify(); return false; }
+    pendingPreviewAt = Date.now();
+    // On Safari, AudioContext.resume() may resolve AFTER this click callback.
+    // The preview is then emitted from flushPreview() and not silently dropped.
+    return unlock();
   }
 
   // All audio starts only after an explicit user action. No automatic page-load sounds.
   document.addEventListener('pointerdown', unlock, { capture: true, passive: true });
+  document.addEventListener('touchend', unlock, { capture: true, passive: true });
+  document.addEventListener('click', unlock, true);
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      // A suspended context will be restarted by the next real user gesture.
+      pendingPreviewAt = 0;
+    }
+    notify();
+  });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Tab' || e.key === 'Shift' || e.key === 'Alt' || e.key === 'Control' || e.key === 'Meta') return;
     unlock();
@@ -215,6 +299,7 @@
     play, unlock, preview, setEnabled, setVolume,
     get enabled() { return enabled; },
     get volume() { return volume; },
+    get status() { return status(); },
     get supported() { return !!(window.AudioContext || window.webkitAudioContext); }
   });
 }());
