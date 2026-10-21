@@ -241,7 +241,7 @@ function outcomeText(result){if(!result)return '';if(result.kind==='uncontested'
 function logText(e){if(typeof e==='string')return e;if(e.key==='action')return playerName(e.values.seat)+' '+actionTranslation(e.values.type)+(e.values.detail?' '+(typeof e.values.detail==='number'?fmt(e.values.detail):e.values.detail):'');if(e.key==='street')return tr('street'+e.values.street.charAt(0).toUpperCase()+e.values.street.slice(1))+' '+e.values.cards;if(e.key==='rebuys')return playerName(e.values.seat)+' '+(state.language==='es'?'recarga':'rebuys')+' 100 BB';if(e.key==='winner')return tr('showdownResult',{name:playerName(e.values.seat),amount:fmt(e.values.amount)})+' ('+getHandName(e.values.category)+')';if(e.key==='uncalled')return playerName(e.values.seat)+' '+tr('action_uncalled')+' '+fmt(e.values.amount);return ''}
 function setLanguage(lang){if(!['es','en'].includes(lang))lang='es';state.language=lang;prefWrite('language',lang);document.documentElement.lang=lang;updateStaticLabels();render();}
 function toggleHints(){state.hintsEnabled=!state.hintsEnabled;prefWrite('hints',state.hintsEnabled?'1':'0');render();}
-function updateStaticLabels(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=tr(el.getAttribute('data-i18n'))});const select=$('language-select');if(select)select.value=state.language;const hints=$('hand-hints');if(hints)hints.setAttribute('aria-label',tr('hintHeading'));const hintButton=$('hint-toggle');if(hintButton){hintButton.textContent=tr(state.hintsEnabled?'hintsOn':'hintsOff');hintButton.setAttribute('aria-pressed',String(state.hintsEnabled));hintButton.setAttribute('aria-label',tr('hintAria'));hintButton.classList.toggle('enabled',state.hintsEnabled)}const auto=$('auto-button');if(auto)auto.textContent=tr('autoNext')+': '+tr(state.autoplay?'on':'off');}
+function updateStaticLabels(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=tr(el.getAttribute('data-i18n'))});const select=$('language-select');if(select)select.value=state.language;const hints=$('hand-hints');if(hints)hints.setAttribute('aria-label',tr('hintHeading'));const hintButton=$('hint-toggle');if(hintButton){hintButton.textContent=tr(state.hintsEnabled?'hintsOn':'hintsOff');hintButton.setAttribute('aria-pressed',String(state.hintsEnabled));hintButton.setAttribute('aria-label',tr('hintAria'));hintButton.classList.toggle('enabled',state.hintsEnabled)}const auto=$('auto-button');if(auto)auto.textContent=tr('autoNext')+': '+tr(state.autoplay?'on':'off');updateSoundUI();}
 const PREFS=[
  {name:'T\u00da',kind:'human',tight:0,agg:0,loose:0,initials:'YO'},
  {name:'KAI',kind:'loose-passive',tight:5.0,agg:0.08,loose:0.95,initials:'KA'},
@@ -274,7 +274,7 @@ function newHand(){
  clearTimers();gameToken++;
  if(state.players[0].stack===0){state.phase='busted';state.turn=null;render();return}
  const rebuys=[];state.players.forEach((p,i)=>{if(i>0&&p.stack===0){p.stack=BUYIN;rebuys.push(i)}Object.assign(p,{cards:[],bet:0,invested:0,folded:false,allIn:false,acted:false,actedFacing:0,action:'',actionAmount:0,wasVPIP:false,wasPFR:false})});
- state.hand++;state.stats.hands++;state.heroStartStack=state.players[0].stack;state.button=next(state.button);state.phase='preflop';state.turn=null;state.board=[];state.logs=[];state.handEvents=[];state.winners=[];state.finishedReason='';state.resultData=null;state.didShowdown=false;rebuys.forEach(seat=>logMsg('rebuys',{seat}));state.deck=shuffle();state.currentBet=BB;state.minRaise=BB;
+ state.hand++;playSound('newHand',.72);state.stats.hands++;state.heroStartStack=state.players[0].stack;state.button=next(state.button);state.phase='preflop';state.turn=null;state.board=[];state.logs=[];state.handEvents=[];state.winners=[];state.finishedReason='';state.resultData=null;state.didShowdown=false;rebuys.forEach(seat=>logMsg('rebuys',{seat}));state.deck=shuffle();state.currentBet=BB;state.minRaise=BB;
  const small=next(state.button),big=next(small);
  for(let card=0;card<2;card++)for(let i=0,s=small;i<N;i++,s=next(s))state.players[s].cards.push(state.deck.pop());
  makeMove(state.players[small],SB);actionLog(small,'publica SB',SB,{beforePot:0,toCall:0,stackBefore:state.players[small].stack+SB,currentBet:BB});
@@ -316,7 +316,7 @@ function act(seat,kind,target=null,forced=false){
  }
  if(kind==='check'){p.acted=true;p.actedFacing=state.currentBet;p.action='check';actionLog(seat,'pasa','',context)}
  if(kind==='fold'){p.folded=true;p.acted=true;p.actedFacing=state.currentBet;p.action='fold';actionLog(seat,forced?'fold autom\u00e1tico':'se retira','',context)}
- state.turn=null;settleAfter(seat);return true;
+ playSound(kind==='raise'&&p.allIn?'allin':kind==='call'&&p.allIn?'allin':kind,seat===0?.88:.57);state.turn=null;settleAfter(seat);return true;
 }
 function settleAfter(from){
  const remaining=live();if(remaining.length===1){finishUncontested(remaining[0]);return}
@@ -334,7 +334,7 @@ function advanceStreet(){
  else if(state.phase==='turn'){burn();state.board.push(state.deck.pop());state.phase='river'}
  state.currentBet=0;state.minRaise=BB;
  state.players.forEach(p=>{p.bet=0;p.acted=false;p.actedFacing=0;if(!p.folded)p.action=''});
- logMsg('street',{street:state.phase,cards:state.board.map(cardText).join(' ')});state.handEvents.push({seat:-1,street:state.phase,kind:'deal',details:'',board:state.board.map(c=>({...c})),pot:pot(),beforePot:pot(),toCall:0,at:Date.now()});
+ playSound('deal',.76);logMsg('street',{street:state.phase,cards:state.board.map(cardText).join(' ')});state.handEvents.push({seat:-1,street:state.phase,kind:'deal',details:'',board:state.board.map(c=>({...c})),pot:pot(),beforePot:pot(),toCall:0,at:Date.now()});
  const capable=eligible();
  if(capable.length<=1){advanceStreet();return}
  settleAfter(state.button);
@@ -388,11 +388,11 @@ function finishShowdown(){
  const allWinners=[...wins.entries()].sort((a,b)=>b[1]-a[1]);
  state.winners=allWinners.map(([seat,amount])=>({seat,name:state.players[seat].name,amount,category:best7(state.players[seat].cards.concat(state.board))[0]}));
  state.resultData={kind:'showdown',winners:state.winners.map(w=>({seat:w.seat,amount:w.amount})),pots:pots.map(p=>({amount:p.amount,eligible:[...p.eligible],winners:p.winners.map(w=>({...w}))}))};
- state.handEvents.push({seat:-1,street:'showdown',kind:'showdown',board:state.board.map(c=>({...c})),pot:pot(),beforePot:pot(),paid:0,toCall:0,at:Date.now()});
+ playSound('showdown',.72);state.handEvents.push({seat:-1,street:'showdown',kind:'showdown',board:state.board.map(c=>({...c})),pot:pot(),beforePot:pot(),paid:0,toCall:0,at:Date.now()});
  state.winners.forEach(w=>logMsg('winner',{seat:w.seat,amount:w.amount,category:w.category}));
  finishHand(allWinners.map(w=>w[0]));
 }
-function finishHand(winnerSeats){state.phase='complete';state.turn=null;if(winnerSeats.includes(0))state.stats.wins++;
+function finishHand(winnerSeats){playSound(winnerSeats.includes(0)?'win':'pot',winnerSeats.includes(0)?.78:.52);state.phase='complete';state.turn=null;if(winnerSeats.includes(0))state.stats.wins++;
  const hand={number:state.hand,button:state.button,heroCards:state.players[0].cards.map(c=>({...c})),board:state.board.map(c=>({...c})),players:state.players.map(p=>({name:p.name,seat:p.seat,cards:(p.seat===0||state.didShowdown&&!p.folded)?p.cards.map(c=>({...c})):[],folded:p.folded,stack:p.stack,invested:p.invested})),events:state.handEvents.slice(),pots:state.resultData?.pots||[],winners:state.winners.map(x=>({...x})),heroWon:winnerSeats.includes(0),didShowdown:state.didShowdown,pot:pot(),net:state.players[0].stack-state.heroStartStack,cumulative:state.players[0].stack-state.buyIns,reason:state.finishedReason,resultData:JSON.parse(JSON.stringify(state.resultData))};
  state.handHistory.unshift(hand);state.handHistory=state.handHistory.slice(0,200);saveSession();render();if(state.autoplay&&state.players[0].stack>0){const t=gameToken;nextTimer=setTimeout(()=>{if(t===gameToken&&state.phase==='complete'&&state.view==='table')newHand()},6800)}
 }
@@ -537,6 +537,7 @@ function setRaise(target){
  const label=$('raise-amount');if(label)label.textContent=fmt(state.selectedRaise);
 }
 function setPreset(type){
+ playSound('ui',.43);
  const p=state.players[0],call=Math.max(0,state.currentBet-p.bet);
  if(type==='all')return setRaise(p.bet+p.stack);
  const factor=type==='half'?.5:type==='three'?.75:1;
@@ -628,6 +629,36 @@ function showView(v){
  $('nav-table').classList.toggle('active',v==='table');$('nav-history').classList.toggle('active',v==='history');$('nav-analytics').classList.toggle('active',v==='analytics');
  if(v!=='table'){clearTimeout(nextTimer);if(v==='history')renderHistory();else renderAnalytics()}else{if(!$('modal-root').innerHTML)resumeGameplay();if(state.phase==='complete'&&state.autoplay){clearTimeout(nextTimer);nextTimer=setTimeout(()=>newHand(),3500)}}
 }
+
+function playSound(kind,intensity=1){try{window.RiverlabAudio?.play(kind,{intensity})}catch(e){}}
+function updateSoundUI(){
+ const audio=window.RiverlabAudio;
+ const btn=$('sound-toggle');
+ const supported=!!audio?.supported, on=!!audio?.enabled;
+ if(btn){
+  btn.textContent=on?'♫ ON':'♫ OFF';
+  btn.setAttribute('aria-pressed',String(on));
+  btn.setAttribute('aria-label',tr(on?'soundOnAria':'soundOffAria'));
+  btn.title=supported?tr(on?'soundOnAria':'soundOffAria'):tr('soundUnsupported');
+  btn.disabled=!supported;
+ }
+ const selector=$('sound-choice');
+ if(selector){selector.value=on?'yes':'no';selector.disabled=!supported}
+ const slider=$('sound-volume');
+ if(slider){slider.value=audio?.volume??38;slider.disabled=!supported}
+ const value=$('sound-volume-value');
+ if(value)value.textContent=(audio?.volume??38)+' %';
+ const preview=$('sound-preview');
+ if(preview)preview.disabled=!supported||!on||(audio?.volume??0)===0;
+}
+function setSoundEnabled(on){
+ const audio=window.RiverlabAudio;if(!audio?.supported)return;
+ audio.setEnabled(on);updateSoundUI();
+ if(on)audio.preview();
+}
+function toggleSound(){const audio=window.RiverlabAudio;if(audio?.supported)setSoundEnabled(!audio.enabled)}
+function setSoundVolume(value){const audio=window.RiverlabAudio;if(!audio?.supported)return;audio.setVolume(value);updateSoundUI()}
+function previewSound(){window.RiverlabAudio?.preview()}
 function toggleAuto(){state.autoplay=!state.autoplay;prefWrite('autoplay',state.autoplay?'1':'0');updateStaticLabels();clearTimeout(nextTimer);if(state.autoplay&&state.phase==='complete'&&state.view==='table')nextTimer=setTimeout(()=>newHand(),3800);renderActions();}
 
 function saveSession(){
