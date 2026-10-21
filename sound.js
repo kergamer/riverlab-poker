@@ -1,5 +1,5 @@
 /*
- * RIVERLAB Sound Studio v0.3.3
+ * RIVERLAB Sound Atelier v0.3.5
  * Procedural, self-contained Web Audio effects. No external samples or requests.
  * Unlocked by a user's pointer/key gesture to comply with Safari/iOS/Chrome.
  */
@@ -27,7 +27,7 @@
   const lastPlayed = Object.create(null);
   const cooldown = {
     ui: 85, chip: 85, check: 100, call: 110, raise: 130,
-    allin: 140, fold: 115, deal: 170, newHand: 300,
+    allin: 140, fold: 115, deal: 170, card: 125, newHand: 300,
     showdown: 230, win: 450, pot: 200, refund: 170
   };
 
@@ -123,100 +123,153 @@
     master.gain.cancelScheduledValues(t);
     master.gain.setTargetAtTime(masterLevel(), t, 0.012);
   }
-  function tone(at, hz, endHz, duration, strength, wave, intensity) {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = wave || 'sine';
-    osc.frequency.setValueAtTime(hz, at);
-    osc.frequency.exponentialRampToValueAtTime(Math.max(50, endHz), at + duration);
-    gain.gain.setValueAtTime(0.0001, at);
-    gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, strength * intensity), at + Math.min(0.008, duration / 3));
-    gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
-    osc.connect(gain); gain.connect(master);
-    osc.start(at); osc.stop(at + duration + 0.007);
+  // RIVERLAB SIGNATURE: tactile acoustic palette.
+  // Soft felt noise, wooden table taps and porcelain-chip resonance.
+  // There is no background music: the table gets its rhythm from real actions.
+  let voiceNumber = 0;
+  let lastEventAt = 0;
+  const effectKinds = ['ui','chip','check','call','raise','allin','fold',
+    'deal','card','newHand','showdown','win','pot','refund'];
+
+  // Subtle, bounded detuning prevents repeated decisions sounding copy/pasted.
+  function humanize(spread=0.025) {
+    voiceNumber++;
+    return 1 + Math.sin(voiceNumber * 2.3999632297 + 0.47) * spread;
   }
-  function rustle(at, hz, endHz, duration, strength, intensity) {
-    const src = ctx.createBufferSource();
-    const filter = ctx.createBiquadFilter();
-    const gain = ctx.createGain();
-    src.buffer = noiseBuffer;
-    filter.type = 'bandpass'; filter.Q.value = 0.83;
-    filter.frequency.setValueAtTime(Math.max(90, hz), at);
-    filter.frequency.exponentialRampToValueAtTime(Math.max(90, endHz), at + duration);
+  function voice(at, hz, hzEnd, length, level, waveform, intensity) {
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    const end = at + Math.max(0.018, length);
+    osc.type = waveform || 'sine';
+    osc.frequency.setValueAtTime(hz, at);
+    osc.frequency.exponentialRampToValueAtTime(Math.max(48, hzEnd), end);
     gain.gain.setValueAtTime(0.0001, at);
-    gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, strength * intensity), at + Math.min(0.009, duration / 3));
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.00015, level * intensity), at + Math.min(0.008, length * 0.21));
+    gain.gain.exponentialRampToValueAtTime(0.0001, end);
+    osc.connect(gain); gain.connect(master);
+    osc.start(at); osc.stop(end + 0.012);
+  }
+  function felt(at, hz, hzEnd, duration, level, intensity, softness=1) {
+    const src = ctx.createBufferSource(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
+    src.buffer = noiseBuffer;
+    filter.type = 'bandpass';
+    filter.Q.value = Math.max(0.4, 0.65 * softness);
+    filter.frequency.setValueAtTime(hz, at);
+    filter.frequency.exponentialRampToValueAtTime(Math.max(120, hzEnd), at + duration);
+    gain.gain.setValueAtTime(0.0001, at);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.00015, level * intensity), at + Math.min(0.012, duration * 0.19));
     gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
     src.connect(filter); filter.connect(gain); gain.connect(master);
-    src.start(at); src.stop(at + duration + 0.008);
+    src.start(at); src.stop(at + duration + 0.011);
   }
-  function chip(at, intensity, pitch) {
-    const p = pitch || 1;
-    rustle(at, 3500 * p, 1250 * p, 0.044, 0.29, intensity);
-    tone(at, 950 * p, 670 * p, 0.058, 0.26, 'triangle', intensity);
-    tone(at + 0.004, 1630 * p, 1120 * p, 0.035, 0.095, 'sine', intensity);
+
+  // CHECK: a short, dry wooden touch with a tiny felt reflection.
+  // Not an electronic button beep, and quieter than placing chips.
+  function woodTap(at, intensity, accent=1) {
+    const v=humanize(0.020), level=intensity * accent;
+    felt(at, 1460*v, 740*v, 0.031, 0.22, level);
+    voice(at+0.002, 375*v, 293*v, 0.067, 0.22, 'triangle', level);
+    voice(at+0.005, 795*v, 610*v, 0.031, 0.040, 'sine', level);
   }
-  function card(at, intensity) {
-    rustle(at, 2350, 720, 0.09, 0.23, intensity);
-    tone(at + 0.022, 400, 280, 0.038, 0.07, 'triangle', intensity);
+  function checkTap(at, intensity) {
+    woodTap(at, intensity, 0.92);
+    // Very quiet second contact suggests a finger leaving the wooden table.
+    felt(at+0.052, 900, 555, 0.021, 0.052, intensity);
+  }
+
+  // Fichas: porcelain-like chips clinking together, not synth bleeps.
+  function chipTap(at, intensity, pitch=1) {
+    const v=humanize(0.031)*pitch;
+    felt(at, 3100*v, 1420*v, 0.037, 0.33, intensity);
+    voice(at+0.001, 1050*v, 860*v, 0.074, 0.25, 'sine', intensity);
+    voice(at+0.004, 1710*v, 1350*v, 0.047, 0.073, 'triangle', intensity);
+    voice(at+0.009, 600*v, 490*v, 0.063, 0.065, 'triangle', intensity);
+  }
+
+  // Felt-backed cardstock: brushed movement plus a quiet contact at the end.
+  function cardSlide(at, intensity, duration=0.097) {
+    const v=humanize(0.045);
+    felt(at, 2650*v, 1180*v, duration, 0.32, intensity, 0.78);
+    felt(at+0.015, 1080*v, 540*v, duration*0.72, 0.082, intensity, 0.82);
+    voice(at+duration*0.69, 325*v, 260*v, 0.036, 0.075, 'triangle', intensity);
+  }
+
+  // Brief airy rustling, not a looping ambience.
+  function feltShuffle(at, intensity) {
+    felt(at, 960, 2240, 0.115, 0.21, intensity);
+    felt(at+0.050, 1830, 870, 0.099, 0.20, intensity*0.75);
+  }
+
+  // Musical feedback only for wins; sparse, warm wooden-bar overtones.
+  function bellNote(at, hz, duration, intensity, emphasis=1) {
+    const v=humanize(0.008);
+    voice(at, hz*v, hz*0.998*v, duration, 0.130*emphasis, 'sine', intensity);
+    voice(at+0.002, hz*2.01*v, hz*2.005*v, duration*0.64, 0.024*emphasis, 'sine', intensity);
   }
   function perform(kind, at, intensity) {
     switch (kind) {
       case 'ui':
-        rustle(at, 2050, 1100, 0.025, 0.16, intensity);
-        tone(at, 570, 440, 0.042, 0.11, 'sine', intensity);
+        felt(at, 1500, 910, 0.022, 0.090, intensity);
+        voice(at+0.001, 630, 540, 0.035, 0.095, 'sine', intensity);
         break;
       case 'chip':
-        chip(at, intensity, 1.0);
+        chipTap(at, intensity*0.80);
         break;
       case 'check':
-        rustle(at, 950, 410, 0.043, 0.21, intensity);
-        tone(at, 470, 330, 0.057, 0.18, 'triangle', intensity);
+        checkTap(at, intensity);
         break;
       case 'call':
-        chip(at, intensity * 0.8, 0.96);
-        chip(at + 0.055, intensity * 0.72, 1.03);
+        chipTap(at, intensity*0.83, 0.99);
+        chipTap(at+0.068, intensity*0.72, 1.045);
         break;
       case 'raise':
-        chip(at, intensity * 0.80, 0.97);
-        chip(at + 0.052, intensity * 0.72, 1.09);
-        chip(at + 0.106, intensity * 0.62, 1.19);
-        tone(at + 0.113, 850, 980, 0.105, 0.12, 'sine', intensity);
+        chipTap(at, intensity*0.81, 0.96);
+        chipTap(at+0.052, intensity*0.77, 1.07);
+        chipTap(at+0.105, intensity*0.67, 1.16);
+        felt(at+0.132, 1200, 690, 0.065, 0.13, intensity);
         break;
       case 'allin':
-        for (let i = 0; i < 4; i++) chip(at + 0.043 * i, intensity * (0.82 - 0.07 * i), 0.91 + i * 0.075);
-        tone(at + 0.14, 540, 420, 0.155, 0.19, 'triangle', intensity);
+        feltShuffle(at, intensity*0.66);
+        for(let i=0;i<5;i++)chipTap(at+0.042*i, intensity*(0.74-i*0.065), 1.04-i*0.055);
+        voice(at+0.207, 345, 288, 0.115, 0.105, 'triangle', intensity);
         break;
       case 'fold':
-        rustle(at, 2500, 375, 0.142, 0.27, intensity);
-        tone(at + 0.023, 320, 215, 0.082, 0.075, 'sine', intensity);
+        cardSlide(at, intensity*0.88, 0.141);
+        felt(at+0.083, 700, 350, 0.057, 0.11, intensity);
         break;
       case 'deal':
-        card(at, intensity * 0.85);
-        card(at + 0.055, intensity * 0.72);
-        card(at + 0.112, intensity * 0.67);
+        cardSlide(at, intensity*0.82, 0.085);
+        cardSlide(at+0.082, intensity*0.78, 0.085);
+        cardSlide(at+0.165, intensity*0.82, 0.085);
+        break;
+      case 'card':
+        cardSlide(at, intensity*0.86, 0.11);
         break;
       case 'newHand':
-        rustle(at, 980, 3500, 0.165, 0.22, intensity);
-        card(at + 0.039, intensity * 0.57);
-        card(at + 0.103, intensity * 0.62);
+        feltShuffle(at, intensity*0.73);
+        cardSlide(at+0.058, intensity*0.57, 0.080);
+        cardSlide(at+0.137, intensity*0.61, 0.082);
         break;
       case 'showdown':
-        card(at, intensity * 0.8);
-        tone(at + 0.074, 560, 710, 0.140, 0.10, 'sine', intensity);
-        tone(at + 0.112, 780, 870, 0.155, 0.08, 'sine', intensity);
+        cardSlide(at, intensity*0.76, 0.088);
+        cardSlide(at+0.085, intensity*0.72, 0.090);
+        // Neutral anticipation, without a harsh electronic 'reveal'.
+        bellNote(at+0.128, 392, 0.172, intensity*0.39);
         break;
       case 'win':
-        chip(at, intensity * 0.70, 1.05);
-        tone(at + 0.052, 523.25, 523.25, 0.210, 0.15, 'sine', intensity);
-        tone(at + 0.117, 659.26, 659.26, 0.245, 0.13, 'sine', intensity);
-        tone(at + 0.177, 783.99, 783.99, 0.320, 0.105, 'sine', intensity);
+        chipTap(at, intensity*0.61, 0.98);
+        chipTap(at+0.071, intensity*0.52, 1.04);
+        // Three tasteful marimba-like notes, deliberately not a casino jackpot.
+        bellNote(at+0.083, 523.25, 0.230, intensity*0.90);
+        bellNote(at+0.155, 659.25, 0.270, intensity*0.73);
+        bellNote(at+0.226, 783.99, 0.350, intensity*0.57);
         break;
       case 'pot':
-        chip(at, intensity * 0.80, 0.85);
-        tone(at + 0.046, 510, 415, 0.079, 0.10, 'triangle', intensity);
+        chipTap(at, intensity*0.70, 0.91);
+        chipTap(at+0.073, intensity*0.49, 0.83);
+        felt(at+0.090, 1350, 710, 0.092, 0.12, intensity);
         break;
       case 'refund':
-        chip(at, intensity * 0.6, 0.8);
+        chipTap(at, intensity*0.53, 0.84);
         break;
       default:
         return false;
@@ -225,18 +278,34 @@
   }
   function play(kind, options) {
     options = options || {};
-    if (!enabled || volume <= 0 || document.hidden || !ctx || !master || ctx.state !== 'running') return false;
-    const now = Date.now(), minGap = cooldown[kind] || 90;
-    if (!options.preview && now - (lastPlayed[kind] || 0) < minGap) return false;
-    const at = Math.max(ctx.currentTime + 0.005, scheduledUntil);
-    if (at - ctx.currentTime > 0.24 && !options.preview && kind !== 'win') return false;
-    const intensity = clamp(Number(options.intensity) || 1, 0.18, 1);
-    try {
-      if (!perform(kind, at, intensity)) return false;
-      scheduledUntil = at + (kind === 'win' ? 0.22 : kind === 'allin' ? 0.18 : kind === 'raise' ? 0.125 : kind === 'deal' ? 0.13 : 0.065);
-      lastPlayed[kind] = now;
+    if (!effectKinds.includes(kind) || !enabled || volume<=0 || document.hidden ||
+      !ctx || !master || ctx.state!=='running') return false;
+
+    const now=Date.now(), isPreview=options.preview===true;
+    const gap=cooldown[kind]||95;
+    if(!isPreview && now-(lastPlayed[kind]||0)<gap)return false;
+
+    // Short bursts of bot activity should feel rhythmic, not noisy.
+    const since=now-lastEventAt;
+    const density=isPreview?1:since<100?0.55:since<230?0.77:1;
+    const raw=Number(options.intensity ?? 1);
+    const intensity=clamp((Number.isFinite(raw)?raw:1)*density,0.20,1);
+    const base=ctx.currentTime+0.007;
+    let at=Math.max(base,scheduledUntil);
+    if(at-base>0.19 && !isPreview){
+      // Prioritise the player's decisions and street transitions.
+      if(['ui','chip','refund'].includes(kind))return false;
+      at=base+0.035;
+    }
+    try{
+      if(!perform(kind,at,intensity))return false;
+      scheduledUntil=at+({ui:0.028,chip:0.051,check:0.059,call:0.105,
+        raise:0.118,allin:0.165,fold:0.091,deal:0.188,card:0.084,
+        newHand:0.158,showdown:0.145,win:0.175,pot:0.108,refund:0.046}[kind]||0.080);
+      lastPlayed[kind]=now;
+      lastEventAt=now;
       return true;
-    } catch (e) { return false; }
+    }catch(e){return false;}
   }
   function setEnabled(next) {
     enabled = !!next;
