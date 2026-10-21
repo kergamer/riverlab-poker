@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RIVERLAB | Poker Room v0.3.2</title>
+<title>RIVERLAB | Poker Room v0.3.3</title>
 <style>
 :root{--bg:#0a1119;--panel:#131f2a;--panel2:#192934;--line:#30414a;--text:#f0efe9;--muted:#a2b3bb;--muted2:#748c95;--gold:#c6a56c;--felt:#175246;--felt2:#0e3c34;--danger:#e18b75;--good:#83c1a9;font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--text);color-scheme:dark}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 76% 22%,#182c35 0%,#0a1119 60%);font-size:14px}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.34;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
@@ -46,6 +46,14 @@
 .analytics-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.metric-card{border:1px solid #3c5259;background:#1c2f38;padding:15px;border-radius:12px}.metric-label{color:#a4bbc0;font-size:11px;line-height:1.4}.metric-value{font-weight:850;font-size:24px;color:#f2e7d0;margin-top:8px;font-variant-numeric:tabular-nums}.metric-detail{color:#9eb8b9;font-size:10px;margin-top:5px}.analytics-subhead{font-size:13px;font-weight:800;color:#e4eae6;margin:23px 0 11px}.chart-card{padding:14px;border:1px solid #3b535a;border-radius:12px;background:#14262f}.chart-card svg{display:block;width:100%;height:auto;max-height:260px}.chart-legend{color:#a9bebc;font-size:11px;margin-top:10px}.stat-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #30444b;padding:10px 0;color:#b8cbd0;font-size:12px}.stat-row strong{color:#eed4a4}.action-inline{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap}.replay-summary{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;background:#213940;border:1px solid #4b6967;border-radius:12px;padding:13px;margin:15px 0}.replay-info{color:#c5d7d5;font-size:11px;line-height:1.7}.replay-card-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.replay-nav{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:12px 0}.replay-step{border-radius:8px;border:1px solid #455d66;padding:11px 12px;background:#243843;color:#f0eae0;font-weight:750;font-size:12px}.replay-step.hero-step{background:#463e30;border-color:#bf9e6d}.replay-points{display:flex;gap:6px;flex-wrap:wrap;max-height:94px;overflow:auto;padding:9px 0}.replay-dot{border:1px solid #45606b;background:#263943;color:#d4dcda;border-radius:7px;padding:6px 9px;font-size:10px;cursor:pointer}.replay-dot.active{border-color:#d5b47a;background:#75603e;color:#fff}.replay-dot.hero{box-shadow:inset 0 0 0 1px #9d8561}.settings-grid{display:grid;gap:15px}.setting-block{border:1px solid #3e565e;border-radius:10px;padding:13px;background:#1e323a}.setting-block label{display:block;color:#f0ede5;font-weight:750;font-size:13px;margin-bottom:8px}.setting-block p{margin:5px 0 0;font-size:11px}.setting-block select{width:100%;border:1px solid #526970;background:#2e444d;color:#f5f3ea;border-radius:8px;padding:11px}.kpi-bar{height:8px;background:#253b43;border-radius:50px;overflow:hidden}.kpi-fill{background:#ad9267;height:100%;border-radius:50px}.replay-modal{width:min(820px,100%)}.stats-footer{color:#9dafb3;font-size:11px;margin:14px 0;line-height:1.6}.action-panel .action-btn:focus-visible{outline-offset:2px}.settings-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:8px}
 .seat.s0{top:84%}
 @media(max-width:980px){.analytics-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:530px){.seat.s0{top:83%}.hero-hand-badge{font-size:8px;max-width:126px;padding:3px 5px}.analytics-grid{gap:7px}.metric-card{padding:10px}.metric-value{font-size:19px}.replay-step{padding:10px 8px;font-size:10px}.replay-summary{padding:10px}.replay-nav{gap:5px}.sidebar .nav{margin-left:2px}.nav-btn{font-size:10px!important}}
+
+.sound-switch{min-width:54px;display:inline-flex;align-items:center;justify-content:center;color:var(--gold);font-variant-numeric:tabular-nums}
+.sound-switch[aria-pressed="false"]{color:var(--muted2)}
+.sound-volume-row{display:flex;align-items:center;gap:12px;margin:10px 0;max-width:370px}
+.sound-volume-row input{accent-color:var(--gold);min-width:100px;width:100%;flex:1;cursor:pointer}
+.sound-volume-row output{font-variant-numeric:tabular-nums;color:var(--gold);font-weight:800;min-width:44px;text-align:right}
+.sound-options{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+@media(max-width:530px){.room-actions{flex-wrap:wrap;justify-content:flex-end}.sound-switch{min-width:48px}}
 </style>
 <meta name="theme-color" content="#0a1119">
 <meta name="description" content="RIVERLAB: juega al poker Texas Hold'em 6-max y analiza tus manos. Fichas virtuales, sin dinero real.">
@@ -76,7 +84,7 @@
   <section id="table-view">
     <div class="main-card">
       <div class="room-head"><div><div class="room-name" data-i18n="theFelt">THE FELT / NO-LIMIT HOLD'EM</div><div class="room-meta" data-i18n="roomMeta">0,5 / 1 BB · 100 BB iniciales · 6 jugadores</div></div>
-        <div class="room-actions"><button class="room-action hint-switch" id="hint-toggle" type="button" aria-pressed="false" onclick="toggleHints()">PISTAS: DESACTIVADAS</button><button class="room-action" onclick="openSettings()" data-i18n="settings">AJUSTES</button><button class="room-action" onclick="openInstructions()" data-i18n="rules">REGLAS</button><button class="room-action" id="auto-button" onclick="toggleAuto()">AUTO: ON</button></div>
+        <div class="room-actions"><button class="room-action hint-switch" id="hint-toggle" type="button" aria-pressed="false" onclick="toggleHints()">PISTAS: DESACTIVADAS</button><button class="room-action sound-switch" id="sound-toggle" type="button" onclick="toggleSound()" aria-pressed="true" aria-label="Silenciar sonido" title="Sonido">♫ ON</button><button class="room-action" onclick="openSettings()" data-i18n="settings">AJUSTES</button><button class="room-action" onclick="openInstructions()" data-i18n="rules">REGLAS</button><button class="room-action" id="auto-button" onclick="toggleAuto()">AUTO: ON</button></div>
       </div>
       <div class="table-area" id="table-area" aria-live="off"><div class="felt-shadow"></div><div class="felt-rail"></div><div class="felt"><div class="table-brand">RIVERLAB</div></div><div id="board" class="board-center"></div><div id="seats"></div><div id="winner-banner"></div></div>
       <div class="hand-hints" id="hand-hints" aria-live="polite" aria-label="Pistas de tu mano" hidden></div>
@@ -90,6 +98,7 @@
 </main>
 </div>
 <div id="modal-root"></div>
+<script src="./sound.js"></script>
 <script>
 
 'use strict';
@@ -100,7 +109,7 @@ const SYMBOL={s:'\u2660',h:'\u2665',d:'\u2666',c:'\u2663'};
 const I18N = {
  es: {
   experience:'EXPERIENCIA', pokerRoom:'Sala de póker', history:'Historial', mySession:'MI SESIÓN', engineReady:'Motor local activo',
-  prototypeFoot:'PROTOTIPO V0.3.2 · Fichas ficticias · Sin dinero real', noRealMoney:'SIN DINERO REAL',
+  prototypeFoot:'PROTOTIPO V0.3.3 · Fichas ficticias · Sin dinero real', noRealMoney:'SIN DINERO REAL',
   theFelt:'THE FELT / NO-LIMIT HOLD\'EM', roomMeta:'0,5 / 1 BB · 100 BB iniciales · 6 jugadores',
   rules:'REGLAS', hintsOn:'PISTAS: ACTIVADAS', hintsOff:'PISTAS: DESACTIVADAS',
   activity:'ACTIVIDAD DE LA MANO', studyWhilePlaying:'APRENDE MIENTRAS JUEGAS',
@@ -153,7 +162,7 @@ const I18N = {
   rulesP5:'El historial muestra las acciones, las manos reveladas, los botes secundarios y los empates. Las manos completadas y el progreso se guardan localmente cuando el navegador lo permite.',
   languageLabel:'Idioma',hintAria:'Activar o desactivar pistas de la mano',hintStatusOn:'Las pistas están activadas',hintStatusOff:'Las pistas están desactivadas',
   analytics:'Rendimiento',analyticsTitle:'Tu evolución',analyticsIntro:'Estadísticas y resultados basados en manos con fichas ficticias. No es un análisis GTO.',
-  settings:'AJUSTES',settingsTitle:'AJUSTES DE LA MESA',settingsSpeed:'Velocidad de los rivales',settingsSpeedHelp:'Cambia la rapidez de respuesta de la IA; el límite máximo sigue siendo cinco segundos.',speedNormal:'Normal · Ritmo natural',speedFast:'Rápido · Más manos',autoNext:'AUTO',autoNextHelp:'Comenzar la siguiente mano automáticamente.',
+  settings:'AJUSTES',settingsTitle:'AJUSTES DE LA MESA',soundTitle:'SONIDO DE LA MESA',soundHelp:'Efectos suaves para cartas, fichas, decisiones y resultados. Se activan al interactuar; sin música ni reproducción automática.',soundVolume:'Volumen',soundPreview:'PROBAR SONIDO',soundOnAria:'Silenciar efectos de sonido',soundOffAria:'Activar efectos de sonido',soundUnsupported:'Este navegador no admite Web Audio.',settingsSpeed:'Velocidad de los rivales',settingsSpeedHelp:'Cambia la rapidez de respuesta de la IA; el límite máximo sigue siendo cinco segundos.',speedNormal:'Normal · Ritmo natural',speedFast:'Rápido · Más manos',autoNext:'AUTO',autoNextHelp:'Comenzar la siguiente mano automáticamente.',
   settingsHint:'Pistas de mano',settingsHintHelp:'Muestra la mejor combinación junto a tus cartas y en el panel explicativo.',on:'Activado',off:'Desactivado',settingsLang:'Idioma de la aplicación',settingsReset:'Reiniciar sesión',resetWarning:'¿Eliminar el historial, las estadísticas y las fichas de esta sesión? Esta acción no se puede deshacer.',resetDone:'Sesión reiniciada',settingsData:'Datos de la sesión',export:'EXPORTAR MANOS JSON',exportHelp:'Descarga el historial registrado para estudiarlo o compartirlo voluntariamente. No incluye cartas ocultas de manos sin showdown.',
   sessionStorage:'PROGRESO GUARDADO EN ESTE DISPOSITIVO',sessionNotSaved:'NO SE HA PODIDO GUARDAR LA SESIÓN',sessionLimited:'ALMACENAMIENTO LIMITADO: SE CONSERVAN LAS MANOS MÁS RECIENTES',sessionRecovered:'Se ha restaurado la última mano completada; una mano interrumpida no se recupera.',
   completedHands:'Manos finalizadas',sessionResults:'Resultado acumulado',playedBoard:'Llegaste al showdown',winAtShowdown:'Showdowns ganados',myDecisions:'Mis decisiones',trend:'EVOLUCIÓN DE FICHAS (BB)',lastHands:'Últimas manos',analyticsSample:'Son estadísticas descriptivas; una muestra pequeña no permite sacar conclusiones fiables.',voluntary:'Participación voluntaria preflop',preflopRaise:'Subida preflop',actionCounts:'Apuestas y decisiones',foldCount:'Retiradas',callCount:'Igualadas',raiseCount:'Apuestas / Subidas',checkCount:'Checks', noPerformance:'Completa alguna mano para activar el análisis.', netPositive:'Positivo',netNegative:'Negativo',netNeutral:'Igualado',
@@ -161,7 +170,7 @@ const I18N = {
  },
  en: {
   experience:'EXPERIENCE', pokerRoom:'Poker Room', history:'Hand History', mySession:'MY SESSION', engineReady:'Local engine running',
-  prototypeFoot:'PROTOTYPE V0.3.2 · Play-money chips · No real money', noRealMoney:'NO REAL MONEY',
+  prototypeFoot:'PROTOTYPE V0.3.3 · Play-money chips · No real money', noRealMoney:'NO REAL MONEY',
   theFelt:'THE FELT / NO-LIMIT HOLD\'EM',roomMeta:'0.5 / 1 BB · 100 BB starting stack · 6 players',
   rules:'RULES',hintsOn:'HINTS: ON',hintsOff:'HINTS: OFF',
   activity:'HAND ACTIVITY',studyWhilePlaying:'LEARN AS YOU PLAY',
@@ -214,7 +223,7 @@ const I18N = {
   rulesP5:'Hand history shows actions, exposed hands, side pots and ties. Completed hands and progress are saved locally whenever browser storage is available.',
   languageLabel:'Language',hintAria:'Enable or disable hand hints',hintStatusOn:'Hand hints are enabled',hintStatusOff:'Hand hints are disabled',
   analytics:'Performance',analyticsTitle:'Your progress',analyticsIntro:'Stats and results based on play-money hands. Not a GTO analysis.',
-  settings:'SETTINGS',settingsTitle:'TABLE SETTINGS',settingsSpeed:'Opponent speed',settingsSpeedHelp:'Adjust how fast opponents act; the five-second maximum remains.',speedNormal:'Normal · Natural pace',speedFast:'Fast · More hands',autoNext:'AUTO',autoNextHelp:'Start the next hand automatically.',
+  settings:'SETTINGS',settingsTitle:'TABLE SETTINGS',soundTitle:'TABLE SOUND',soundHelp:'Subtle effects for cards, chips, decisions and results. Enabled after interaction; no music or unsolicited autoplay.',soundVolume:'Volume',soundPreview:'PLAY TEST SOUND',soundOnAria:'Mute sound effects',soundOffAria:'Enable sound effects',soundUnsupported:'This browser does not support Web Audio.',settingsSpeed:'Opponent speed',settingsSpeedHelp:'Adjust how fast opponents act; the five-second maximum remains.',speedNormal:'Normal · Natural pace',speedFast:'Fast · More hands',autoNext:'AUTO',autoNextHelp:'Start the next hand automatically.',
   settingsHint:'Hand hints',settingsHintHelp:'Shows the best made hand next to your cards and in a detailed hint panel.',on:'On',off:'Off',settingsLang:'Application language',settingsReset:'Reset session',resetWarning:'Delete your hand history, statistics and chip stacks? This cannot be undone.',resetDone:'Session reset',settingsData:'Session data',export:'EXPORT HANDS JSON',exportHelp:'Download recorded hand history to review or voluntarily share. Hidden cards from non-showdown hands are excluded.',
   sessionStorage:'PROGRESS SAVED ON THIS DEVICE',sessionNotSaved:'SESSION COULD NOT BE SAVED',sessionLimited:'LIMITED STORAGE: ONLY RECENT HANDS CAN BE KEPT',sessionRecovered:'Restored last completed hand; an interrupted hand is not recovered.',
   completedHands:'Completed hands',sessionResults:'Cumulative result',playedBoard:'Reached showdown',winAtShowdown:'Showdowns won',myDecisions:'My decisions',trend:'CHIP EVOLUTION (BB)',lastHands:'Recent hands',analyticsSample:'These are descriptive statistics; small samples do not support firm conclusions.',voluntary:'Voluntarily played preflop',preflopRaise:'Preflop raise',actionCounts:'Bets and decisions',foldCount:'Folds',callCount:'Calls',raiseCount:'Bets / Raises',checkCount:'Checks',noPerformance:'Finish a few hands to unlock the analysis.',netPositive:'Positive',netNegative:'Negative',netNeutral:'Even',
@@ -647,7 +656,7 @@ function updateSettingHint(value){const enabled=value==='yes';if(state.hintsEnab
 function settingsAuto(value){state.autoplay=value==='yes';prefWrite('autoplay',state.autoplay?'1':'0');updateStaticLabels();if(state.phase==='complete'){clearTimeout(nextTimer);if(state.autoplay&&state.view==='table')nextTimer=setTimeout(()=>newHand(),6800)}}
 function resetSession(){if(!confirm(tr('resetWarning')))return;clearTimers();gameToken++;try{localStorage.removeItem(SESSION_KEY)}catch(e){}state.players.forEach(p=>p.stack=BUYIN);state.hand=0;state.button=5;state.heroBank=20;state.stats={hands:0,wins:0,vpip:0,pfr:0};state.buyIns=BUYIN;state.handHistory=[];state.recovered=false;state.storageStatus='ok';closeModal();showView('table');newHand()}
 function downloadSession(){
- const data={app:'RIVERLAB',version:'0.3.2',exportedAt:new Date().toISOString(),blinds:{small:0.5,big:1},units:'half_big_blind',stats:state.stats,hands:state.handHistory};
+ const data={app:'RIVERLAB',version:'0.3.3',exportedAt:new Date().toISOString(),blinds:{small:0.5,big:1},units:'half_big_blind',stats:state.stats,hands:state.handHistory};
  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='RIVERLAB_session_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
 }
 function openSettings(){
@@ -723,7 +732,7 @@ function openHand(n){
  const h=state.handHistory.find(x=>x.number===n);if(!h)return;
  activeReplayHand=n;activeReplayIndex=-1;openModal('<div id="replay-content"></div>');$('modal-root').querySelector('.modal').classList.add('replay-modal');renderReplay();
 }
-function openModal(content){pauseGameplay();clearTimeout(nextTimer);$('modal-root').innerHTML='<div class="modal-cover" onclick="closeModal(event)"><div class="modal" role="dialog" aria-modal="true" aria-label="RIVERLAB"><div class="modal-header"><div class="eyebrow">RIVERLAB / V0.3.2</div><button class="btn small ghost" onclick="closeModal()">'+tr('modalClose')+'</button></div>'+content+'</div></div>'}
+function openModal(content){pauseGameplay();clearTimeout(nextTimer);$('modal-root').innerHTML='<div class="modal-cover" onclick="closeModal(event)"><div class="modal" role="dialog" aria-modal="true" aria-label="RIVERLAB"><div class="modal-header"><div class="eyebrow">RIVERLAB / V0.3.3</div><button class="btn small ghost" onclick="closeModal()">'+tr('modalClose')+'</button></div>'+content+'</div></div>'}
 function closeModal(ev){if(ev&&ev.target!==ev.currentTarget)return;$('modal-root').innerHTML='';if(state.view==='table'&&!document.hidden)resumeGameplay();if(state.autoplay&&state.phase==='complete'&&state.view==='table'){clearTimeout(nextTimer);nextTimer=setTimeout(()=>newHand(),3500)}}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('modal-root').innerHTML)closeModal()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseGameplay();else if(state.view==='table'&&!$('modal-root').innerHTML)resumeGameplay()});
