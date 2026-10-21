@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RIVERLAB | Poker Room v0.3</title>
+<title>RIVERLAB | Poker Room v0.3.2</title>
 <style>
 :root{--bg:#0a1119;--panel:#131f2a;--panel2:#192934;--line:#30414a;--text:#f0efe9;--muted:#a2b3bb;--muted2:#748c95;--gold:#c6a56c;--felt:#175246;--felt2:#0e3c34;--danger:#e18b75;--good:#83c1a9;font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--text);color-scheme:dark}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 76% 22%,#182c35 0%,#0a1119 60%);font-size:14px}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.34;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
@@ -100,7 +100,7 @@ const SYMBOL={s:'\u2660',h:'\u2665',d:'\u2666',c:'\u2663'};
 const I18N = {
  es: {
   experience:'EXPERIENCIA', pokerRoom:'Sala de póker', history:'Historial', mySession:'MI SESIÓN', engineReady:'Motor local activo',
-  prototypeFoot:'PROTOTIPO V0.3 · Fichas ficticias · Sin dinero real', noRealMoney:'SIN DINERO REAL',
+  prototypeFoot:'PROTOTIPO V0.3.2 · Fichas ficticias · Sin dinero real', noRealMoney:'SIN DINERO REAL',
   theFelt:'THE FELT / NO-LIMIT HOLD\'EM', roomMeta:'0,5 / 1 BB · 100 BB iniciales · 6 jugadores',
   rules:'REGLAS', hintsOn:'PISTAS: ACTIVADAS', hintsOff:'PISTAS: DESACTIVADAS',
   activity:'ACTIVIDAD DE LA MANO', studyWhilePlaying:'APRENDE MIENTRAS JUEGAS',
@@ -125,7 +125,7 @@ const I18N = {
   streetPreflop:'PREFLOP', streetFlop:'FLOP', streetTurn:'TURN', streetRiver:'RIVER',
   noLogs:'Preparando la primera mano...', you:'TÚ', hiddenCard:'Carta oculta', noCard:'Sin carta',
   action_postSB:'publica la ciega pequeña', action_postBB:'publica la ciega grande', action_bet:'apuesta',action_raise:'sube hasta',
-  action_call:'iguala', action_check:'pasa', action_fold:'se retira', action_autoFold:'se retira por tiempo', action_win:'gana el bote',
+  action_call:'iguala', action_check:'pasa', action_fold:'se retira', action_autoFold:'se retira por tiempo', action_win:'gana el bote', action_uncalled:'recupera la apuesta no igualada',
   uncontested:'{name} gana {amount} (los demás se retiran)', showdownResult:'{name} gana {amount}',
   withoutShowdown:'sin showdown',
   hintHeading:'PISTA DE TU MANO', hintSub:'Lectura automática de tus cartas y las comunitarias',
@@ -136,7 +136,7 @@ const I18N = {
   hintTwo:'La combinación utiliza tus dos cartas privadas.',hintOne:'La mejor combinación utiliza una de tus cartas privadas.',hintBoard:'La mejor jugada ya está formada por las cinco cartas comunitarias; tus cartas no la mejoran.',
   hintYourCards:'TUS CARTAS',hintBoardCards:'MESA',
   hintNotAdvice:'Información sobre tu jugada actual; no es una recomendación de apostar, igualar o retirarte.',
-  hintDraws:'Posibilidades a completar',drawFlush:'Proyecto de color (falta una carta)',drawStraight:'Proyecto de escalera (falta una carta)',
+  hintDraws:'Posibilidades a completar',drawFlush:'Proyecto de color (falta una carta)',drawStraight:'Proyecto de escalera propio (falta una carta)',
   highCard:'Carta alta: {rank}', onePair:'Pareja de {rank}',twoPair:'Dobles parejas: {a} y {b}',trips:'Trío de {rank}',straight:'Escalera hasta {rank}',
   flush:'Color de {suit}',fullHouse:'Full house: {a} sobre {b}',quads:'Póker de {rank}',straightFlush:'Escalera de color hasta {rank}',royalFlush:'Escalera real',
   suit_s:'picas',suit_h:'corazones',suit_d:'diamantes',suit_c:'tréboles',
@@ -155,13 +155,13 @@ const I18N = {
   analytics:'Rendimiento',analyticsTitle:'Tu evolución',analyticsIntro:'Estadísticas y resultados basados en manos con fichas ficticias. No es un análisis GTO.',
   settings:'AJUSTES',settingsTitle:'AJUSTES DE LA MESA',settingsSpeed:'Velocidad de los rivales',settingsSpeedHelp:'Cambia la rapidez de respuesta de la IA; el límite máximo sigue siendo cinco segundos.',speedNormal:'Normal · Ritmo natural',speedFast:'Rápido · Más manos',autoNext:'AUTO',autoNextHelp:'Comenzar la siguiente mano automáticamente.',
   settingsHint:'Pistas de mano',settingsHintHelp:'Muestra la mejor combinación junto a tus cartas y en el panel explicativo.',on:'Activado',off:'Desactivado',settingsLang:'Idioma de la aplicación',settingsReset:'Reiniciar sesión',resetWarning:'¿Eliminar el historial, las estadísticas y las fichas de esta sesión? Esta acción no se puede deshacer.',resetDone:'Sesión reiniciada',settingsData:'Datos de la sesión',export:'EXPORTAR MANOS JSON',exportHelp:'Descarga el historial registrado para estudiarlo o compartirlo voluntariamente. No incluye cartas ocultas de manos sin showdown.',
-  sessionStorage:'PROGRESO GUARDADO EN ESTE DISPOSITIVO',sessionNotSaved:'ALMACENAMIENTO NO DISPONIBLE',sessionRecovered:'Se ha restaurado la última mano completada; una mano interrumpida no se recupera.',
+  sessionStorage:'PROGRESO GUARDADO EN ESTE DISPOSITIVO',sessionNotSaved:'NO SE HA PODIDO GUARDAR LA SESIÓN',sessionLimited:'ALMACENAMIENTO LIMITADO: SE CONSERVAN LAS MANOS MÁS RECIENTES',sessionRecovered:'Se ha restaurado la última mano completada; una mano interrumpida no se recupera.',
   completedHands:'Manos finalizadas',sessionResults:'Resultado acumulado',playedBoard:'Llegaste al showdown',winAtShowdown:'Showdowns ganados',myDecisions:'Mis decisiones',trend:'EVOLUCIÓN DE FICHAS (BB)',lastHands:'Últimas manos',analyticsSample:'Son estadísticas descriptivas; una muestra pequeña no permite sacar conclusiones fiables.',voluntary:'Participación voluntaria preflop',preflopRaise:'Subida preflop',actionCounts:'Apuestas y decisiones',foldCount:'Retiradas',callCount:'Igualadas',raiseCount:'Apuestas / Subidas',checkCount:'Checks', noPerformance:'Completa alguna mano para activar el análisis.', netPositive:'Positivo',netNegative:'Negativo',netNeutral:'Igualado',
-  replay:'REPRODUCIR',replayStep:'ACCIÓN {step} DE {total}',replayStart:'INICIO DE MANO',replayEnd:'RESULTADO DE LA MANO',replayBefore:'Bote antes',replayAfter:'Bote después',replayPotOdds:'Pot odds para pagar',replayActionCost:'Cantidad pendiente',replayStack:'Stack previo',replayAction:'Acción seleccionada',replayNote:'Datos matemáticos de esta acción, no una valoración de la decisión.',replayHero:'TU DECISIÓN',replayOthers:'RIVAL',replayPrev:'← ANTERIOR',replayNext:'SIGUIENTE →',replayNextHero:'MI SIGUIENTE ACCIÓN',replayProgress:'Navega por cada acción y observa cómo evoluciona el board, el bote y tus decisiones.',replayAll:'Todos los movimientos',replayNoDecision:'Todavía no hay decisiones tuyas en esta mano.',replayCommunity:'Cartas visibles en ese momento',handNet:'Resultado de la mano',storageNote:'Solo se almacena en este navegador. Si eliminas los datos del sitio, puedes perder la sesión.'
+  replay:'REPRODUCIR',replayStep:'ACCIÓN {step} DE {total}',replayStart:'INICIO DE MANO',replayEnd:'RESULTADO DE LA MANO',replayBefore:'Bote antes',replayAfter:'Bote después',replayPotOdds:'Pot odds para pagar',replayActionCost:'Fichas aportadas',replayStack:'Stack previo',replayAction:'Acción seleccionada',replayNote:'Datos matemáticos de esta acción, no una valoración de la decisión.',replayHero:'TU DECISIÓN',replayOthers:'RIVAL',replayPrev:'← ANTERIOR',replayNext:'SIGUIENTE →',replayNextHero:'MI SIGUIENTE ACCIÓN',replayProgress:'Navega por cada acción y observa cómo evoluciona el board, el bote y tus decisiones.',replayAll:'Todos los movimientos',replayNoDecision:'Todavía no hay decisiones tuyas en esta mano.',replayShowdown:'SHOWDOWN · CARTAS REVELADAS',replayRevealed:'CARTAS REVELADAS',replayPayout:'REPARTO DEL BOTE',replayMainPot:'Bote principal',replaySidePot:'Bote secundario',replayNoShowdown:'Mano terminada sin mostrar cartas de rivales',replayCommunity:'Cartas visibles en ese momento',handNet:'Resultado de la mano',storageNote:'Solo se almacena en este navegador. Si eliminas los datos del sitio, puedes perder la sesión.'
  },
  en: {
   experience:'EXPERIENCE', pokerRoom:'Poker Room', history:'Hand History', mySession:'MY SESSION', engineReady:'Local engine running',
-  prototypeFoot:'PROTOTYPE V0.3 · Play-money chips · No real money', noRealMoney:'NO REAL MONEY',
+  prototypeFoot:'PROTOTYPE V0.3.2 · Play-money chips · No real money', noRealMoney:'NO REAL MONEY',
   theFelt:'THE FELT / NO-LIMIT HOLD\'EM',roomMeta:'0.5 / 1 BB · 100 BB starting stack · 6 players',
   rules:'RULES',hintsOn:'HINTS: ON',hintsOff:'HINTS: OFF',
   activity:'HAND ACTIVITY',studyWhilePlaying:'LEARN AS YOU PLAY',
@@ -186,7 +186,7 @@ const I18N = {
   streetPreflop:'PREFLOP',streetFlop:'FLOP',streetTurn:'TURN',streetRiver:'RIVER',
   noLogs:'Preparing the first hand...',you:'YOU',hiddenCard:'Hidden card',noCard:'No card',
   action_postSB:'posts small blind',action_postBB:'posts big blind',action_bet:'bets',action_raise:'raises to',
-  action_call:'calls',action_check:'checks',action_fold:'folds',action_autoFold:'times out and folds',action_win:'wins the pot',
+  action_call:'calls',action_check:'checks',action_fold:'folds',action_autoFold:'times out and folds',action_win:'wins the pot', action_uncalled:'gets uncalled bet returned',
   uncontested:'{name} wins {amount} (everyone else folds)',showdownResult:'{name} wins {amount}',
   withoutShowdown:'without showdown',
   hintHeading:'YOUR HAND HINT',hintSub:'Automatic reading of your cards and the board',
@@ -197,7 +197,7 @@ const I18N = {
   hintTwo:'The best five-card hand uses both of your hole cards.',hintOne:'The best five-card hand uses one of your hole cards.',hintBoard:'The same best hand is already on the board; your hole cards do not improve it.',
   hintYourCards:'YOUR CARDS',hintBoardCards:'BOARD',
   hintNotAdvice:'This is factual hand information, not advice to bet, call or fold.',
-  hintDraws:'Possible draws',drawFlush:'Flush draw (one card away)',drawStraight:'Straight draw (one card away)',
+  hintDraws:'Possible draws',drawFlush:'Flush draw (one card away)',drawStraight:'Personal straight draw (one card away)',
   highCard:'High card: {rank}',onePair:'Pair of {rank}',twoPair:'Two pair: {a} and {b}',trips:'Three of a kind: {rank}',straight:'Straight to {rank}',
   flush:'Flush ({suit})',fullHouse:'Full house: {a} full of {b}',quads:'Four of a kind: {rank}',straightFlush:'Straight flush to {rank}',royalFlush:'Royal flush',
   suit_s:'spades',suit_h:'hearts',suit_d:'diamonds',suit_c:'clubs',
@@ -216,20 +216,20 @@ const I18N = {
   analytics:'Performance',analyticsTitle:'Your progress',analyticsIntro:'Stats and results based on play-money hands. Not a GTO analysis.',
   settings:'SETTINGS',settingsTitle:'TABLE SETTINGS',settingsSpeed:'Opponent speed',settingsSpeedHelp:'Adjust how fast opponents act; the five-second maximum remains.',speedNormal:'Normal · Natural pace',speedFast:'Fast · More hands',autoNext:'AUTO',autoNextHelp:'Start the next hand automatically.',
   settingsHint:'Hand hints',settingsHintHelp:'Shows the best made hand next to your cards and in a detailed hint panel.',on:'On',off:'Off',settingsLang:'Application language',settingsReset:'Reset session',resetWarning:'Delete your hand history, statistics and chip stacks? This cannot be undone.',resetDone:'Session reset',settingsData:'Session data',export:'EXPORT HANDS JSON',exportHelp:'Download recorded hand history to review or voluntarily share. Hidden cards from non-showdown hands are excluded.',
-  sessionStorage:'PROGRESS SAVED ON THIS DEVICE',sessionNotSaved:'STORAGE UNAVAILABLE',sessionRecovered:'Restored last completed hand; an interrupted hand is not recovered.',
+  sessionStorage:'PROGRESS SAVED ON THIS DEVICE',sessionNotSaved:'SESSION COULD NOT BE SAVED',sessionLimited:'LIMITED STORAGE: ONLY RECENT HANDS CAN BE KEPT',sessionRecovered:'Restored last completed hand; an interrupted hand is not recovered.',
   completedHands:'Completed hands',sessionResults:'Cumulative result',playedBoard:'Reached showdown',winAtShowdown:'Showdowns won',myDecisions:'My decisions',trend:'CHIP EVOLUTION (BB)',lastHands:'Recent hands',analyticsSample:'These are descriptive statistics; small samples do not support firm conclusions.',voluntary:'Voluntarily played preflop',preflopRaise:'Preflop raise',actionCounts:'Bets and decisions',foldCount:'Folds',callCount:'Calls',raiseCount:'Bets / Raises',checkCount:'Checks',noPerformance:'Finish a few hands to unlock the analysis.',netPositive:'Positive',netNegative:'Negative',netNeutral:'Even',
-  replay:'REPLAY',replayStep:'ACTION {step} OF {total}',replayStart:'HAND START',replayEnd:'HAND RESULT',replayBefore:'Pot before',replayAfter:'Pot after',replayPotOdds:'Pot odds to call',replayActionCost:'Amount to call',replayStack:'Stack before',replayAction:'Selected action',replayNote:'Mathematical information about this action, not a judgement of its quality.',replayHero:'YOUR DECISION',replayOthers:'OPPONENT',replayPrev:'← PREVIOUS',replayNext:'NEXT →',replayNextHero:'MY NEXT ACTION',replayProgress:'Step through each action to see the board, pot and your decisions.',replayAll:'All actions',replayNoDecision:'No hero decisions in this hand yet.',replayCommunity:'Community cards visible at this point',handNet:'Hand result',storageNote:'Saved only in this browser. Clearing site data may remove your session.'
+  replay:'REPLAY',replayStep:'ACTION {step} OF {total}',replayStart:'HAND START',replayEnd:'HAND RESULT',replayBefore:'Pot before',replayAfter:'Pot after',replayPotOdds:'Pot odds to call',replayActionCost:'Chips committed',replayStack:'Stack before',replayAction:'Selected action',replayNote:'Mathematical information about this action, not a judgement of its quality.',replayHero:'YOUR DECISION',replayOthers:'OPPONENT',replayPrev:'← PREVIOUS',replayNext:'NEXT →',replayNextHero:'MY NEXT ACTION',replayProgress:'Step through each action to see the board, pot and your decisions.',replayAll:'All actions',replayNoDecision:'There are no hero decisions in this hand yet.',replayShowdown:'SHOWDOWN · REVEALED CARDS',replayRevealed:'REVEALED CARDS',replayPayout:'POT DISTRIBUTION',replayMainPot:'Main pot',replaySidePot:'Side pot',replayNoShowdown:'Hand ended without revealing opponents’ cards',replayCommunity:'Community cards visible at this point',handNet:'Hand result',storageNote:'Saved only in this browser. Clearing site data may remove your session.'
  }
 };
 function prefRead(key, fallback){try {const value=localStorage.getItem('riverlab.v03.'+key)??localStorage.getItem('riverlab.v02.'+key);return value===null?fallback:value} catch(e){return fallback}}
-function prefWrite(key,value){try{localStorage.setItem('riverlab.v02.'+key,value)}catch(e){}}
+function prefWrite(key,value){try{localStorage.setItem('riverlab.v03.'+key,value)}catch(e){}}
 function tr(key, args={}){let raw=I18N[state.language]?.[key] ?? I18N.es[key] ?? key; if(typeof raw!=='string')return raw;return raw.replace(/\{(\w+)\}/g,(_,name)=>String(args[name]??''))}
 function playerName(seat){return seat===0?tr('you'):state.players[seat].name}
 function titleHand(n){return tr('hand')+' #'+n}
 function getHandName(category){return tr('handNames')[category]}
-function actionTranslation(kind){const keys={'publica SB':'action_postSB','publica BB':'action_postBB','sube hasta':'action_raise','apuesta':'action_bet','iguala':'action_call','pasa':'action_check','se retira':'action_fold','fold automático':'action_autoFold','gana el bote':'action_win'};return tr(keys[kind]||kind)}
+function actionTranslation(kind){const keys={'publica SB':'action_postSB','publica BB':'action_postBB','sube hasta':'action_raise','apuesta':'action_bet','iguala':'action_call','pasa':'action_check','se retira':'action_fold','fold automático':'action_autoFold','gana el bote':'action_win','uncalledReturn':'action_uncalled'};return tr(keys[kind]||kind)}
 function outcomeText(result){if(!result)return '';if(result.kind==='uncontested')return tr('uncontested',{name:playerName(result.seat),amount:fmt(result.amount)});return result.winners.map(w=>tr('showdownResult',{name:playerName(w.seat),amount:fmt(w.amount)})).join(' · ')}
-function logText(e){if(typeof e==='string')return e;if(e.key==='action')return playerName(e.values.seat)+' '+actionTranslation(e.values.type)+(e.values.detail?' '+(typeof e.values.detail==='number'?fmt(e.values.detail):e.values.detail):'');if(e.key==='street')return tr('street'+e.values.street.charAt(0).toUpperCase()+e.values.street.slice(1))+' '+e.values.cards;if(e.key==='rebuys')return playerName(e.values.seat)+' '+(state.language==='es'?'recarga':'rebuys')+' 100 BB';if(e.key==='winner')return tr('showdownResult',{name:playerName(e.values.seat),amount:fmt(e.values.amount)})+' ('+getHandName(e.values.category)+')';return ''}
+function logText(e){if(typeof e==='string')return e;if(e.key==='action')return playerName(e.values.seat)+' '+actionTranslation(e.values.type)+(e.values.detail?' '+(typeof e.values.detail==='number'?fmt(e.values.detail):e.values.detail):'');if(e.key==='street')return tr('street'+e.values.street.charAt(0).toUpperCase()+e.values.street.slice(1))+' '+e.values.cards;if(e.key==='rebuys')return playerName(e.values.seat)+' '+(state.language==='es'?'recarga':'rebuys')+' 100 BB';if(e.key==='winner')return tr('showdownResult',{name:playerName(e.values.seat),amount:fmt(e.values.amount)})+' ('+getHandName(e.values.category)+')';if(e.key==='uncalled')return playerName(e.values.seat)+' '+tr('action_uncalled')+' '+fmt(e.values.amount);return ''}
 function setLanguage(lang){if(!['es','en'].includes(lang))lang='es';state.language=lang;prefWrite('language',lang);document.documentElement.lang=lang;updateStaticLabels();render();}
 function toggleHints(){state.hintsEnabled=!state.hintsEnabled;prefWrite('hints',state.hintsEnabled?'1':'0');render();}
 function updateStaticLabels(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=tr(el.getAttribute('data-i18n'))});const select=$('language-select');if(select)select.value=state.language;const hints=$('hand-hints');if(hints)hints.setAttribute('aria-label',tr('hintHeading'));const hintButton=$('hint-toggle');if(hintButton){hintButton.textContent=tr(state.hintsEnabled?'hintsOn':'hintsOff');hintButton.setAttribute('aria-pressed',String(state.hintsEnabled));hintButton.setAttribute('aria-label',tr('hintAria'));hintButton.classList.toggle('enabled',state.hintsEnabled)}const auto=$('auto-button');if(auto)auto.textContent=tr('autoNext')+': '+tr(state.autoplay?'on':'off');}
@@ -245,8 +245,8 @@ const $=id=>document.getElementById(id);
 const SESSION_KEY='riverlab.v03.session';
 function fmt(u){return (u/2).toLocaleString(state.language==='en'?'en-US':'es-ES',{maximumFractionDigits:1})+' BB'}
 function fmtN(u){return (u/2).toLocaleString(state.language==='en'?'en-US':'es-ES',{maximumFractionDigits:1})}
-const state={players:PREFS.map((v,i)=>({...v,seat:i,stack:BUYIN,cards:[],bet:0,invested:0,folded:false,allIn:false,acted:false,actedFacing:0,action:''})),button:5,hand:0,phase:'idle',turn:null,deck:[],board:[],currentBet:0,minRaise:BB,heroBank:20,bankAtStart:20,turnStart:0,logs:[],handEvents:[],handHistory:[],winners:[],stats:{hands:0,wins:0,vpip:0,pfr:0},buyIns:BUYIN,autoplay:prefRead('autoplay','1')!=='0',view:'table',selectedRaise:6,finishedReason:'',resultData:null,didShowdown:false,language:['es','en'].includes(prefRead('language','es'))?prefRead('language','es'):'es',hintsEnabled:prefRead('hints','0')==='1',botSpeed:prefRead('speed','normal')==='fast'?'fast':'normal',heroStartStack:BUYIN,recovered:false};
-let botTimer=null,botFallback=null,heroTimer=null,nextTimer=null,gameToken=0;
+const state={players:PREFS.map((v,i)=>({...v,seat:i,stack:BUYIN,cards:[],bet:0,invested:0,folded:false,allIn:false,acted:false,actedFacing:0,action:''})),button:5,hand:0,phase:'idle',turn:null,deck:[],board:[],currentBet:0,minRaise:BB,heroBank:20,bankAtStart:20,turnStart:0,logs:[],handEvents:[],handHistory:[],winners:[],stats:{hands:0,wins:0,vpip:0,pfr:0},buyIns:BUYIN,autoplay:prefRead('autoplay','1')!=='0',view:'table',selectedRaise:6,finishedReason:'',resultData:null,didShowdown:false,language:['es','en'].includes(prefRead('language','es'))?prefRead('language','es'):'es',hintsEnabled:prefRead('hints','0')==='1',botSpeed:prefRead('speed','normal')==='fast'?'fast':'normal',heroStartStack:BUYIN,recovered:false,storageStatus:'ok'};
+let botTimer=null,botFallback=null,heroTimer=null,nextTimer=null,gameToken=0,gamePauseAt=0;
 function rand(n){if(globalThis.crypto && crypto.getRandomValues){const arr=new Uint32Array(1);crypto.getRandomValues(arr);return arr[0]%n}return Math.floor(Math.random()*n)}
 function shuffle(){const d=[];for(const r of RANKS)for(const s of SUITS)d.push({r:RANKS.indexOf(r)+2,s});for(let i=d.length-1;i>0;i--){const j=rand(i+1);[d[i],d[j]]=[d[j],d[i]]}return d}
 function next(s){return (s+1)%N}
@@ -255,8 +255,11 @@ function pot(){return state.players.reduce((a,p)=>a+p.invested,0)}
 function live(){return state.players.filter(p=>!p.folded)}
 function eligible(){return state.players.filter(p=>!p.folded&&!p.allIn)}
 function logMsg(key,values={}){state.logs.unshift({key,values});state.logs=state.logs.slice(0,9)}
-function actionLog(seat,type,detail='',context=null){logMsg('action',{seat,type,detail});state.handEvents.push({seat,street:state.phase,kind:type,details:detail,board:state.board.map(c=>({...c})),pot:pot(),beforePot:context?.beforePot??(pot()-(typeof detail==='number'&&type==='iguala'?detail:0)),toCall:context?.toCall??0,stackBefore:context?.stackBefore??null,currentBetBefore:context?.currentBet??null,at:Date.now()})}
-function clearTimers(){clearTimeout(botTimer);clearTimeout(botFallback);clearInterval(heroTimer);clearTimeout(nextTimer);botTimer=botFallback=heroTimer=nextTimer=null}
+function actionLog(seat,type,detail='',context=null){logMsg('action',{seat,type,detail});const before=context?.beforePot??(pot()-(typeof detail==='number'&&type==='iguala'?detail:0));state.handEvents.push({seat,street:state.phase,kind:type,details:detail,board:state.board.map(c=>({...c})),pot:pot(),beforePot:before,paid:Math.max(0,pot()-before),toCall:context?.toCall??0,stackBefore:context?.stackBefore??null,currentBetBefore:context?.currentBet??null,at:Date.now()})}
+function clearTimers(){clearTimeout(botTimer);clearTimeout(botFallback);clearInterval(heroTimer);clearTimeout(nextTimer);botTimer=botFallback=heroTimer=nextTimer=null;gamePauseAt=0}
+function pauseGameplay(){if(gamePauseAt||!['preflop','flop','turn','river'].includes(state.phase))return;gamePauseAt=Date.now();clearTimeout(botTimer);clearTimeout(botFallback);clearInterval(heroTimer);botTimer=botFallback=heroTimer=null;}
+function resumeGameplay(){if(!gamePauseAt)return;const elapsed=Date.now()-gamePauseAt;gamePauseAt=0;if(state.turn===0){state.turnStart+=elapsed;clearInterval(heroTimer);heroTimer=setInterval(tick,100);tick();}else if(Number.isInteger(state.turn)&&state.turn>0){setTurn(state.turn);}}
+
 function makeMove(player,amount){const pay=Math.max(0,Math.min(player.stack,amount));player.stack-=pay;player.bet+=pay;player.invested+=pay;if(player.stack===0)player.allIn=true;return pay}
 function newHand(){
  clearTimers();gameToken++;
@@ -276,20 +279,22 @@ function setTurn(seat){
  clearTimeout(botTimer);clearTimeout(botFallback);clearInterval(heroTimer);
  state.turn=seat;
  const p=state.players[seat];if(!needsAction(p)){settleAfter(seat);return}
+ if(gamePauseAt){render();return}
  if(seat===0){state.turnStart=Date.now();state.bankAtStart=state.heroBank;heroTimer=setInterval(tick,100);render();tick();}
- else {render();const t=gameToken;let completed=false;botTimer=setTimeout(()=>{if(completed||t!==gameToken||state.turn!==seat)return;completed=true;clearTimeout(botFallback);try{const a=chooseBotAction(p);act(seat,a.kind,a.target)}catch(e){console.error(e);safeBot(seat)}},state.botSpeed==='fast'?130+rand(300):600+rand(1500));botFallback=setTimeout(()=>{if(completed||t!==gameToken||state.turn!==seat)return;completed=true;clearTimeout(botTimer);safeBot(seat)},5000)}
+ else {render();const t=gameToken;let completed=false;botTimer=setTimeout(()=>{if(completed||t!==gameToken||state.turn!==seat)return;completed=true;clearTimeout(botFallback);try{const a=chooseBotAction(p);if(!act(seat,a.kind,a.target))safeBot(seat)}catch(e){console.error(e);safeBot(seat)}},state.botSpeed==='fast'?130+rand(300):600+rand(1500));botFallback=setTimeout(()=>{if(completed||t!==gameToken||state.turn!==seat)return;completed=true;clearTimeout(botTimer);safeBot(seat)},5000)}
 }
 function safeBot(seat){const p=state.players[seat];if(state.turn!==seat)return;act(seat,state.currentBet>p.bet?'fold':'check')}
-function bankSnapshot(){if(state.turn!==0)return {normal:0,bank:state.heroBank,using:false};const elapsed=(Date.now()-state.turnStart)/1000;return {normal:Math.max(0,20-elapsed),bank:Math.max(0,state.bankAtStart-Math.max(0,elapsed-20)),using:elapsed>=20}}
-function tick(){if(state.turn!==0 || state.phase==='complete')return;const snap=bankSnapshot();const remaining=snap.using?snap.bank:snap.normal;const el=$('countdown');if(el)el.textContent='00:'+String(Math.max(0,Math.ceil(remaining))).padStart(2,'0');const fill=$('time-fill');if(fill){fill.style.width=Math.max(0,Math.min(100,remaining/20*100))+'%';fill.className='timer-fill'+(remaining<=5?' urgent':snap.using?' bank':'')};const bank=$('bank-count');if(bank)bank.textContent=Math.ceil(snap.bank)+' s';const label=$('time-label');if(label)label.textContent=tr(snap.using?'bankActive':'yourTurn');if(snap.using&&snap.bank<=0){state.heroBank=0;act(0,state.currentBet>state.players[0].bet?'fold':'check',null,true)}}
+function bankSnapshot(){if(state.turn!==0)return {normal:0,bank:state.heroBank,using:false};const elapsed=((gamePauseAt||Date.now())-state.turnStart)/1000;return {normal:Math.max(0,20-elapsed),bank:Math.max(0,state.bankAtStart-Math.max(0,elapsed-20)),using:elapsed>=20}}
+function tick(){if(state.turn!==0 || state.phase==='complete')return;const snap=bankSnapshot();const remaining=snap.using?snap.bank:snap.normal;const el=$('countdown');if(el)el.textContent='00:'+String(Math.max(0,Math.ceil(remaining))).padStart(2,'0');const fill=$('time-fill');if(fill){fill.style.width=Math.max(0,Math.min(100,remaining/20*100))+'%';fill.className='timer-fill'+(remaining<=5?' urgent':snap.using?' bank':'')};const bank=$('bank-count');if(bank)bank.textContent=Math.ceil(snap.bank)+' s';const label=$('time-label');if(label)label.textContent=tr(snap.using?'bankActive':'yourTurn');if(snap.using&&snap.bank<=0&&!gamePauseAt){state.heroBank=0;act(0,state.currentBet>state.players[0].bet?'fold':'check',null,true)}}
 function recordHero(player,kind,pay){if(player.seat!==0||state.phase!=='preflop')return;if(pay>0&&['call','raise'].includes(kind)&&!player.wasVPIP){player.wasVPIP=true;state.stats.vpip++}if(kind==='raise'&&!player.wasPFR){player.wasPFR=true;state.stats.pfr++}}
 function act(seat,kind,target=null,forced=false){
  if(state.turn!==seat||!['preflop','flop','turn','river'].includes(state.phase))return false;
  const p=state.players[seat],toCall=Math.max(0,state.currentBet-p.bet);
  const context={beforePot:pot(),toCall,stackBefore:p.stack,currentBet:state.currentBet};
- if(seat===0){const snap=bankSnapshot();if(!forced&&snap.using&&snap.bank<=0)kind=toCall>0?'fold':'check';state.heroBank=snap.bank;clearInterval(heroTimer)}
+ if(!['fold','check','call','raise'].includes(kind))return false;
  if(kind==='check'&&toCall>0)return false;
  if(kind==='raise'&&!mayRaise(p))return false;
+ if(seat===0){const snap=bankSnapshot();if(!forced&&snap.using&&snap.bank<=0)kind=toCall>0?'fold':'check';state.heroBank=snap.bank;clearInterval(heroTimer)}
  if(kind==='raise'){
   const maxTotal=p.bet+p.stack,min=currentMinRaise(p);
   let t=Number(target);if(!Number.isFinite(t))t=min;t=Math.floor(Math.max(min,Math.min(maxTotal,t)));
@@ -359,19 +364,27 @@ function splitPots(players,board,button){
  }
  return results;
 }
-function finishUncontested(p){clearTimers();state.turn=null;const amount=pot();p.stack+=amount;state.winners=[{seat:p.seat,name:p.name,amount,noShowdown:true}];state.resultData={kind:'uncontested',seat:p.seat,amount};actionLog(p.seat,'gana el bote',amount);finishHand([p.seat]);}
+function refundUncalledExcess(){
+ const invested=state.players.slice().sort((a,b)=>b.invested-a.invested);const leader=invested[0],second=invested[1]?.invested??0;
+ if(!leader||leader.folded||leader.invested<=second)return 0;
+ const amount=leader.invested-second,before=pot();leader.invested-=amount;leader.bet=Math.max(0,leader.bet-amount);leader.stack+=amount;leader.allIn=leader.stack===0;
+ state.handEvents.push({seat:leader.seat,street:state.phase,kind:'uncalledReturn',details:amount,board:state.board.map(c=>({...c})),pot:pot(),beforePot:before,paid:-amount,toCall:0,stackBefore:leader.stack-amount,at:Date.now()});
+ logMsg('uncalled',{seat:leader.seat,amount});return amount;
+}
+function finishUncontested(p){clearTimers();state.turn=null;const returnAmount=refundUncalledExcess();const amount=pot();p.stack+=amount;state.winners=[{seat:p.seat,name:p.name,amount,noShowdown:true}];state.resultData={kind:'uncontested',seat:p.seat,amount,returnAmount};actionLog(p.seat,'gana el bote',amount);finishHand([p.seat]);}
 function finishShowdown(){
- clearTimers();state.turn=null;state.didShowdown=true;
+ clearTimers();state.turn=null;state.didShowdown=true;refundUncalledExcess();
  let pots=splitPots(state.players,state.board,state.button);const wins=new Map();
  for(const sp of pots)for(const w of sp.winners){state.players[w.seat].stack+=w.amount;wins.set(w.seat,(wins.get(w.seat)||0)+w.amount)}
  const allWinners=[...wins.entries()].sort((a,b)=>b[1]-a[1]);
  state.winners=allWinners.map(([seat,amount])=>({seat,name:state.players[seat].name,amount,category:best7(state.players[seat].cards.concat(state.board))[0]}));
- state.resultData={kind:'showdown',winners:state.winners.map(w=>({seat:w.seat,amount:w.amount}))};
+ state.resultData={kind:'showdown',winners:state.winners.map(w=>({seat:w.seat,amount:w.amount})),pots:pots.map(p=>({amount:p.amount,eligible:[...p.eligible],winners:p.winners.map(w=>({...w}))}))};
+ state.handEvents.push({seat:-1,street:'showdown',kind:'showdown',board:state.board.map(c=>({...c})),pot:pot(),beforePot:pot(),paid:0,toCall:0,at:Date.now()});
  state.winners.forEach(w=>logMsg('winner',{seat:w.seat,amount:w.amount,category:w.category}));
  finishHand(allWinners.map(w=>w[0]));
 }
 function finishHand(winnerSeats){state.phase='complete';state.turn=null;if(winnerSeats.includes(0))state.stats.wins++;
- const hand={number:state.hand,heroCards:state.players[0].cards.map(c=>({...c})),board:state.board.map(c=>({...c})),players:state.players.map(p=>({name:p.name,seat:p.seat,cards:(p.seat===0||state.didShowdown&&!p.folded)?p.cards.map(c=>({...c})):[],folded:p.folded,stack:p.stack,invested:p.invested})),events:state.handEvents.slice(),winners:state.winners.map(x=>({...x})),heroWon:winnerSeats.includes(0),didShowdown:state.didShowdown,pot:pot(),net:state.players[0].stack-state.heroStartStack,cumulative:state.players[0].stack-state.buyIns,reason:state.finishedReason,resultData:JSON.parse(JSON.stringify(state.resultData))};
+ const hand={number:state.hand,button:state.button,heroCards:state.players[0].cards.map(c=>({...c})),board:state.board.map(c=>({...c})),players:state.players.map(p=>({name:p.name,seat:p.seat,cards:(p.seat===0||state.didShowdown&&!p.folded)?p.cards.map(c=>({...c})):[],folded:p.folded,stack:p.stack,invested:p.invested})),events:state.handEvents.slice(),pots:state.resultData?.pots||[],winners:state.winners.map(x=>({...x})),heroWon:winnerSeats.includes(0),didShowdown:state.didShowdown,pot:pot(),net:state.players[0].stack-state.heroStartStack,cumulative:state.players[0].stack-state.buyIns,reason:state.finishedReason,resultData:JSON.parse(JSON.stringify(state.resultData))};
  state.handHistory.unshift(hand);state.handHistory=state.handHistory.slice(0,200);saveSession();render();if(state.autoplay&&state.players[0].stack>0){const t=gameToken;nextTimer=setTimeout(()=>{if(t===gameToken&&state.phase==='complete'&&state.view==='table')newHand()},6800)}
 }
 function preflopScore(cards){const a=Math.max(cards[0].r,cards[1].r),b=Math.min(cards[0].r,cards[1].r);const weights={14:10,13:8,12:7,11:6,10:5,9:4.5,8:4,7:3.5,6:3,5:2.5,4:2,3:1.5,2:1};let sc=weights[a];if(a===b)sc=Math.max(5,2*sc);if(cards[0].s===cards[1].s)sc+=2;const gap=a-b-1;if(a!==b)sc-=gap<=0?0:gap===1?1:gap===2?2:gap===3?4:5;if(a<12&&gap<2&&a!==b)sc+=1;return sc}
@@ -445,16 +458,17 @@ function startingHandHint(hole){
 function detectHandDraws(hole,board,made){
  if(board.length<3||board.length>=5)return [];
  const cards=hole.concat(board),out=[];
- if(made.rank[0]!==5&&made.rank[0]!==8){
+ if(made.rank[0]<5){
   const suits={s:0,h:0,d:0,c:0};for(const c of cards)suits[c.s]++;
   for(const suit of SUITS){if(suits[suit]===4&&hole.some(c=>c.s===suit)){out.push(tr('drawFlush'));break}}
  }
- if(![4,8].includes(made.rank[0])){
+ if(made.rank[0]<4){
   const available=new Set(cards.map(c=>c.r));if(available.has(14))available.add(1);
+  const boardRanks=new Set(board.map(c=>c.r));if(boardRanks.has(14))boardRanks.add(1);
   const holeRanks=new Set(hole.map(c=>c.r));if(holeRanks.has(14))holeRanks.add(1);
   for(let min=1;min<=10;min++){
    const seq=[min,min+1,min+2,min+3,min+4];const present=seq.filter(r=>available.has(r));
-   if(present.length===4&&present.some(r=>holeRanks.has(r))){out.push(tr('drawStraight'));break}
+   if(present.length===4&&present.some(r=>holeRanks.has(r)&&!boardRanks.has(r))){out.push(tr('drawStraight'));break}
   }
  }
  return out;
@@ -518,7 +532,6 @@ function setPreset(type){
  if(type==='all')return setRaise(p.bet+p.stack);
  const factor=type==='half'?.5:type==='three'?.75:1;
  let want=state.currentBet+Math.round(factor*(pot()+call));
- if(state.phase==='preflop'&&state.currentBet===BB)want=type==='half'?6:type==='three'?7:8;
  setRaise(want);
 }
 function renderActions(){
@@ -542,21 +555,21 @@ function renderActions(){
  tick();
 }
 function renderEvents(){
- const rows=state.logs;
+ const rows=state.logs.slice().reverse();
  $('events').innerHTML=rows.length?rows.map((l,i)=>'<div class="event"><span class="time">'+String(i+1).padStart(2,'0')+'</span><span>'+logText(l)+'</span></div>').join(''):'<div class="detail-text">'+tr('noLogs')+'</div>';
 }
 function renderStats(){
  const st=state.stats;
- $('sidebar-stats').innerHTML=[[tr('handsPlayed'),st.hands],[tr('handsWon'),st.wins],['VPIP',st.hands?(100*st.vpip/st.hands).toFixed(0)+' %':'—'],['PFR',st.hands?(100*st.pfr/st.hands).toFixed(0)+' %':'—'],[tr('result'),(state.players[0].stack-state.buyIns>=0?'+':'')+fmt(state.players[0].stack-state.buyIns)],[tr('timeBank'),Math.ceil(state.heroBank)+' s']].map(([k,v])=>'<div class="stat-line"><span>'+k+'</span><strong>'+v+'</strong></div>').join('');
+ $('sidebar-stats').innerHTML=[[tr('handsPlayed'),st.hands],[tr('handsWon'),st.wins],['VPIP',st.hands?(100*st.vpip/st.hands).toFixed(0)+' %':'—'],['PFR',st.hands?(100*st.pfr/st.hands).toFixed(0)+' %':'—'],[tr('result'),((state.handHistory[0]?.cumulative??0)>=0?'+':'')+fmt(state.handHistory[0]?.cumulative??0)],[tr('timeBank'),Math.ceil(state.heroBank)+' s']].map(([k,v])=>'<div class="stat-line"><span>'+k+'</span><strong>'+v+'</strong></div>').join('');
 }
 
 function derivedPerformance(){
  const records=state.handHistory;
  const st=state.stats,hands=Math.max(1,st.hands);
  const actions={fold:0,call:0,raise:0,check:0};
- for(const h of records)for(const e of h.events){if(e.seat!==0)continue;if(e.kind==='se retira'||e.kind==='fold automático')actions.fold++;
+ for(const h of records)for(const e of (Array.isArray(h.events)?h.events:[])){if(e.seat!==0)continue;if(e.kind==='se retira'||e.kind==='fold automático')actions.fold++;
  else if(e.kind==='iguala')actions.call++;else if(e.kind==='sube hasta'||e.kind==='apuesta')actions.raise++;else if(e.kind==='pasa')actions.check++;}
- const showdown=records.filter(h=>h.didShowdown&&!h.players[0].folded);
+ const showdown=records.filter(h=>h.didShowdown&&h.players?.[0]&&!h.players[0].folded);
  const showdownWins=showdown.filter(h=>h.heroWon).length;
  return {hands:st.hands,completed:st.hands-(['preflop','flop','turn','river'].includes(state.phase)?1:0),vpip:st.hands?100*st.vpip/hands:0,pfr:st.hands?100*st.pfr/hands:0,showdown:showdown.length,showdownWins,actions};
 }
@@ -595,23 +608,28 @@ function render(){
  updateStaticLabels();renderBoard();renderSeats();renderActions();renderHandHints();renderEvents();renderStats();
  $('hand-counter').textContent=titleHand(state.hand);
  const banner=$('winner-banner');
- banner.innerHTML=state.phase==='complete'?'<div class="top-notice">'+(state.winners.length>1?tr('potSplit'):tr('wins',{name:playerName(state.winners[0]?.seat??0)}))+'</div>':'';
+ banner.innerHTML=state.phase==='complete'?'<div class="top-notice">'+(state.winners.length>1?state.winners.map(w=>playerName(w.seat)).join(' · '):tr('wins',{name:playerName(state.winners[0]?.seat??0)}))+'</div>':'';
  if(state.view==='history')renderHistory();if(state.view==='analytics')renderAnalytics();
 }
 function showView(v){
+ if(v!=='table')pauseGameplay();
  state.view=v;
  $('table-view').style.display=v==='table'?'block':'none';$('history-view').style.display=v==='history'?'grid':'none';$('analytics-view').style.display=v==='analytics'?'grid':'none';
  $('page-title').innerHTML=v==='table'?'Cash Games <span style="color:#c6a56c">6-max</span>':v==='history'?'Hand Lab <span style="color:#c6a56c">/ '+tr('history')+'</span>':tr('analyticsTitle');
  $('nav-table').classList.toggle('active',v==='table');$('nav-history').classList.toggle('active',v==='history');$('nav-analytics').classList.toggle('active',v==='analytics');
- if(v!=='table'){clearTimeout(nextTimer);if(v==='history')renderHistory();else renderAnalytics()}else if(state.phase==='complete'&&state.autoplay){clearTimeout(nextTimer);nextTimer=setTimeout(()=>newHand(),3500)}
+ if(v!=='table'){clearTimeout(nextTimer);if(v==='history')renderHistory();else renderAnalytics()}else{if(!$('modal-root').innerHTML)resumeGameplay();if(state.phase==='complete'&&state.autoplay){clearTimeout(nextTimer);nextTimer=setTimeout(()=>newHand(),3500)}}
 }
 function toggleAuto(){state.autoplay=!state.autoplay;prefWrite('autoplay',state.autoplay?'1':'0');updateStaticLabels();clearTimeout(nextTimer);if(state.autoplay&&state.phase==='complete'&&state.view==='table')nextTimer=setTimeout(()=>newHand(),3800);renderActions();}
 
 function saveSession(){
- try{
-  const data={version:3,hand:state.hand,button:state.button,stacks:state.players.map(p=>p.stack),heroBank:state.heroBank,stats:state.stats,buyIns:state.buyIns,hands:state.handHistory,autoplay:state.autoplay,savedAt:Date.now()};
-  localStorage.setItem(SESSION_KEY,JSON.stringify(data));return true;
- }catch(e){return false}
+ const data={version:3,hand:state.hand,button:state.button,stacks:state.players.map(p=>p.stack),heroBank:state.heroBank,stats:state.stats,buyIns:state.buyIns,hands:[],autoplay:state.autoplay,savedAt:Date.now()};
+ // Storage limits differ by browser. Keep new session data and the most recent hands rather than silently losing every update.
+ let count=state.handHistory.length;
+ while(true){
+  data.hands=state.handHistory.slice(0,count);
+  try{localStorage.setItem(SESSION_KEY,JSON.stringify(data));state.storageStatus=count<state.handHistory.length?'partial':'ok';return true;}
+  catch(e){if(count===0){state.storageStatus='failed';return false}count=Math.floor(count/2)}
+ }
 }
 function restoreSession(){
  try{
@@ -619,24 +637,24 @@ function restoreSession(){
   const s=JSON.parse(raw);if(s.version!==3||!Number.isSafeInteger(s.hand)||s.hand<0||!Array.isArray(s.stacks)||s.stacks.length!==N||s.stacks.some(x=>!Number.isSafeInteger(x)||x<0)||!Array.isArray(s.hands)||!Number.isInteger(s.button)||s.button<0||s.button>=N)return false;
   if(!Number.isSafeInteger(s.buyIns)||s.buyIns<BUYIN)return false;
   state.players.forEach((p,i)=>p.stack=s.stacks[i]);state.hand=s.hand;state.button=s.button;state.buyIns=s.buyIns;
-  state.heroBank=Math.max(0,Math.min(20,Number(s.heroBank)||0));state.stats={hands:0,wins:0,vpip:0,pfr:0,...s.stats};
-  state.handHistory=s.hands.slice(0,200);state.autoplay=s.autoplay!==false;state.recovered=true;
+  state.heroBank=Math.max(0,Math.min(20,Number(s.heroBank)||0));const rawStats=s.stats||{};state.stats=Object.fromEntries(['hands','wins','vpip','pfr'].map(k=>[k,Number.isSafeInteger(rawStats[k])&&rawStats[k]>=0?rawStats[k]:0]));
+  state.handHistory=s.hands.slice(0,200).filter(h=>h&&Number.isSafeInteger(h.number)&&Array.isArray(h.events)&&Array.isArray(h.players)&&Array.isArray(h.heroCards)&&Array.isArray(h.board));state.autoplay=s.autoplay!==false;state.recovered=true;
   return true;
  }catch(e){return false}
 }
 function changeSpeed(value){state.botSpeed=value==='fast'?'fast':'normal';prefWrite('speed',state.botSpeed);const sel=$('speed-choice');if(sel)sel.value=state.botSpeed}
 function updateSettingHint(value){const enabled=value==='yes';if(state.hintsEnabled!==enabled)toggleHints();const sel=$('hint-choice');if(sel)sel.value=state.hintsEnabled?'yes':'no'}
 function settingsAuto(value){state.autoplay=value==='yes';prefWrite('autoplay',state.autoplay?'1':'0');updateStaticLabels();if(state.phase==='complete'){clearTimeout(nextTimer);if(state.autoplay&&state.view==='table')nextTimer=setTimeout(()=>newHand(),6800)}}
-function resetSession(){if(!confirm(tr('resetWarning')))return;clearTimers();gameToken++;try{localStorage.removeItem(SESSION_KEY)}catch(e){}state.players.forEach(p=>p.stack=BUYIN);state.hand=0;state.button=5;state.heroBank=20;state.stats={hands:0,wins:0,vpip:0,pfr:0};state.buyIns=BUYIN;state.handHistory=[];state.recovered=false;closeModal();showView('table');newHand()}
+function resetSession(){if(!confirm(tr('resetWarning')))return;clearTimers();gameToken++;try{localStorage.removeItem(SESSION_KEY)}catch(e){}state.players.forEach(p=>p.stack=BUYIN);state.hand=0;state.button=5;state.heroBank=20;state.stats={hands:0,wins:0,vpip:0,pfr:0};state.buyIns=BUYIN;state.handHistory=[];state.recovered=false;state.storageStatus='ok';closeModal();showView('table');newHand()}
 function downloadSession(){
- const data={app:'RIVERLAB',version:'0.3',exportedAt:new Date().toISOString(),blinds:{small:0.5,big:1},units:'half_big_blind',stats:state.stats,hands:state.handHistory};
+ const data={app:'RIVERLAB',version:'0.3.2',exportedAt:new Date().toISOString(),blinds:{small:0.5,big:1},units:'half_big_blind',stats:state.stats,hands:state.handHistory};
  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='RIVERLAB_session_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
 }
 function openSettings(){
  const speed='<div class="setting-block"><label for="speed-choice">'+tr('settingsSpeed')+'</label><select id="speed-choice" onchange="changeSpeed(this.value)"><option value="normal">'+tr('speedNormal')+'</option><option value="fast">'+tr('speedFast')+'</option></select><p>'+tr('settingsSpeedHelp')+'</p></div>';
  const hints='<div class="setting-block"><label for="hint-choice">'+tr('settingsHint')+'</label><select id="hint-choice" onchange="updateSettingHint(this.value)"><option value="no">'+tr('off')+'</option><option value="yes">'+tr('on')+'</option></select><p>'+tr('settingsHintHelp')+'</p></div>';
  const data='<div class="setting-block"><strong>'+tr('settingsData')+'</strong><p>'+tr('storageNote')+'</p><p>'+tr('exportHelp')+'</p><div class="settings-actions"><button class="btn" onclick="downloadSession()">'+tr('export')+'</button><button class="btn ghost" onclick="resetSession()">'+tr('settingsReset')+'</button></div></div>';
- openModal('<h2>'+tr('settingsTitle')+'</h2><p>'+tr('sessionStorage')+'</p><div class="settings-grid">'+speed+hints+data+'</div>');$('speed-choice').value=state.botSpeed;$('hint-choice').value=state.hintsEnabled?'yes':'no';
+ openModal('<h2>'+tr('settingsTitle')+'</h2><p>'+tr(state.storageStatus==='failed'?'sessionNotSaved':state.storageStatus==='partial'?'sessionLimited':'sessionStorage')+'</p><div class="settings-grid">'+speed+hints+data+'</div>');$('speed-choice').value=state.botSpeed;$('hint-choice').value=state.hintsEnabled?'yes':'no';
 }
 
 function rebuy(){if(state.players[0].stack>0)return;state.players[0].stack=BUYIN;state.buyIns+=BUYIN;newHand()}
@@ -646,18 +664,30 @@ function openInstructions(){
 let activeReplayHand=null,activeReplayIndex=0;
 function replayEventLabel(h,e){
  if(e.kind==='deal')return tr('street'+e.street.charAt(0).toUpperCase()+e.street.slice(1));
+ if(e.kind==='showdown')return tr('replayShowdown');
+ if(e.kind==='uncalledReturn')return (h.players[e.seat]?.name||playerName(e.seat))+' '+tr('action_uncalled')+' '+fmt(e.details);
  const name=e.seat===0?tr('you'):(h.players[e.seat]?.name||tr('you'));
  return name+' '+actionTranslation(e.kind)+(e.details?' '+(typeof e.details==='number'?fmt(e.details):e.details):'');
 }
 function replayMath(h,e){
- if(e.seat!==0||['publica SB','publica BB','gana el bote'].includes(e.kind)||e.kind==='deal')return '';
- const callCost=Math.max(0,e.toCall||0),effectiveCall=Math.min(callCost,e.stackBefore||0);
+ if(e.seat!==0||['publica SB','publica BB','gana el bote','uncalledReturn','showdown'].includes(e.kind)||e.kind==='deal')return '';
+ const callCost=Math.max(0,e.toCall||0),effectiveCall=Math.min(callCost,e.stackBefore||0),paid=Math.max(0,e.paid??(Number.isFinite(e.pot)&&Number.isFinite(e.beforePot)?e.pot-e.beforePot:0));
  const ratio=callCost>0&&effectiveCall===callCost&&Number.isFinite(e.beforePot)?(100*callCost/(e.beforePot+callCost)).toFixed(1)+' %':'—';
  return '<div class="replay-summary">'+
   '<div class="replay-info"><strong>'+tr('replayBefore')+'</strong><div>'+fmt(e.beforePot??0)+'</div></div>'+
-  '<div class="replay-info"><strong>'+tr('replayActionCost')+'</strong><div>'+fmt(effectiveCall)+'</div></div>'+
+  '<div class="replay-info"><strong>'+tr('replayActionCost')+'</strong><div>'+fmt(paid)+'</div></div>'+
   '<div class="replay-info"><strong>'+tr('replayPotOdds')+'</strong><div>'+ratio+'</div></div>'+
   '<div class="replay-info"><strong>'+tr('replayStack')+'</strong><div>'+fmt(e.stackBefore??0)+'</div></div></div><p class="stats-footer">'+tr('replayNote')+'</p>';
+}
+function historicalPots(h){
+ if(Array.isArray(h.pots)&&h.pots.length)return h.pots;
+ if(Array.isArray(h.resultData?.pots)&&h.resultData.pots.length)return h.resultData.pots;
+ if(!h.didShowdown||!Array.isArray(h.players)||!Array.isArray(h.board)||h.board.length!==5)return [];
+ try {
+  const players=h.players.map(p=>({seat:p.seat,invested:p.invested||0,folded:!!p.folded,cards:p.cards||[]}));
+  if(players.some(p=>!p.folded&&p.cards.length!==2))return [];
+  return splitPots(players,h.board,Number.isInteger(h.button)?h.button:(h.number+5)%N);
+ }catch(e){return []}
 }
 function renderReplay(){
  const h=state.handHistory.find(x=>x.number===activeReplayHand);if(!h)return;
@@ -665,31 +695,39 @@ function renderReplay(){
  const board=activeReplayIndex<0?[]:e?e.board:h.board;
  const potValue=activeReplayIndex<0?0:e?e.pot:h.pot;
  const info=activeReplayIndex<0?tr('replayStart'):e?replayEventLabel(h,e):tr('replayEnd')+': '+outcomeText(h.resultData);
- const street=activeReplayIndex<0?tr('streetPreflop'):e?tr('street'+e.street.charAt(0).toUpperCase()+e.street.slice(1)):tr('replayEnd');
- const hero=e?.seat===0&&!['publica SB','publica BB','gana el bote'].includes(e.kind);
+ const street=activeReplayIndex<0?tr('streetPreflop'):e?(e.kind==='showdown'?tr('replayShowdown'):tr('street'+e.street.charAt(0).toUpperCase()+e.street.slice(1))):tr('replayEnd');
+ const hero=e?.seat===0&&!['publica SB','publica BB','gana el bote','uncalledReturn'].includes(e.kind);
+ const finalStep=activeReplayIndex>=h.events.length;
+ const reveal=finalStep||(e&&e.kind==='showdown');
+ const shown=(reveal&&h.didShowdown)?h.players.filter(p=>p.seat!==0&&Array.isArray(p.cards)&&p.cards.length===2&&!p.folded):[];
+ const breakdown=reveal?historicalPots(h):[];
  const max=h.events.length,steps=activeReplayIndex+1;
- const dots=h.events.map((ev,i)=>'<button class="replay-dot'+(activeReplayIndex===i?' active':'')+(ev.seat===0?' hero':'')+'" onclick="changeReplay('+i+')" aria-label="'+tr('replayStep',{step:i+1,total:max})+'">'+(ev.kind==='deal'?'◆':ev.seat===0?'●':'·')+' '+(i+1)+'</button>').join('');
+ const dots=h.events.map((ev,i)=>'<button class="replay-dot'+(activeReplayIndex===i?' active':'')+(ev.seat===0&&!['publica SB','publica BB','uncalledReturn'].includes(ev.kind)?' hero':'')+'" onclick="changeReplay('+i+')" aria-label="'+tr('replayStep',{step:i+1,total:max})+'">'+(ev.kind==='deal'?'◆':ev.seat===0?'●':'·')+' '+(i+1)+'</button>').join('');
  const renderCards=x=>x.map(c=>cardHTML(c,true)).join('');
  const allCards=renderCards(board)+Array(5-board.length).fill(0).map(()=>cardHTML(null,true,false,true)).join('');
  $('replay-content').innerHTML='<h2>'+tr('modalHand',{n:h.number})+'</h2><p>'+tr('replayProgress')+'</p>'+
- '<div class="replay-summary"><div><div class="eyebrow">'+street+'</div><strong>'+tr('pot')+': '+fmt(potValue)+'</strong></div><div><div class="eyebrow">'+tr('handNet')+'</div><strong>'+(h.net>=0?'+':'')+fmt(h.net??0)+'</strong></div></div>'+
+ '<div class="replay-summary"><div><div class="eyebrow">'+street+'</div><strong>'+tr('pot')+': '+fmt(potValue)+'</strong></div><div><div class="eyebrow">'+tr('handNet')+'</div><strong>'+(finalStep?((h.net>=0?'+':'')+fmt(h.net??0)):'—')+'</strong></div></div>'+
  '<div class="eyebrow">'+tr('modalMyCards')+'</div><div class="replay-card-row">'+renderCards(h.heroCards)+'</div>'+
  '<div class="eyebrow" style="margin-top:15px">'+tr('replayCommunity')+'</div><div class="replay-card-row" style="margin:8px 0 14px">'+allCards+'</div>'+
  '<div class="replay-step'+(hero?' hero-step':'')+'"><span class="eyebrow">'+(activeReplayIndex<0?tr('replayStart'):e?tr('replayStep',{step:steps,total:max}):tr('replayEnd'))+(hero?' · '+tr('replayHero'):'')+'</span><div style="font-size:14px;margin-top:6px">'+info+'</div></div>'+
  (e?replayMath(h,e):'')+
+ (shown.length?'<div class="eyebrow" style="margin-top:16px">'+tr('replayRevealed')+'</div>'+shown.map(p=>'<div class="replay-summary"><strong>'+p.name+'</strong><div class="replay-card-row">'+renderCards(p.cards)+'</div></div>').join(''):'')+
+ (reveal&&breakdown.length?'<div class="eyebrow" style="margin-top:16px">'+tr('replayPayout')+'</div>'+breakdown.map((p,i)=>'<div class="replay-summary"><strong>'+tr(i===0?'replayMainPot':'replaySidePot')+' '+(i+1)+' · '+fmt(p.amount)+'</strong><span>'+p.winners.map(w=>(h.players[w.seat]?.name||playerName(w.seat))+' +'+fmt(w.amount)).join(' · ')+'</span></div>').join(''):'')+
+
  '<div class="replay-nav"><button class="btn small" onclick="changeReplay('+(activeReplayIndex-1)+')" '+(activeReplayIndex<0?'disabled':'')+'>'+tr('replayPrev')+'</button><button class="btn small gold" onclick="changeReplay('+(activeReplayIndex+1)+')" '+(activeReplayIndex>=max?'disabled':'')+'>'+tr('replayNext')+'</button><button class="btn small ghost" onclick="jumpHero()">'+tr('replayNextHero')+'</button></div>'+
  '<div class="eyebrow">'+tr('replayAll')+'</div><div class="replay-points">'+dots+'</div>';
 }
 function changeReplay(step){const h=state.handHistory.find(x=>x.number===activeReplayHand);if(!h)return;activeReplayIndex=Math.min(h.events.length,Math.max(-1,step));renderReplay()}
-function jumpHero(){const h=state.handHistory.find(x=>x.number===activeReplayHand);if(!h)return;let found=h.events.findIndex((e,i)=>i>activeReplayIndex&&e.seat===0&&!['publica SB','publica BB','gana el bote'].includes(e.kind));if(found<0)found=h.events.findIndex(e=>e.seat===0&&!['publica SB','publica BB','gana el bote'].includes(e.kind));if(found>=0)changeReplay(found)}
+function jumpHero(){const h=state.handHistory.find(x=>x.number===activeReplayHand);if(!h)return;let found=h.events.findIndex((e,i)=>i>activeReplayIndex&&e.seat===0&&!['publica SB','publica BB','gana el bote','uncalledReturn'].includes(e.kind));if(found<0)found=h.events.findIndex(e=>e.seat===0&&!['publica SB','publica BB','gana el bote','uncalledReturn'].includes(e.kind));if(found>=0)changeReplay(found)}
 function openHand(n){
  const h=state.handHistory.find(x=>x.number===n);if(!h)return;
  activeReplayHand=n;activeReplayIndex=-1;openModal('<div id="replay-content"></div>');$('modal-root').querySelector('.modal').classList.add('replay-modal');renderReplay();
 }
-function openModal(content){clearTimeout(nextTimer);$('modal-root').innerHTML='<div class="modal-cover" onclick="closeModal(event)"><div class="modal" role="dialog" aria-modal="true"><div class="modal-header"><div class="eyebrow">RIVERLAB / V0.3</div><button class="btn small ghost" onclick="closeModal()">'+tr('modalClose')+'</button></div>'+content+'</div></div>'}
-function closeModal(ev){if(ev&&ev.target!==ev.currentTarget)return;$('modal-root').innerHTML='';if(state.autoplay&&state.phase==='complete'&&state.view==='table'){clearTimeout(nextTimer);nextTimer=setTimeout(()=>newHand(),3500)}}
+function openModal(content){pauseGameplay();clearTimeout(nextTimer);$('modal-root').innerHTML='<div class="modal-cover" onclick="closeModal(event)"><div class="modal" role="dialog" aria-modal="true" aria-label="RIVERLAB"><div class="modal-header"><div class="eyebrow">RIVERLAB / V0.3.2</div><button class="btn small ghost" onclick="closeModal()">'+tr('modalClose')+'</button></div>'+content+'</div></div>'}
+function closeModal(ev){if(ev&&ev.target!==ev.currentTarget)return;$('modal-root').innerHTML='';if(state.view==='table'&&!document.hidden)resumeGameplay();if(state.autoplay&&state.phase==='complete'&&state.view==='table'){clearTimeout(nextTimer);nextTimer=setTimeout(()=>newHand(),3500)}}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('modal-root').innerHTML)closeModal()});
-window.__riverlab={state,rank5,best7,compareRank,splitPots,act,newHand,showView,fmt,chooseBotAction,evaluateVisibleHand,handHintLabel,detectHandDraws,startingHandHint,setLanguage,toggleHints,changeSpeed,openHand,changeReplay,jumpHero,derivedPerformance,saveSession,restoreSession,resetSession,renderAnalytics};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseGameplay();else if(state.view==='table'&&!$('modal-root').innerHTML)resumeGameplay()});
+window.__riverlab={state,rank5,best7,compareRank,splitPots,act,newHand,showView,fmt,chooseBotAction,evaluateVisibleHand,handHintLabel,detectHandDraws,startingHandHint,setLanguage,toggleHints,changeSpeed,openHand,changeReplay,jumpHero,derivedPerformance,saveSession,restoreSession,resetSession,renderAnalytics,pauseGameplay,resumeGameplay};
 restoreSession();newHand();
 </script>
 <script>
