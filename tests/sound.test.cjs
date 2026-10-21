@@ -56,7 +56,7 @@ function makeContext(initial={}){
 test('PWA incluye sonido sintetizado offline y carga antes del motor',()=>{
  assert.ok(html.includes('<script src="./sound.js"></script>\n<script>'));
  assert.ok(sw.includes("'./sound.js'"));
- assert.ok(sw.includes('riverlab-v034'));
+ assert.ok(sw.includes('riverlab-v035'));
 });
 test('Sonido no se reproduce sin gesto del usuario',async()=>{
  const e=makeContext();
@@ -152,4 +152,51 @@ test('Una interrupción de Safari puede reanudarse mediante una nueva interacci�
  await Promise.resolve();
  assert.equal(audio.status,'ready');
  assert.ok(recorded.oscillators+recorded.noises>before);
+});
+
+test('Sound Atelier dispone de muestras independientes y un check táctil', async()=>{
+ const e=makeContext();
+ e.listeners.pointerdown[0]({});
+ await Promise.resolve();
+ const audio=e.sandbox.window.RiverlabAudio;
+ const before=recorded.oscillators+recorded.noises;
+ assert.equal(audio.preview('check'),true);
+ assert.ok(recorded.oscillators+recorded.noises>before);
+ assert.ok(audio.status==='ready');
+ assert.ok(audio.preview('fold'));
+ assert.ok(audio.preview('deal'));
+ assert.ok(audio.preview('raise'));
+ assert.ok(audio.preview('win'));
+ assert.equal(audio.play('unknown',{preview:true}),false);
+});
+test('Panel de escucha reproduce al menos 12 efectos sin cambiar la sesión', async()=>{
+ const e=makeContext();
+ const oldStack=e.sandbox.window.__riverlab.state.players[0].stack;
+ vm.runInContext('openSettings()',e.sandbox);
+ const modal=e.nodes['modal-root'].innerHTML;
+ const sounds=[...modal.matchAll(/data-sound="([a-zA-Z]+)"/g)].map(x=>x[1]);
+ assert.equal(sounds.length,13);
+ for(const key of ['check','call','raise','fold','deal','showdown','win','pot','ui'])assert.ok(sounds.includes(key),key);
+ e.listeners.pointerdown[0]({});
+ await Promise.resolve();
+ for(const key of ['check','call','raise','fold','deal','showdown','win']){
+   const before=recorded.oscillators+recorded.noises;
+   vm.runInContext('previewSound('+JSON.stringify(key)+')',e.sandbox);
+   assert.ok(recorded.oscillators+recorded.noises>before,'preview audible: '+key);
+ }
+ assert.equal(e.sandbox.window.__riverlab.state.players[0].stack,oldStack);
+});
+test('Motores sonoros conservan modo silencio y control de volumen', async()=>{
+ const e=makeContext();
+ e.listeners.pointerdown[0]({});
+ await Promise.resolve();
+ const audio=e.sandbox.window.RiverlabAudio;
+ audio.setVolume(0);
+ assert.equal(audio.preview('check'),false);
+ audio.setVolume(35);
+ audio.setEnabled(false);
+ assert.equal(audio.preview('win'),false);
+ audio.setEnabled(true);
+ await Promise.resolve();
+ assert.equal(audio.preview('check'),true);
 });
