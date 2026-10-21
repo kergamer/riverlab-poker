@@ -5,6 +5,7 @@ on:
       - main
       - fix/v032-integrity-audit
       - feat/v033-sound-design
+      - fix/v034-audio-activation
   pull_request:
     branches:
       - main
