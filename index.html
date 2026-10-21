@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RIVERLAB | Poker Room v0.3.4</title>
+<title>RIVERLAB | Poker Room v0.3.5</title>
 <style>
 :root{--bg:#0a1119;--panel:#131f2a;--panel2:#192934;--line:#30414a;--text:#f0efe9;--muted:#a2b3bb;--muted2:#748c95;--gold:#c6a56c;--felt:#175246;--felt2:#0e3c34;--danger:#e18b75;--good:#83c1a9;font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--text);color-scheme:dark}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 76% 22%,#182c35 0%,#0a1119 60%);font-size:14px}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.34;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
@@ -54,6 +54,16 @@
 .sound-volume-row output{font-variant-numeric:tabular-nums;color:var(--gold);font-weight:800;min-width:44px;text-align:right}
 .sound-options{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 @media(max-width:530px){.room-actions{flex-wrap:wrap;justify-content:flex-end}.sound-switch{min-width:48px}}
+
+/* Tactile sound palette tester, quiet visual hierarchy */
+.sound-lab{margin-top:15px;padding:13px;border:1px solid #46605d;border-radius:10px;background:linear-gradient(145deg,#233b3d,#192f35)}
+.sound-lab-title{font-size:11px;color:#e4c894;font-weight:850;letter-spacing:1px}
+.sound-lab-help{font-size:11px;color:#adc7c5;line-height:1.5;margin:6px 0 12px}
+.sound-lab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:7px}
+.sound-sample{border:1px solid #53736f;background:#28443f;color:#e7ebe5;border-radius:8px;min-height:39px;padding:8px 10px;text-align:left;font-size:11px;font-weight:750;transition:background .14s,border-color .14s}
+.sound-sample:hover:not(:disabled),.sound-sample.auditioned{background:#395e56;border-color:#d0ae76;color:#fff}
+.sound-sample:before{content:'♪';color:#dfc18a;margin-right:8px}
+.sound-sample:disabled{opacity:.35;cursor:not-allowed}
 </style>
 <meta name="theme-color" content="#0a1119">
 <meta name="description" content="RIVERLAB: juega al poker Texas Hold'em 6-max y analiza tus manos. Fichas virtuales, sin dinero real.">
@@ -109,7 +119,7 @@ const SYMBOL={s:'\u2660',h:'\u2665',d:'\u2666',c:'\u2663'};
 const I18N = {
  es: {
   experience:'EXPERIENCIA', pokerRoom:'Sala de póker', history:'Historial', mySession:'MI SESIÓN', engineReady:'Motor local activo',
-  prototypeFoot:'PROTOTIPO V0.3.4 · Fichas ficticias · Sin dinero real', noRealMoney:'SIN DINERO REAL',
+  prototypeFoot:'PROTOTIPO V0.3.5 · Fichas ficticias · Sin dinero real', noRealMoney:'SIN DINERO REAL',
   theFelt:'THE FELT / NO-LIMIT HOLD\'EM', roomMeta:'0,5 / 1 BB · 100 BB iniciales · 6 jugadores',
   rules:'REGLAS', hintsOn:'PISTAS: ACTIVADAS', hintsOff:'PISTAS: DESACTIVADAS',
   activity:'ACTIVIDAD DE LA MANO', studyWhilePlaying:'APRENDE MIENTRAS JUEGAS',
@@ -162,7 +172,7 @@ const I18N = {
   rulesP5:'El historial muestra las acciones, las manos reveladas, los botes secundarios y los empates. Las manos completadas y el progreso se guardan localmente cuando el navegador lo permite.',
   languageLabel:'Idioma',hintAria:'Activar o desactivar pistas de la mano',hintStatusOn:'Las pistas están activadas',hintStatusOff:'Las pistas están desactivadas',
   analytics:'Rendimiento',analyticsTitle:'Tu evolución',analyticsIntro:'Estadísticas y resultados basados en manos con fichas ficticias. No es un análisis GTO.',
-  settings:'AJUSTES',settingsTitle:'AJUSTES DE LA MESA',soundTitle:'SONIDO DE LA MESA',soundHelp:'Efectos suaves para cartas, fichas, decisiones y resultados. Si el iPhone no emite sonido, revisa el volumen multimedia y el modo silencio. Sin reproducción automática.',soundVolume:'Volumen',soundPreview:'PROBAR SONIDO',soundOnAria:'Silenciar efectos de sonido',soundOffAria:'Activar efectos de sonido',soundUnsupported:'Este navegador no admite Web Audio.',soundStateReady:'Motor de audio activo. Si no lo oyes, revisa los ajustes de sonido del dispositivo.',soundStateLocked:'Audio pendiente: pulsa PROBAR SONIDO para activarlo.',soundStateSuspended:'Audio suspendido: pulsa PROBAR SONIDO para reactivarlo.',soundStateInterrupted:'Audio interrumpido por Safari. Pulsa PROBAR SONIDO.',soundStateZero:'Volumen al 0 %. Súbelo para escuchar.',soundStateOff:'Sonido desactivado.',soundStateUnavailable:'No se ha podido activar el motor de sonido.',soundActivateAria:'Activar el audio con una prueba sonora.',settingsSpeed:'Velocidad de los rivales',settingsSpeedHelp:'Cambia la rapidez de respuesta de la IA; el límite máximo sigue siendo cinco segundos.',speedNormal:'Normal · Ritmo natural',speedFast:'Rápido · Más manos',autoNext:'AUTO',autoNextHelp:'Comenzar la siguiente mano automáticamente.',
+  settings:'AJUSTES',settingsTitle:'AJUSTES DE LA MESA',soundTitle:'SONIDO DE LA MESA',soundPaletteTitle:'ESCUCHA EL NUEVO SONIDO',soundPaletteHelp:'Prueba los efectos uno por uno. Los sonidos son breves, suaves y distintos para que puedas disfrutar partidas largas.',soundLabelDeal:'Reparto',soundLabelNewHand:'Nueva mano',soundLabelWin:'Victoria',soundLabelPot:'Bote',soundLabelUi:'Clic de interfaz',soundLabelCards:'Cartas',soundLabelChips:'Fichas',soundLabelShowdown:'Mostrar cartas',soundHelp:'Efectos suaves para cartas, fichas, decisiones y resultados. Si el iPhone no emite sonido, revisa el volumen multimedia y el modo silencio. Sin reproducción automática.',soundVolume:'Volumen',soundPreview:'PROBAR SONIDO',soundOnAria:'Silenciar efectos de sonido',soundOffAria:'Activar efectos de sonido',soundUnsupported:'Este navegador no admite Web Audio.',soundStateReady:'Motor de audio activo. Si no lo oyes, revisa los ajustes de sonido del dispositivo.',soundStateLocked:'Audio pendiente: pulsa PROBAR SONIDO para activarlo.',soundStateSuspended:'Audio suspendido: pulsa PROBAR SONIDO para reactivarlo.',soundStateInterrupted:'Audio interrumpido por Safari. Pulsa PROBAR SONIDO.',soundStateZero:'Volumen al 0 %. Súbelo para escuchar.',soundStateOff:'Sonido desactivado.',soundStateUnavailable:'No se ha podido activar el motor de sonido.',soundActivateAria:'Activar el audio con una prueba sonora.',settingsSpeed:'Velocidad de los rivales',settingsSpeedHelp:'Cambia la rapidez de respuesta de la IA; el límite máximo sigue siendo cinco segundos.',speedNormal:'Normal · Ritmo natural',speedFast:'Rápido · Más manos',autoNext:'AUTO',autoNextHelp:'Comenzar la siguiente mano automáticamente.',
   settingsHint:'Pistas de mano',settingsHintHelp:'Muestra la mejor combinación junto a tus cartas y en el panel explicativo.',on:'Activado',off:'Desactivado',settingsLang:'Idioma de la aplicación',settingsReset:'Reiniciar sesión',resetWarning:'¿Eliminar el historial, las estadísticas y las fichas de esta sesión? Esta acción no se puede deshacer.',resetDone:'Sesión reiniciada',settingsData:'Datos de la sesión',export:'EXPORTAR MANOS JSON',exportHelp:'Descarga el historial registrado para estudiarlo o compartirlo voluntariamente. No incluye cartas ocultas de manos sin showdown.',
   sessionStorage:'PROGRESO GUARDADO EN ESTE DISPOSITIVO',sessionNotSaved:'NO SE HA PODIDO GUARDAR LA SESIÓN',sessionLimited:'ALMACENAMIENTO LIMITADO: SE CONSERVAN LAS MANOS MÁS RECIENTES',sessionRecovered:'Se ha restaurado la última mano completada; una mano interrumpida no se recupera.',
   completedHands:'Manos finalizadas',sessionResults:'Resultado acumulado',playedBoard:'Llegaste al showdown',winAtShowdown:'Showdowns ganados',myDecisions:'Mis decisiones',trend:'EVOLUCIÓN DE FICHAS (BB)',lastHands:'Últimas manos',analyticsSample:'Son estadísticas descriptivas; una muestra pequeña no permite sacar conclusiones fiables.',voluntary:'Participación voluntaria preflop',preflopRaise:'Subida preflop',actionCounts:'Apuestas y decisiones',foldCount:'Retiradas',callCount:'Igualadas',raiseCount:'Apuestas / Subidas',checkCount:'Checks', noPerformance:'Completa alguna mano para activar el análisis.', netPositive:'Positivo',netNegative:'Negativo',netNeutral:'Igualado',
@@ -170,7 +180,7 @@ const I18N = {
  },
  en: {
   experience:'EXPERIENCE', pokerRoom:'Poker Room', history:'Hand History', mySession:'MY SESSION', engineReady:'Local engine running',
-  prototypeFoot:'PROTOTYPE V0.3.4 · Play-money chips · No real money', noRealMoney:'NO REAL MONEY',
+  prototypeFoot:'PROTOTYPE V0.3.5 · Play-money chips · No real money', noRealMoney:'NO REAL MONEY',
   theFelt:'THE FELT / NO-LIMIT HOLD\'EM',roomMeta:'0.5 / 1 BB · 100 BB starting stack · 6 players',
   rules:'RULES',hintsOn:'HINTS: ON',hintsOff:'HINTS: OFF',
   activity:'HAND ACTIVITY',studyWhilePlaying:'LEARN AS YOU PLAY',
@@ -223,7 +233,7 @@ const I18N = {
   rulesP5:'Hand history shows actions, exposed hands, side pots and ties. Completed hands and progress are saved locally whenever browser storage is available.',
   languageLabel:'Language',hintAria:'Enable or disable hand hints',hintStatusOn:'Hand hints are enabled',hintStatusOff:'Hand hints are disabled',
   analytics:'Performance',analyticsTitle:'Your progress',analyticsIntro:'Stats and results based on play-money hands. Not a GTO analysis.',
-  settings:'SETTINGS',settingsTitle:'TABLE SETTINGS',soundTitle:'TABLE SOUND',soundHelp:'Subtle effects for cards, chips, decisions and results. If your iPhone is silent, check media volume and Silent Mode. No unsolicited autoplay.',soundVolume:'Volume',soundPreview:'PLAY TEST SOUND',soundOnAria:'Mute sound effects',soundOffAria:'Enable sound effects',soundUnsupported:'This browser does not support Web Audio.',soundStateReady:'Audio engine running. If it is inaudible, check your device sound settings.',soundStateLocked:'Audio pending: tap PLAY TEST SOUND to enable it.',soundStateSuspended:'Audio suspended: tap PLAY TEST SOUND to resume.',soundStateInterrupted:'Safari interrupted audio. Tap PLAY TEST SOUND.',soundStateZero:'Volume is at 0%. Increase it to hear sound.',soundStateOff:'Sound is off.',soundStateUnavailable:'The audio engine could not be started.',soundActivateAria:'Activate audio and play a sound test.',settingsSpeed:'Opponent speed',settingsSpeedHelp:'Adjust how fast opponents act; the five-second maximum remains.',speedNormal:'Normal · Natural pace',speedFast:'Fast · More hands',autoNext:'AUTO',autoNextHelp:'Start the next hand automatically.',
+  settings:'SETTINGS',settingsTitle:'TABLE SETTINGS',soundTitle:'TABLE SOUND',soundPaletteTitle:'PREVIEW THE NEW SOUNDS',soundPaletteHelp:'Listen to each effect. The sounds are short, soft and distinctive for long, comfortable sessions.',soundLabelDeal:'Deal',soundLabelNewHand:'New hand',soundLabelWin:'Victory',soundLabelPot:'Pot',soundLabelUi:'Interface click',soundLabelCards:'Cards',soundLabelChips:'Chips',soundLabelShowdown:'Showdown',soundHelp:'Subtle effects for cards, chips, decisions and results. If your iPhone is silent, check media volume and Silent Mode. No unsolicited autoplay.',soundVolume:'Volume',soundPreview:'PLAY TEST SOUND',soundOnAria:'Mute sound effects',soundOffAria:'Enable sound effects',soundUnsupported:'This browser does not support Web Audio.',soundStateReady:'Audio engine running. If it is inaudible, check your device sound settings.',soundStateLocked:'Audio pending: tap PLAY TEST SOUND to enable it.',soundStateSuspended:'Audio suspended: tap PLAY TEST SOUND to resume.',soundStateInterrupted:'Safari interrupted audio. Tap PLAY TEST SOUND.',soundStateZero:'Volume is at 0%. Increase it to hear sound.',soundStateOff:'Sound is off.',soundStateUnavailable:'The audio engine could not be started.',soundActivateAria:'Activate audio and play a sound test.',settingsSpeed:'Opponent speed',settingsSpeedHelp:'Adjust how fast opponents act; the five-second maximum remains.',speedNormal:'Normal · Natural pace',speedFast:'Fast · More hands',autoNext:'AUTO',autoNextHelp:'Start the next hand automatically.',
   settingsHint:'Hand hints',settingsHintHelp:'Shows the best made hand next to your cards and in a detailed hint panel.',on:'On',off:'Off',settingsLang:'Application language',settingsReset:'Reset session',resetWarning:'Delete your hand history, statistics and chip stacks? This cannot be undone.',resetDone:'Session reset',settingsData:'Session data',export:'EXPORT HANDS JSON',exportHelp:'Download recorded hand history to review or voluntarily share. Hidden cards from non-showdown hands are excluded.',
   sessionStorage:'PROGRESS SAVED ON THIS DEVICE',sessionNotSaved:'SESSION COULD NOT BE SAVED',sessionLimited:'LIMITED STORAGE: ONLY RECENT HANDS CAN BE KEPT',sessionRecovered:'Restored last completed hand; an interrupted hand is not recovered.',
   completedHands:'Completed hands',sessionResults:'Cumulative result',playedBoard:'Reached showdown',winAtShowdown:'Showdowns won',myDecisions:'My decisions',trend:'CHIP EVOLUTION (BB)',lastHands:'Recent hands',analyticsSample:'These are descriptive statistics; small samples do not support firm conclusions.',voluntary:'Voluntarily played preflop',preflopRaise:'Preflop raise',actionCounts:'Bets and decisions',foldCount:'Folds',callCount:'Calls',raiseCount:'Bets / Raises',checkCount:'Checks',noPerformance:'Finish a few hands to unlock the analysis.',netPositive:'Positive',netNegative:'Negative',netNeutral:'Even',
@@ -655,6 +665,7 @@ function updateSoundUI(){
  if(value)value.textContent=(audio?.volume??55)+' %';
  const preview=$('sound-preview');
  if(preview)preview.disabled=!supported||!on||(audio?.volume??0)===0;
+ document.querySelectorAll('.sound-sample').forEach(el=>el.disabled=!supported||!on||(audio?.volume??0)===0);
  const line=$('sound-status');if(line)line.textContent=hint;
 }
 function setSoundEnabled(on){
@@ -672,7 +683,25 @@ function setSoundVolume(value){
  const audio=window.RiverlabAudio;if(!audio?.supported)return;
  audio.setVolume(value);updateSoundUI();
 }
-function previewSound(){window.RiverlabAudio?.preview();updateSoundUI()}
+function previewSound(kind='call'){
+ const audio=window.RiverlabAudio;
+ audio?.preview(kind);
+ const btns=document.querySelectorAll('.sound-sample');
+ btns.forEach(el=>el.classList.toggle('auditioned',el.getAttribute('data-sound')===kind));
+ updateSoundUI();
+}
+function renderSoundLab(){
+ const samples=[
+  ['check','check'],['call','call'],['raise','raise'],['allin','allin'],
+  ['fold','fold'],['deal','soundLabelDeal'],['newHand','soundLabelNewHand'],
+  ['showdown','soundLabelShowdown'],['win','soundLabelWin'],['pot','soundLabelPot'],
+  ['card','soundLabelCards'],['chip','soundLabelChips'],['ui','soundLabelUi']
+ ];
+ return '<div class="sound-lab"><div class="sound-lab-title">'+tr('soundPaletteTitle')+'</div>'+
+   '<p class="sound-lab-help">'+tr('soundPaletteHelp')+'</p>'+
+   '<div class="sound-lab-grid">'+samples.map(([kind,label])=>
+   '<button class="sound-sample" data-sound="'+kind+'" type="button" onclick="previewSound(\''+kind+'\')">'+tr(label)+'</button>').join('')+'</div></div>';
+}
 function toggleAuto(){state.autoplay=!state.autoplay;prefWrite('autoplay',state.autoplay?'1':'0');updateStaticLabels();clearTimeout(nextTimer);if(state.autoplay&&state.phase==='complete'&&state.view==='table')nextTimer=setTimeout(()=>newHand(),3800);renderActions();}
 
 function saveSession(){
@@ -701,13 +730,13 @@ function updateSettingHint(value){const enabled=value==='yes';if(state.hintsEnab
 function settingsAuto(value){state.autoplay=value==='yes';prefWrite('autoplay',state.autoplay?'1':'0');updateStaticLabels();if(state.phase==='complete'){clearTimeout(nextTimer);if(state.autoplay&&state.view==='table')nextTimer=setTimeout(()=>newHand(),6800)}}
 function resetSession(){if(!confirm(tr('resetWarning')))return;clearTimers();gameToken++;try{localStorage.removeItem(SESSION_KEY)}catch(e){}state.players.forEach(p=>p.stack=BUYIN);state.hand=0;state.button=5;state.heroBank=20;state.stats={hands:0,wins:0,vpip:0,pfr:0};state.buyIns=BUYIN;state.handHistory=[];state.recovered=false;state.storageStatus='ok';closeModal();showView('table');newHand()}
 function downloadSession(){
- const data={app:'RIVERLAB',version:'0.3.4',exportedAt:new Date().toISOString(),blinds:{small:0.5,big:1},units:'half_big_blind',stats:state.stats,hands:state.handHistory};
+ const data={app:'RIVERLAB',version:'0.3.5',exportedAt:new Date().toISOString(),blinds:{small:0.5,big:1},units:'half_big_blind',stats:state.stats,hands:state.handHistory};
  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='RIVERLAB_session_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
 }
 function openSettings(){
  const speed='<div class="setting-block"><label for="speed-choice">'+tr('settingsSpeed')+'</label><select id="speed-choice" onchange="changeSpeed(this.value)"><option value="normal">'+tr('speedNormal')+'</option><option value="fast">'+tr('speedFast')+'</option></select><p>'+tr('settingsSpeedHelp')+'</p></div>';
  const hints='<div class="setting-block"><label for="hint-choice">'+tr('settingsHint')+'</label><select id="hint-choice" onchange="updateSettingHint(this.value)"><option value="no">'+tr('off')+'</option><option value="yes">'+tr('on')+'</option></select><p>'+tr('settingsHintHelp')+'</p></div>';
- const sound='<div class="setting-block"><label for="sound-choice">'+tr('soundTitle')+'</label><select id="sound-choice" onchange="setSoundEnabled(this.value===&quot;yes&quot;)"><option value="yes">'+tr('on')+'</option><option value="no">'+tr('off')+'</option></select><p>'+tr('soundHelp')+'</p><p id="sound-status" role="status" aria-live="polite"></p><div class="sound-volume-row"><label for="sound-volume">'+tr('soundVolume')+'</label><input id="sound-volume" type="range" min="0" max="100" step="1" value="55" aria-label="'+tr('soundVolume')+'" oninput="setSoundVolume(this.value)" onchange="previewSound()"><output id="sound-volume-value" for="sound-volume">55 %</output></div><div class="sound-options"><button id="sound-preview" class="btn small" onclick="previewSound()">'+tr('soundPreview')+'</button></div></div>';
+ const sound='<div class="setting-block"><label for="sound-choice">'+tr('soundTitle')+'</label><select id="sound-choice" onchange="setSoundEnabled(this.value===&quot;yes&quot;)"><option value="yes">'+tr('on')+'</option><option value="no">'+tr('off')+'</option></select><p>'+tr('soundHelp')+'</p><p id="sound-status" role="status" aria-live="polite"></p><div class="sound-volume-row"><label for="sound-volume">'+tr('soundVolume')+'</label><input id="sound-volume" type="range" min="0" max="100" step="1" value="55" aria-label="'+tr('soundVolume')+'" oninput="setSoundVolume(this.value)" onchange="previewSound()"><output id="sound-volume-value" for="sound-volume">55 %</output></div><div class="sound-options"><button id="sound-preview" class="btn small" onclick="previewSound()">'+tr('soundPreview')+'</button></div>'+renderSoundLab()+'</div>';
  const data='<div class="setting-block"><strong>'+tr('settingsData')+'</strong><p>'+tr('storageNote')+'</p><p>'+tr('exportHelp')+'</p><div class="settings-actions"><button class="btn" onclick="downloadSession()">'+tr('export')+'</button><button class="btn ghost" onclick="resetSession()">'+tr('settingsReset')+'</button></div></div>';
  openModal('<h2>'+tr('settingsTitle')+'</h2><p>'+tr(state.storageStatus==='failed'?'sessionNotSaved':state.storageStatus==='partial'?'sessionLimited':'sessionStorage')+'</p><div class="settings-grid">'+speed+hints+sound+data+'</div>');$('speed-choice').value=state.botSpeed;$('hint-choice').value=state.hintsEnabled?'yes':'no';updateSoundUI();
 }
@@ -778,7 +807,7 @@ function openHand(n){
  const h=state.handHistory.find(x=>x.number===n);if(!h)return;
  activeReplayHand=n;activeReplayIndex=-1;openModal('<div id="replay-content"></div>');$('modal-root').querySelector('.modal').classList.add('replay-modal');renderReplay();
 }
-function openModal(content){pauseGameplay();clearTimeout(nextTimer);$('modal-root').innerHTML='<div class="modal-cover" onclick="closeModal(event)"><div class="modal" role="dialog" aria-modal="true" aria-label="RIVERLAB"><div class="modal-header"><div class="eyebrow">RIVERLAB / V0.3.4</div><button class="btn small ghost" onclick="closeModal()">'+tr('modalClose')+'</button></div>'+content+'</div></div>'}
+function openModal(content){pauseGameplay();clearTimeout(nextTimer);$('modal-root').innerHTML='<div class="modal-cover" onclick="closeModal(event)"><div class="modal" role="dialog" aria-modal="true" aria-label="RIVERLAB"><div class="modal-header"><div class="eyebrow">RIVERLAB / V0.3.5</div><button class="btn small ghost" onclick="closeModal()">'+tr('modalClose')+'</button></div>'+content+'</div></div>'}
 function closeModal(ev){if(ev&&ev.target!==ev.currentTarget)return;$('modal-root').innerHTML='';if(state.view==='table'&&!document.hidden)resumeGameplay();if(state.autoplay&&state.phase==='complete'&&state.view==='table'){clearTimeout(nextTimer);nextTimer=setTimeout(()=>newHand(),3500)}}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('modal-root').innerHTML)closeModal()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseGameplay();else if(state.view==='table'&&!$('modal-root').innerHTML)resumeGameplay()});
