@@ -9,7 +9,7 @@ const ctx={window:{},document:{documentElement:{lang:'es'},hidden:false,getEleme
 ctx.globalThis=ctx;vm.createContext(ctx);vm.runInContext(js,ctx);
 const app=ctx.window.__riverlab;const card=(r,s='s')=>({r,s});
 test('Mesa inicial de 6 jugadores',()=>{assert.equal(app.state.players.length,6);assert.equal(app.state.hand,1)});
-test('Escalera baja A-2-3-4-5',()=>{assert.equal(app.rank5([card(14),card(2),card(3),card(4),card(5)])[0],4)});
+test('Escalera baja A-2-3-4-5',()=>{assert.equal(app.rank5([card(14,'s'),card(2,'d'),card(3,'h'),card(4,'c'),card(5,'d')])[0],4)});
 test('Escalera real',()=>{assert.equal(app.rank5([card(10),card(11),card(12),card(13),card(14)])[0],8)});
 test('Botes secundarios sin pérdida de fichas',()=>{
  const p=[{seat:0,invested:20,folded:false,cards:[card(14,'s'),card(14,'h')]},{seat:1,invested:100,folded:false,cards:[card(13,'s'),card(13,'h')]},{seat:2,invested:100,folded:false,cards:[card(12,'s'),card(12,'h')]},{seat:3,invested:100,folded:true,cards:[]}];
