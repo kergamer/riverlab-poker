@@ -6,6 +6,7 @@ on:
       - fix/v032-integrity-audit
       - feat/v033-sound-design
       - fix/v034-audio-activation
+      - feat/v035-sonic-atelier
   pull_request:
     branches:
       - main
