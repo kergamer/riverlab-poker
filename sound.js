@@ -22,6 +22,7 @@
   let ctx = null, master = null, noiseBuffer = null;
   let scheduledUntil = 0;
   let pendingPreviewAt = 0;
+  let pendingPreviewKind = 'call';
   let lastResumeAttempt = 0;
   let lastContextRestart = 0;
   const lastPlayed = Object.create(null);
@@ -81,9 +82,11 @@
     if (!pendingPreviewAt || !ctx || ctx.state !== 'running') return;
     const elapsed = Date.now() - pendingPreviewAt;
     pendingPreviewAt = 0;
+    const kind = pendingPreviewKind;
+    pendingPreviewKind = 'call';
     // Never play an old preview after returning to the app much later.
     if (elapsed > 2500 || document.hidden || !enabled || volume <= 0) return;
-    play('call', { preview: true, intensity: 0.88 });
+    play(kind, { preview: true, intensity: 0.83 });
   }
   function unlock() {
     if (!enabled || volume <= 0 || document.hidden) { notify(); return false; }
@@ -330,8 +333,9 @@
     notify();
     return volume;
   }
-  function preview() {
+  function preview(kind='call') {
     if (!enabled || volume <= 0) { notify(); return false; }
+    pendingPreviewKind = effectKinds.includes(kind) ? kind : 'call';
     pendingPreviewAt = Date.now();
     // On Safari, AudioContext.resume() may resolve AFTER this click callback.
     // The preview is then emitted from flushPreview() and not silently dropped.
