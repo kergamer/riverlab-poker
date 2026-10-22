@@ -8,7 +8,7 @@ function start(seed){
  const element=id=>nodes[id]??={innerHTML:'',textContent:'',hidden:false,value:'',style:{},classList:{add(){},remove(){},toggle(){}},setAttribute(){},querySelector(){return {classList:{add(){}}}}};
  const document={hidden:false,documentElement:{lang:'es'},getElementById:element,querySelectorAll:()=>[],addEventListener(k,fn){listeners[k]=fn}};
  const window={RiverlabAudio:{play(){},get status(){return 'ready'},get enabled(){return false},get supported(){return false}},addEventListener(){}};
- const localStorage={getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,String(v)),removeItem:k=>storage.delete(k)};
+ const localStorage={getItem:k=>storage.get(k)??null,setItem:(k,v)=>{if(k!=='riverlab.v03.session')storage.set(k,String(v))},removeItem:k=>storage.delete(k)};
  let timer=0;const setTimeout=fn=>{timeouts.set(++timer,fn);return timer},clearTimeout=id=>timeouts.delete(id);
  const sandbox={window,document,localStorage,console,Math:Object.assign(Object.create(Math),{random:rnd}),Date,Intl,setTimeout,clearTimeout,setInterval:()=>0,clearInterval(){}};
  sandbox.globalThis=sandbox;vm.createContext(sandbox);vm.runInContext(bots,sandbox);vm.runInContext(game,sandbox);
