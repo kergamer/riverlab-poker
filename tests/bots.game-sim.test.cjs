@@ -23,8 +23,8 @@ test('2.000 manos integradas de 6 jugadores: finalización, fichas y botes',()=>
   for(let seat=0;seat<6;seat++)if(state.players[seat].stack===0){
    state.players[seat].stack=200;state.buyIns+=seat===0?200:0;rebuys+=200;
   }
-  const totalBefore=state.players.reduce((a,p)=>a+p.stack,0);
   if(state.phase==='complete'||state.phase==='busted')app.newHand();
+  const totalBefore=state.players.reduce((a,p)=>a+p.stack+p.invested,0);
   let steps=0;
   while(['preflop','flop','turn','river'].includes(state.phase)){
    assert.ok(++steps<120,'possible stuck hand #'+h+' phase '+state.phase);
