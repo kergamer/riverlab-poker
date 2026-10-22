@@ -19,7 +19,8 @@ La V0.3.5 definía cinco personalidades con `tight`, `agg`, `loose`, una puntuac
 6. **Aprendizaje estadístico:** VPIP, PFR, 3-bet, fold a apuesta, agresión, calls, showdowns y muestras observadas; suavizado con priors y límites de adaptación según número de manos. Memoria guardada en `riverlab.v04.botMemory`, con activación y reinicio independientes.
 7. **Ritmo:** tiempo de decisión según perfil, nivel, calle, bote y situación; modo rápido conservado.
 8. **Panel de rendimiento:** perfiles de los cinco rivales, frecuencia VPIP/PFR y tamaño de muestra, ocultando los porcentajes cuando hay menos de 30 manos.
-9. **PWA:** `bots.js` incluido en caché `riverlab-v040-static-1`. El sonido V0.3.5 permanece intacto.
+9. **Laboratorio de análisis postmano:** en el último paso del replay se describen las decisiones propias, posición preflop, cantidades aportadas y coste relativo de los calls. Sin juzgar optimalidad ni revelar cartas ocultas.
+10. **PWA:** `bots.js` incluido en caché `riverlab-v040-static-1`. El sonido V0.3.5 permanece intacto.
 
 ## Pruebas completadas
 
@@ -27,7 +28,8 @@ La V0.3.5 definía cinco personalidades con `tight`, `agg`, `loose`, una puntuac
 - 169 clases y 1.326 combinaciones verificadas.
 - 10.000 decisiones con condiciones variadas: comprobación de acciones legales, targets válidos, ausencia de raises ilegales, invariancia respecto a cartas ocultas ajenas, determinismo mediante semilla.
 - Prueba de divergencia estadística entre perfiles preflop.
-- 2.000 manos completas del motor integrado en Node.js: finalización, ausencia de bloqueos, acciones legales y conservación de fichas.
+- 2.000 manos completas del motor integrado en Node.js: finalización, ausencia de bloqueos, acciones legales y conservación de fichas, superadas.
+- **Ampliación a 10.000 manos completas** añadida como prueba de regresión; comprobar conclusión CI antes de presentarla como aprobada.
 - GitHub Actions: **smoke — success** en la revisión de esta candidata.
 - Vercel Preview: verificar estado READY del último commit antes de dar URL definitiva.
 
