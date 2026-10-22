@@ -9,6 +9,7 @@ on:
       - feat/v035-sonic-atelier
       - dev/v040-strategy-learning
       - audit/v041-bot-performance
+      - fix/v042-ten-card-display
       - feat/v042-bot-calibration
   pull_request:
     branches:
