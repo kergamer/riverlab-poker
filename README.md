@@ -1,4 +1,4 @@
-# RIVERLAB · Poker Room V0.3.5 (Sound Atelier, versión de pruebas)
+# RIVERLAB · Poker Room V0.4.0 (inteligencia estratégica; candidata)
 
 Aplicación personal de Texas Hold'em No-Limit 6-max con fichas ficticias, sin dinero real.
 
@@ -13,24 +13,26 @@ Aplicación personal de Texas Hold'em No-Limit 6-max con fichas ficticias, sin d
 - Silencio y volumen persistentes, y activación fiable de Web Audio tras un gesto del usuario.
 
 ## Repositorio y despliegue
-- **Producción:** rama `main` (V0.3.4, hasta aprobación del Sound Atelier).
+- **Producción:** rama `main` (V0.3.5 Sound Atelier, validada).
 - **Correcciones de estabilidad:** `fix/v032-integrity-audit` (V0.3.2).
 - **Sonido interactivo:** `feat/v033-sound-design` (V0.3.3, ya incorporada).
 - **Corrección Safari/audio:** `fix/v034-audio-activation` (V0.3.4, ya incorporada).
-- **Sound Atelier:** `feat/v035-sonic-atelier` (V0.3.5, candidata).
-- **IA de los bots:** `dev/v04-bot-intelligence` (trabajo futuro).
+- **Sound Atelier:** `feat/v035-sonic-atelier` (V0.3.5, validada y publicada).
+- **Inteligencia de bots:** `dev/v040-strategy-learning` (V0.4.0, candidata para pruebas).
+- **Plan de IA anterior:** `dev/v04-bot-intelligence` (especificación de partida).
+- **Nueva IA V0.4:** motor de rangos, equity, dificultades, personalidades y memoria estadística local.
 - **Vercel:** proyecto personal `riverlab-poker`.
 
-Aplicación estática sin build: `index.html`, `sound.js`, `icon.svg`, `sw.js`, `manifest.webmanifest`, `vercel.json`.
+Aplicación estática sin build: `index.html`, `bots.js`, `sound.js`, `icon.svg`, `sw.js`, `manifest.webmanifest`, `vercel.json`.
 
 ## Auditoría
-Ver [docs/V035_SOUND_ATELIER.md](docs/V035_SOUND_ATELIER.md) para el rediseño y el laboratorio de escucha. Para revisiones anteriores: [docs/V034_AUDIO_ACTIVATION_FIX.md](docs/V034_AUDIO_ACTIVATION_FIX.md) y [docs/AUDITORIA_V032.md](docs/AUDITORIA_V032.md).
+Ver [docs/V040_VALIDACION_BOTS.md](docs/V040_VALIDACION_BOTS.md) para el alcance y las pruebas de la V0.4 y [docs/V035_SOUND_ATELIER.md](docs/V035_SOUND_ATELIER.md) para la versión sonora. Para revisiones anteriores: [docs/V034_AUDIO_ACTIVATION_FIX.md](docs/V034_AUDIO_ACTIVATION_FIX.md) y [docs/AUDITORIA_V032.md](docs/AUDITORIA_V032.md).
 
 ### Pruebas automatizadas
 Requisitos: Node.js 22+ y, opcionalmente, Python con Playwright/Chromium.
 
 ```sh
-node --test tests/smoke.test.cjs tests/sound.test.cjs
+node --test tests/smoke.test.cjs tests/sound.test.cjs tests/bots.test.cjs tests/bots.stress.test.cjs tests/bots.game-sim.test.cjs
 ```
 
 ## Persistencia y limitaciones
