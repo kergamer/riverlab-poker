@@ -35,3 +35,15 @@ test('la migración de memoria V0.4 mantiene las manos antiguas y añade contado
  assert.equal(m.hands,80);assert.equal(m.vpip,25);assert.equal(m.preflopFaced,0);
  assert.equal(m.flopFaced,0);assert.equal(m.turnFaced,0);assert.equal(m.riverFaced,0);
 });
+
+test('Performance muestra métricas nuevas sin alterar clave de historial',()=>{
+ const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+ assert(html.includes('renderBotProfiles()'));
+ assert(html.includes('m.flopFaced+m.turnFaced+m.riverFaced'));
+ assert(html.includes("tr('botAggression')"));
+ assert(html.includes("tr('botPostFold')"));
+ assert(html.includes("tr(levels[state.botDifficulty]"));
+ assert(html.includes("const SESSION_KEY='riverlab.v03.session'"));
+ assert(html.includes('<script src="./sound.js"></script>'));
+ assert(html.includes('<script src="./bots.js"></script>'));
+});
