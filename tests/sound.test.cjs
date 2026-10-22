@@ -54,7 +54,7 @@ function makeContext(initial={}){
  return {sandbox,storage,listeners,nodes};
 }
 test('PWA incluye sonido sintetizado offline y carga antes del motor',()=>{
- assert.ok(html.includes('<script src="./sound.js"></script>\n<script>'));
+ assert.ok(html.includes('<script src="./sound.js"></script>\n<script src="./bots.js"></script>\n<script>'));
  assert.ok(sw.includes("'./sound.js'"));
  assert.ok(sw.includes('riverlab-v035'));
 });
