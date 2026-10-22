@@ -22,3 +22,15 @@ test('Proyecto ajeno solo en tablero no se atribuye al jugador',()=>{
 });
 test('Las preferencias se guardan en la versión correcta',()=>{app.setLanguage('en');assert.equal(storage.get('riverlab.v03.language'),'en');app.setLanguage('es')});
 test('La versión auditada conserva el identificador de sesión anterior',()=>{assert.equal(app.saveSession(),true);const s=JSON.parse(storage.get('riverlab.v03.session'));assert.equal(s.version,3)});
+
+test('El 10 se muestra como 10 en cartas normales, pequeñas, accesibilidad e historial',()=>{
+ const data=vm.runInContext("({ten:cardText({r:10,s:'d'}),normal:cardHTML({r:10,s:'d'}),small:cardHTML({r:10,s:'h'},true),jack:cardText({r:11,s:'s'}),ranks:RANKS})",ctx);
+ assert.equal(data.ten,'10♦');
+ assert.match(data.normal,/<span>10<\/span>/);
+ assert.match(data.small,/<span>10<\/span>/);
+ assert.match(data.normal,/aria-label="10♦"/);
+ assert.equal(data.jack,'J♠');
+ assert.equal(data.ranks,'23456789TJQKA');
+ assert(html.includes('function cardText(c){return cardRankLabel(c)+SYMBOL[c.s]}'));
+ assert(html.includes("c.r===10?'10':RANKS[c.r-2]"));
+});
