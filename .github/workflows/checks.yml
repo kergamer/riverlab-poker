@@ -11,6 +11,7 @@ on:
       - audit/v041-bot-performance
       - fix/v042-ten-card-display
       - feat/v042-bot-calibration
+      - feat/v2-todo01-volumetry
   pull_request:
     branches:
       - main
@@ -27,7 +28,7 @@ jobs:
       - name: Verificar Node.js
         run: node --version
       - name: Regresiones de reglas y datos
-        run: node --test tests/smoke.test.cjs tests/sound.test.cjs tests/bots.test.cjs tests/bots.stress.test.cjs tests/bots.game-sim.test.cjs tests/benchmark_v041_evaluator.test.cjs tests/bots.v042.test.cjs
+        run: node --test tests/smoke.test.cjs tests/sound.test.cjs tests/bots.test.cjs tests/bots.stress.test.cjs tests/bots.game-sim.test.cjs tests/benchmark_v041_evaluator.test.cjs tests/bots.v042.test.cjs tests/volumetry.test.cjs
 
   bot-audit:
     runs-on: ubuntu-latest
