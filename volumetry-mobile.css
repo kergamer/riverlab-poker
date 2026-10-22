@@ -1,0 +1,86 @@
+/* V2 / TODO-01 revision 2: compact mobile layout; all hint information retained. */
+@media (max-width:530px) {
+  .shell {padding:5px;}
+  .sidebar {display:flex;align-items:center;justify-content:space-between;min-height:0;position:static;gap:5px;padding:7px 8px;margin:0 0 6px;border-radius:11px;}
+  .sidebar .brand {display:flex;flex:0 0 auto;gap:5px;padding:0;margin:0;align-items:center;}
+  .sidebar .brand-mark {font-size:20px;}
+  .sidebar .brand-name {font-size:12px;letter-spacing:.5px;}
+  .sidebar .brand-sub {display:none;}
+  .sidebar > div:nth-child(2) {min-width:0;flex:1 1 auto;}
+  .sidebar .nav {margin:0;display:flex;justify-content:flex-end;align-items:center;gap:2px;}
+  .sidebar .nav-btn {width:auto;white-space:nowrap;padding:6px 4px!important;font-size:9px!important;line-height:1.15;border-radius:7px;}
+  .topbar {display:flex;gap:5px;align-items:center;flex-wrap:wrap;padding:2px 4px;}
+  .topbar .eyebrow {display:none;}
+  .topbar h1 {font-size:15px;margin:0;letter-spacing:-.3px;white-space:nowrap;}
+  .top-right {gap:4px;flex:1 1 auto;justify-content:flex-end;}
+  .muted-tag {padding:5px 6px;font-size:9px;line-height:1.2;}
+  .lang-control {padding:3px 5px;gap:4px;font-size:9px;}
+  .lang-control select {min-width:75px;padding:4px;font-size:10px;}
+  .main {gap:5px;}
+  .main-card {padding:7px;}
+  .room-head {display:flex;flex-direction:column;align-items:stretch;gap:5px;padding:2px 3px 6px;}
+  .room-name {font-size:10px;}
+  .room-meta {font-size:9px;margin-top:2px;}
+  .room-actions {width:100%;display:flex;flex-wrap:wrap;gap:3px;justify-content:flex-start;}
+  .room-action {font-size:9px;padding:6px 6px;line-height:1.15;}
+  .room-action.hint-switch {font-size:9px;}
+  .sound-switch {min-width:0;padding-left:7px;padding-right:7px;}
+  .table-area {height:clamp(250px,69vw,292px);margin:1px auto 2px;}
+  .seat.s0 {top:80%;}
+  .seat.s3 {top:17%;}
+  .seat.s1,.seat.s5 {top:69%;}
+  .seat.s2,.seat.s4 {top:20%;}
+  .seat .player-body {min-width:55px;padding:5px 4px;gap:1px;border-radius:8px;}
+  .seat.s0 .player-body {min-width:70px;}
+  .seat-name {font-size:9px;}
+  .seat-stack {font-size:9px;}
+  .seat .seat-action {font-size:8px;min-height:12px;}
+  .seat-hole {min-height:29px;gap:2px;}
+  .card.smallcard {width:23px;height:32px;font-size:11px;}
+  .card.smallcard .suit {font-size:10px;}
+  .seat-chip {font-size:8px;padding:2px 4px;}
+  .board-center {gap:4px;top:46%;}
+  .community {gap:4px;}
+  .card {width:31px;height:43px;font-size:13px;}
+  .card .suit {font-size:13px;}
+  .hand-hints:not([hidden]) {padding:7px 8px 6px;margin-bottom:5px;row-gap:4px;}
+  .hand-hints .hint-header {gap:4px;}
+  .hand-hints .hint-eyebrow {font-size:9px;}
+  .hand-hints .hint-sub {font-size:9px;margin-top:1px;}
+  .hand-hints .hint-phase {font-size:8px;padding:3px 5px;}
+  .hand-hints .hint-content {gap:6px;}
+  .hand-hints .hint-strength {font-size:14px;line-height:1.16;}
+  .hand-hints .hint-explanation {font-size:10px;line-height:1.25;margin-top:2px;}
+  .hand-hints .hint-card {padding:2px 2px;}
+  .hand-hints .hint-card>span {font-size:12px;}
+  .hand-hints .hint-card>small {font-size:7px;}
+  .hand-hints .hint-draws {font-size:9px;line-height:1.22;}
+  .hand-hints .hint-disclaimer {padding-top:4px;font-size:9.5px;line-height:1.2;}
+  .action-panel {padding:9px;gap:7px;min-height:112px;}
+  .actions-row {gap:5px;}
+  .action-btn {min-height:42px;padding:10px 5px;font-size:11px;}
+  .turn-top {gap:7px;}
+  .timer-value {font-size:23px;}
+  .turn-hint {font-size:10px;}
+  .timer-desc {font-size:9px;}
+  .timer-track {height:5px;}
+  .bottom-grid {margin-top:7px!important;gap:7px;}
+  .detail-card {padding:12px;min-height:0;}
+}
+@media (max-width:365px) {
+  .sidebar {padding:6px 5px;gap:3px;}
+  .sidebar .brand-name {font-size:11px;}
+  .sidebar .brand-mark {font-size:16px;}
+  .sidebar .nav-btn {font-size:8.2px!important;padding:5px 3px!important;}
+  .topbar h1 {font-size:14px;}
+  .muted-tag {font-size:8px;padding:4px;}
+  .room-action {font-size:8.5px;padding:5px;}
+  .table-area {height:250px;}
+  .seat.s1 {left:15%;}
+  .seat.s5 {left:85%;}
+  .hand-hints .hint-content {grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);}
+  .hand-hints .hint-main {min-width:0;}
+  .hand-hints .hint-card {min-width:0;padding:2px 1px;}
+  .hand-hints .hint-card>span {font-size:11px;}
+  .hand-hints .hint-card>small {font-size:6.4px;}
+}
