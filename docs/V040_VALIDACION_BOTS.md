@@ -29,7 +29,7 @@ La V0.3.5 definía cinco personalidades con `tight`, `agg`, `loose`, una puntuac
 - 10.000 decisiones con condiciones variadas: comprobación de acciones legales, targets válidos, ausencia de raises ilegales, invariancia respecto a cartas ocultas ajenas, determinismo mediante semilla.
 - Prueba de divergencia estadística entre perfiles preflop.
 - 2.000 manos completas del motor integrado en Node.js: finalización, ausencia de bloqueos, acciones legales y conservación de fichas, superadas.
-- **Ampliación a 10.000 manos completas** añadida como prueba de regresión; comprobar conclusión CI antes de presentarla como aprobada.
+- **10.000 manos completas de No-Limit Hold’em simuladas**, con finalización, acciones legales, ausencia de bloqueos y conservación de fichas, superadas en GitHub Actions (revisión `c4f816866e0d2a4e017ce16bc1e76299f80cb888`). Se aisló el guardado masivo de sesiones de esta prueba para medir las reglas; la persistencia se prueba por separado.
 - GitHub Actions: **smoke — success** en la revisión de esta candidata.
 - Vercel Preview: verificar estado READY del último commit antes de dar URL definitiva.
 
