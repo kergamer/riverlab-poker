@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RIVERLAB | Poker Room v0.3.5</title>
+<title>RIVERLAB | Poker Room v0.4.0</title>
 <style>
 :root{--bg:#0a1119;--panel:#131f2a;--panel2:#192934;--line:#30414a;--text:#f0efe9;--muted:#a2b3bb;--muted2:#748c95;--gold:#c6a56c;--felt:#175246;--felt2:#0e3c34;--danger:#e18b75;--good:#83c1a9;font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--text);color-scheme:dark}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 76% 22%,#182c35 0%,#0a1119 60%);font-size:14px}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.34;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
@@ -109,6 +109,7 @@
 </div>
 <div id="modal-root"></div>
 <script src="./sound.js"></script>
+<script src="./bots.js"></script>
 <script>
 
 'use strict';
@@ -119,7 +120,7 @@ const SYMBOL={s:'\u2660',h:'\u2665',d:'\u2666',c:'\u2663'};
 const I18N = {
  es: {
   experience:'EXPERIENCIA', pokerRoom:'Sala de póker', history:'Historial', mySession:'MI SESIÓN', engineReady:'Motor local activo',
-  prototypeFoot:'PROTOTIPO V0.3.5 · Fichas ficticias · Sin dinero real', noRealMoney:'SIN DINERO REAL',
+  prototypeFoot:'PROTOTIPO V0.4.0 · Fichas ficticias · Sin dinero real', noRealMoney:'SIN DINERO REAL',
   theFelt:'THE FELT / NO-LIMIT HOLD\'EM', roomMeta:'0,5 / 1 BB · 100 BB iniciales · 6 jugadores',
   rules:'REGLAS', hintsOn:'PISTAS: ACTIVADAS', hintsOff:'PISTAS: DESACTIVADAS',
   activity:'ACTIVIDAD DE LA MANO', studyWhilePlaying:'APRENDE MIENTRAS JUEGAS',
@@ -172,7 +173,7 @@ const I18N = {
   rulesP5:'El historial muestra las acciones, las manos reveladas, los botes secundarios y los empates. Las manos completadas y el progreso se guardan localmente cuando el navegador lo permite.',
   languageLabel:'Idioma',hintAria:'Activar o desactivar pistas de la mano',hintStatusOn:'Las pistas están activadas',hintStatusOff:'Las pistas están desactivadas',
   analytics:'Rendimiento',analyticsTitle:'Tu evolución',analyticsIntro:'Estadísticas y resultados basados en manos con fichas ficticias. No es un análisis GTO.',
-  settings:'AJUSTES',settingsTitle:'AJUSTES DE LA MESA',soundTitle:'SONIDO DE LA MESA',soundPaletteTitle:'ESCUCHA EL NUEVO SONIDO',soundPaletteHelp:'Prueba los efectos uno por uno. Los sonidos son breves, suaves y distintos para que puedas disfrutar partidas largas.',soundLabelDeal:'Reparto',soundLabelNewHand:'Nueva mano',soundLabelWin:'Victoria',soundLabelPot:'Bote',soundLabelUi:'Clic de interfaz',soundLabelCards:'Cartas',soundLabelChips:'Fichas',soundLabelShowdown:'Mostrar cartas',soundHelp:'Efectos suaves para cartas, fichas, decisiones y resultados. Si el iPhone no emite sonido, revisa el volumen multimedia y el modo silencio. Sin reproducción automática.',soundVolume:'Volumen',soundPreview:'PROBAR SONIDO',soundOnAria:'Silenciar efectos de sonido',soundOffAria:'Activar efectos de sonido',soundUnsupported:'Este navegador no admite Web Audio.',soundStateReady:'Motor de audio activo. Si no lo oyes, revisa los ajustes de sonido del dispositivo.',soundStateLocked:'Audio pendiente: pulsa PROBAR SONIDO para activarlo.',soundStateSuspended:'Audio suspendido: pulsa PROBAR SONIDO para reactivarlo.',soundStateInterrupted:'Audio interrumpido por Safari. Pulsa PROBAR SONIDO.',soundStateZero:'Volumen al 0 %. Súbelo para escuchar.',soundStateOff:'Sonido desactivado.',soundStateUnavailable:'No se ha podido activar el motor de sonido.',soundActivateAria:'Activar el audio con una prueba sonora.',settingsSpeed:'Velocidad de los rivales',settingsSpeedHelp:'Cambia la rapidez de respuesta de la IA; el límite máximo sigue siendo cinco segundos.',speedNormal:'Normal · Ritmo natural',speedFast:'Rápido · Más manos',autoNext:'AUTO',autoNextHelp:'Comenzar la siguiente mano automáticamente.',
+  botDifficulty:'DIFICULTAD DE LOS BOTS',difficultyBeginner:'Principiante',difficultyIntermediate:'Intermedio',difficultyAdvanced:'Avanzado',difficultyExpert:'Experto',botDifficultyHelp:'Competencia estratégica; cada rival conserva su personalidad.',botLearning:'APRENDIZAJE ADAPTATIVO',botLearningHelp:'Se adapta a acciones públicas y necesita suficientes manos. Memoria local del dispositivo.',botReset:'REINICIAR APRENDIZAJE',botResetConfirm:'¿Borrar el aprendizaje estadístico de los rivales sin eliminar las partidas?',settings:'AJUSTES',settingsTitle:'AJUSTES DE LA MESA',soundTitle:'SONIDO DE LA MESA',soundPaletteTitle:'ESCUCHA EL NUEVO SONIDO',soundPaletteHelp:'Prueba los efectos uno por uno. Los sonidos son breves, suaves y distintos para que puedas disfrutar partidas largas.',soundLabelDeal:'Reparto',soundLabelNewHand:'Nueva mano',soundLabelWin:'Victoria',soundLabelPot:'Bote',soundLabelUi:'Clic de interfaz',soundLabelCards:'Cartas',soundLabelChips:'Fichas',soundLabelShowdown:'Mostrar cartas',soundHelp:'Efectos suaves para cartas, fichas, decisiones y resultados. Si el iPhone no emite sonido, revisa el volumen multimedia y el modo silencio. Sin reproducción automática.',soundVolume:'Volumen',soundPreview:'PROBAR SONIDO',soundOnAria:'Silenciar efectos de sonido',soundOffAria:'Activar efectos de sonido',soundUnsupported:'Este navegador no admite Web Audio.',soundStateReady:'Motor de audio activo. Si no lo oyes, revisa los ajustes de sonido del dispositivo.',soundStateLocked:'Audio pendiente: pulsa PROBAR SONIDO para activarlo.',soundStateSuspended:'Audio suspendido: pulsa PROBAR SONIDO para reactivarlo.',soundStateInterrupted:'Audio interrumpido por Safari. Pulsa PROBAR SONIDO.',soundStateZero:'Volumen al 0 %. Súbelo para escuchar.',soundStateOff:'Sonido desactivado.',soundStateUnavailable:'No se ha podido activar el motor de sonido.',soundActivateAria:'Activar el audio con una prueba sonora.',settingsSpeed:'Velocidad de los rivales',settingsSpeedHelp:'Cambia la rapidez de respuesta de la IA; el límite máximo sigue siendo cinco segundos.',speedNormal:'Normal · Ritmo natural',speedFast:'Rápido · Más manos',autoNext:'AUTO',autoNextHelp:'Comenzar la siguiente mano automáticamente.',
   settingsHint:'Pistas de mano',settingsHintHelp:'Muestra la mejor combinación junto a tus cartas y en el panel explicativo.',on:'Activado',off:'Desactivado',settingsLang:'Idioma de la aplicación',settingsReset:'Reiniciar sesión',resetWarning:'¿Eliminar el historial, las estadísticas y las fichas de esta sesión? Esta acción no se puede deshacer.',resetDone:'Sesión reiniciada',settingsData:'Datos de la sesión',export:'EXPORTAR MANOS JSON',exportHelp:'Descarga el historial registrado para estudiarlo o compartirlo voluntariamente. No incluye cartas ocultas de manos sin showdown.',
   sessionStorage:'PROGRESO GUARDADO EN ESTE DISPOSITIVO',sessionNotSaved:'NO SE HA PODIDO GUARDAR LA SESIÓN',sessionLimited:'ALMACENAMIENTO LIMITADO: SE CONSERVAN LAS MANOS MÁS RECIENTES',sessionRecovered:'Se ha restaurado la última mano completada; una mano interrumpida no se recupera.',
   completedHands:'Manos finalizadas',sessionResults:'Resultado acumulado',playedBoard:'Llegaste al showdown',winAtShowdown:'Showdowns ganados',myDecisions:'Mis decisiones',trend:'EVOLUCIÓN DE FICHAS (BB)',lastHands:'Últimas manos',analyticsSample:'Son estadísticas descriptivas; una muestra pequeña no permite sacar conclusiones fiables.',voluntary:'Participación voluntaria preflop',preflopRaise:'Subida preflop',actionCounts:'Apuestas y decisiones',foldCount:'Retiradas',callCount:'Igualadas',raiseCount:'Apuestas / Subidas',checkCount:'Checks', noPerformance:'Completa alguna mano para activar el análisis.', netPositive:'Positivo',netNegative:'Negativo',netNeutral:'Igualado',
@@ -180,7 +181,7 @@ const I18N = {
  },
  en: {
   experience:'EXPERIENCE', pokerRoom:'Poker Room', history:'Hand History', mySession:'MY SESSION', engineReady:'Local engine running',
-  prototypeFoot:'PROTOTYPE V0.3.5 · Play-money chips · No real money', noRealMoney:'NO REAL MONEY',
+  prototypeFoot:'PROTOTYPE V0.4.0 · Play-money chips · No real money', noRealMoney:'NO REAL MONEY',
   theFelt:'THE FELT / NO-LIMIT HOLD\'EM',roomMeta:'0.5 / 1 BB · 100 BB starting stack · 6 players',
   rules:'RULES',hintsOn:'HINTS: ON',hintsOff:'HINTS: OFF',
   activity:'HAND ACTIVITY',studyWhilePlaying:'LEARN AS YOU PLAY',
@@ -233,7 +234,7 @@ const I18N = {
   rulesP5:'Hand history shows actions, exposed hands, side pots and ties. Completed hands and progress are saved locally whenever browser storage is available.',
   languageLabel:'Language',hintAria:'Enable or disable hand hints',hintStatusOn:'Hand hints are enabled',hintStatusOff:'Hand hints are disabled',
   analytics:'Performance',analyticsTitle:'Your progress',analyticsIntro:'Stats and results based on play-money hands. Not a GTO analysis.',
-  settings:'SETTINGS',settingsTitle:'TABLE SETTINGS',soundTitle:'TABLE SOUND',soundPaletteTitle:'PREVIEW THE NEW SOUNDS',soundPaletteHelp:'Listen to each effect. The sounds are short, soft and distinctive for long, comfortable sessions.',soundLabelDeal:'Deal',soundLabelNewHand:'New hand',soundLabelWin:'Victory',soundLabelPot:'Pot',soundLabelUi:'Interface click',soundLabelCards:'Cards',soundLabelChips:'Chips',soundLabelShowdown:'Showdown',soundHelp:'Subtle effects for cards, chips, decisions and results. If your iPhone is silent, check media volume and Silent Mode. No unsolicited autoplay.',soundVolume:'Volume',soundPreview:'PLAY TEST SOUND',soundOnAria:'Mute sound effects',soundOffAria:'Enable sound effects',soundUnsupported:'This browser does not support Web Audio.',soundStateReady:'Audio engine running. If it is inaudible, check your device sound settings.',soundStateLocked:'Audio pending: tap PLAY TEST SOUND to enable it.',soundStateSuspended:'Audio suspended: tap PLAY TEST SOUND to resume.',soundStateInterrupted:'Safari interrupted audio. Tap PLAY TEST SOUND.',soundStateZero:'Volume is at 0%. Increase it to hear sound.',soundStateOff:'Sound is off.',soundStateUnavailable:'The audio engine could not be started.',soundActivateAria:'Activate audio and play a sound test.',settingsSpeed:'Opponent speed',settingsSpeedHelp:'Adjust how fast opponents act; the five-second maximum remains.',speedNormal:'Normal · Natural pace',speedFast:'Fast · More hands',autoNext:'AUTO',autoNextHelp:'Start the next hand automatically.',
+  botDifficulty:'BOT DIFFICULTY',difficultyBeginner:'Beginner',difficultyIntermediate:'Intermediate',difficultyAdvanced:'Advanced',difficultyExpert:'Expert',botDifficultyHelp:'Strategic competence; each opponent retains its style.',botLearning:'ADAPTIVE LEARNING',botLearningHelp:'Observes public actions and needs a meaningful sample. Memory is stored on this device.',botReset:'RESET LEARNING',botResetConfirm:'Clear opponent learning without deleting hands?',settings:'SETTINGS',settingsTitle:'TABLE SETTINGS',soundTitle:'TABLE SOUND',soundPaletteTitle:'PREVIEW THE NEW SOUNDS',soundPaletteHelp:'Listen to each effect. The sounds are short, soft and distinctive for long, comfortable sessions.',soundLabelDeal:'Deal',soundLabelNewHand:'New hand',soundLabelWin:'Victory',soundLabelPot:'Pot',soundLabelUi:'Interface click',soundLabelCards:'Cards',soundLabelChips:'Chips',soundLabelShowdown:'Showdown',soundHelp:'Subtle effects for cards, chips, decisions and results. If your iPhone is silent, check media volume and Silent Mode. No unsolicited autoplay.',soundVolume:'Volume',soundPreview:'PLAY TEST SOUND',soundOnAria:'Mute sound effects',soundOffAria:'Enable sound effects',soundUnsupported:'This browser does not support Web Audio.',soundStateReady:'Audio engine running. If it is inaudible, check your device sound settings.',soundStateLocked:'Audio pending: tap PLAY TEST SOUND to enable it.',soundStateSuspended:'Audio suspended: tap PLAY TEST SOUND to resume.',soundStateInterrupted:'Safari interrupted audio. Tap PLAY TEST SOUND.',soundStateZero:'Volume is at 0%. Increase it to hear sound.',soundStateOff:'Sound is off.',soundStateUnavailable:'The audio engine could not be started.',soundActivateAria:'Activate audio and play a sound test.',settingsSpeed:'Opponent speed',settingsSpeedHelp:'Adjust how fast opponents act; the five-second maximum remains.',speedNormal:'Normal · Natural pace',speedFast:'Fast · More hands',autoNext:'AUTO',autoNextHelp:'Start the next hand automatically.',
   settingsHint:'Hand hints',settingsHintHelp:'Shows the best made hand next to your cards and in a detailed hint panel.',on:'On',off:'Off',settingsLang:'Application language',settingsReset:'Reset session',resetWarning:'Delete your hand history, statistics and chip stacks? This cannot be undone.',resetDone:'Session reset',settingsData:'Session data',export:'EXPORT HANDS JSON',exportHelp:'Download recorded hand history to review or voluntarily share. Hidden cards from non-showdown hands are excluded.',
   sessionStorage:'PROGRESS SAVED ON THIS DEVICE',sessionNotSaved:'SESSION COULD NOT BE SAVED',sessionLimited:'LIMITED STORAGE: ONLY RECENT HANDS CAN BE KEPT',sessionRecovered:'Restored last completed hand; an interrupted hand is not recovered.',
   completedHands:'Completed hands',sessionResults:'Cumulative result',playedBoard:'Reached showdown',winAtShowdown:'Showdowns won',myDecisions:'My decisions',trend:'CHIP EVOLUTION (BB)',lastHands:'Recent hands',analyticsSample:'These are descriptive statistics; small samples do not support firm conclusions.',voluntary:'Voluntarily played preflop',preflopRaise:'Preflop raise',actionCounts:'Bets and decisions',foldCount:'Folds',callCount:'Calls',raiseCount:'Bets / Raises',checkCount:'Checks',noPerformance:'Finish a few hands to unlock the analysis.',netPositive:'Positive',netNegative:'Negative',netNeutral:'Even',
@@ -264,7 +265,7 @@ const $=id=>document.getElementById(id);
 const SESSION_KEY='riverlab.v03.session';
 function fmt(u){return (u/2).toLocaleString(state.language==='en'?'en-US':'es-ES',{maximumFractionDigits:1})+' BB'}
 function fmtN(u){return (u/2).toLocaleString(state.language==='en'?'en-US':'es-ES',{maximumFractionDigits:1})}
-const state={players:PREFS.map((v,i)=>({...v,seat:i,stack:BUYIN,cards:[],bet:0,invested:0,folded:false,allIn:false,acted:false,actedFacing:0,action:''})),button:5,hand:0,phase:'idle',turn:null,deck:[],board:[],currentBet:0,minRaise:BB,heroBank:20,bankAtStart:20,turnStart:0,logs:[],handEvents:[],handHistory:[],winners:[],stats:{hands:0,wins:0,vpip:0,pfr:0},buyIns:BUYIN,autoplay:prefRead('autoplay','1')!=='0',view:'table',selectedRaise:6,finishedReason:'',resultData:null,didShowdown:false,language:['es','en'].includes(prefRead('language','es'))?prefRead('language','es'):'es',hintsEnabled:prefRead('hints','0')==='1',botSpeed:prefRead('speed','normal')==='fast'?'fast':'normal',heroStartStack:BUYIN,recovered:false,storageStatus:'ok'};
+const state={players:PREFS.map((v,i)=>({...v,seat:i,stack:BUYIN,cards:[],bet:0,invested:0,folded:false,allIn:false,acted:false,actedFacing:0,action:''})),button:5,hand:0,phase:'idle',turn:null,deck:[],board:[],currentBet:0,minRaise:BB,heroBank:20,bankAtStart:20,turnStart:0,logs:[],handEvents:[],handHistory:[],winners:[],stats:{hands:0,wins:0,vpip:0,pfr:0},buyIns:BUYIN,autoplay:prefRead('autoplay','1')!=='0',view:'table',selectedRaise:6,finishedReason:'',resultData:null,didShowdown:false,language:['es','en'].includes(prefRead('language','es'))?prefRead('language','es'):'es',hintsEnabled:prefRead('hints','0')==='1',botSpeed:prefRead('speed','normal')==='fast'?'fast':'normal',botDifficulty:['beginner','intermediate','advanced','expert'].includes(prefRead('botDifficulty','intermediate'))?prefRead('botDifficulty','intermediate'):'intermediate',botLearning:prefRead('botLearning','1')!=='0',heroStartStack:BUYIN,recovered:false,storageStatus:'ok'};
 let botTimer=null,botFallback=null,heroTimer=null,nextTimer=null,gameToken=0,gamePauseAt=0;
 function rand(n){if(globalThis.crypto && crypto.getRandomValues){const arr=new Uint32Array(1);crypto.getRandomValues(arr);return arr[0]%n}return Math.floor(Math.random()*n)}
 function shuffle(){const d=[];for(const r of RANKS)for(const s of SUITS)d.push({r:RANKS.indexOf(r)+2,s});for(let i=d.length-1;i>0;i--){const j=rand(i+1);[d[i],d[j]]=[d[j],d[i]]}return d}
@@ -282,6 +283,7 @@ function resumeGameplay(){if(!gamePauseAt)return;const elapsed=Date.now()-gamePa
 function makeMove(player,amount){const pay=Math.max(0,Math.min(player.stack,amount));player.stack-=pay;player.bet+=pay;player.invested+=pay;if(player.stack===0)player.allIn=true;return pay}
 function newHand(){
  clearTimers();gameToken++;
+ window.RiverlabBots?.startHand(state.hand+1);
  if(state.players[0].stack===0){state.phase='busted';state.turn=null;render();return}
  const rebuys=[];state.players.forEach((p,i)=>{if(i>0&&p.stack===0){p.stack=BUYIN;rebuys.push(i)}Object.assign(p,{cards:[],bet:0,invested:0,folded:false,allIn:false,acted:false,actedFacing:0,action:'',actionAmount:0,wasVPIP:false,wasPFR:false})});
  state.hand++;playSound('newHand',.72);state.stats.hands++;state.heroStartStack=state.players[0].stack;state.button=next(state.button);state.phase='preflop';state.turn=null;state.board=[];state.logs=[];state.handEvents=[];state.winners=[];state.finishedReason='';state.resultData=null;state.didShowdown=false;rebuys.forEach(seat=>logMsg('rebuys',{seat}));state.deck=shuffle();state.currentBet=BB;state.minRaise=BB;
@@ -300,7 +302,7 @@ function setTurn(seat){
  const p=state.players[seat];if(!needsAction(p)){settleAfter(seat);return}
  if(gamePauseAt){render();return}
  if(seat===0){state.turnStart=Date.now();state.bankAtStart=state.heroBank;heroTimer=setInterval(tick,100);render();tick();}
- else {render();const t=gameToken;let completed=false;botTimer=setTimeout(()=>{if(completed||t!==gameToken||state.turn!==seat)return;completed=true;clearTimeout(botFallback);try{const a=chooseBotAction(p);if(!act(seat,a.kind,a.target))safeBot(seat)}catch(e){console.error(e);safeBot(seat)}},state.botSpeed==='fast'?130+rand(300):600+rand(1500));botFallback=setTimeout(()=>{if(completed||t!==gameToken||state.turn!==seat)return;completed=true;clearTimeout(botTimer);safeBot(seat)},5000)}
+ else {render();const t=gameToken;let completed=false;const botCtx={kind:p.kind,level:state.botDifficulty,phase:state.phase,toCall:Math.max(0,state.currentBet-p.bet),pot:pot()};botTimer=setTimeout(()=>{if(completed||t!==gameToken||state.turn!==seat)return;completed=true;clearTimeout(botFallback);try{const a=chooseBotAction(p);if(!act(seat,a.kind,a.target))safeBot(seat)}catch(e){console.error(e);safeBot(seat)}},window.RiverlabBots?window.RiverlabBots.delay(botCtx,state.botSpeed):state.botSpeed==='fast'?130+rand(300):600+rand(1500));botFallback=setTimeout(()=>{if(completed||t!==gameToken||state.turn!==seat)return;completed=true;clearTimeout(botTimer);safeBot(seat)},5000)}
 }
 function safeBot(seat){const p=state.players[seat];if(state.turn!==seat)return;act(seat,state.currentBet>p.bet?'fold':'check')}
 function bankSnapshot(){if(state.turn!==0)return {normal:0,bank:state.heroBank,using:false};const elapsed=((gamePauseAt||Date.now())-state.turnStart)/1000;return {normal:Math.max(0,20-elapsed),bank:Math.max(0,state.bankAtStart-Math.max(0,elapsed-20)),using:elapsed>=20}}
@@ -326,7 +328,8 @@ function act(seat,kind,target=null,forced=false){
  }
  if(kind==='check'){p.acted=true;p.actedFacing=state.currentBet;p.action='check';actionLog(seat,'pasa','',context)}
  if(kind==='fold'){p.folded=true;p.acted=true;p.actedFacing=state.currentBet;p.action='fold';actionLog(seat,forced?'fold autom\u00e1tico':'se retira','',context)}
- playSound(kind==='raise'&&p.allIn?'allin':kind==='call'&&p.allIn?'allin':kind,seat===0?.88:.57);state.turn=null;settleAfter(seat);return true;
+ playSound(kind==='raise'&&p.allIn?'allin':kind==='call'&&p.allIn?'allin':kind,seat===0?.88:.57);if(window.RiverlabBots){window.RiverlabBots.observe({hand:state.hand,seat,street:state.phase,kind,paid:kind==='call'||kind==='raise'?context.stackBefore-p.stack:0,toCall,raisedBefore:state.handEvents.filter(e=>e.street==='preflop'&&['sube hasta','apuesta'].includes(e.kind)&&e.seat!==seat).length})}
+ state.turn=null;settleAfter(seat);return true;
 }
 function settleAfter(from){
  const remaining=live();if(remaining.length===1){finishUncontested(remaining[0]);return}
@@ -402,7 +405,7 @@ function finishShowdown(){
  state.winners.forEach(w=>logMsg('winner',{seat:w.seat,amount:w.amount,category:w.category}));
  finishHand(allWinners.map(w=>w[0]));
 }
-function finishHand(winnerSeats){playSound(winnerSeats.includes(0)?'win':'pot',winnerSeats.includes(0)?.78:.52);state.phase='complete';state.turn=null;if(winnerSeats.includes(0))state.stats.wins++;
+function finishHand(winnerSeats){window.RiverlabBots?.finishHand({hand:state.hand,shown:state.didShowdown?state.players.filter(p=>!p.folded).map(p=>p.seat):[],winners:winnerSeats});playSound(winnerSeats.includes(0)?'win':'pot',winnerSeats.includes(0)?.78:.52);state.phase='complete';state.turn=null;if(winnerSeats.includes(0))state.stats.wins++;
  const hand={number:state.hand,button:state.button,heroCards:state.players[0].cards.map(c=>({...c})),board:state.board.map(c=>({...c})),players:state.players.map(p=>({name:p.name,seat:p.seat,cards:(p.seat===0||state.didShowdown&&!p.folded)?p.cards.map(c=>({...c})):[],folded:p.folded,stack:p.stack,invested:p.invested})),events:state.handEvents.slice(),pots:state.resultData?.pots||[],winners:state.winners.map(x=>({...x})),heroWon:winnerSeats.includes(0),didShowdown:state.didShowdown,pot:pot(),net:state.players[0].stack-state.heroStartStack,cumulative:state.players[0].stack-state.buyIns,reason:state.finishedReason,resultData:JSON.parse(JSON.stringify(state.resultData))};
  state.handHistory.unshift(hand);state.handHistory=state.handHistory.slice(0,200);saveSession();render();if(state.autoplay&&state.players[0].stack>0){const t=gameToken;nextTimer=setTimeout(()=>{if(t===gameToken&&state.phase==='complete'&&state.view==='table')newHand()},6800)}
 }
@@ -413,6 +416,21 @@ function boardStrength(p){const r=best7(p.cards.concat(state.board));let v=[.12,
  if(r[0]===0){if(p.cards.some(c=>c.r>=13))v+=.09;const suitCounts={};for(const c of p.cards.concat(state.board))suitCounts[c.s]=(suitCounts[c.s]||0)+1;if(Object.values(suitCounts).some(n=>n===4)&&p.cards.some(c=>suitCounts[c.s]===4))v+=.2}
  return Math.min(.99,v)}
 function chooseBotAction(p){
+ const bot=window.RiverlabBots;
+ if(bot){
+  const toCall=Math.max(0,state.currentBet-p.bet);
+  const ctx={seat:p.seat,kind:p.kind,level:state.botDifficulty,learning:state.botLearning,
+   hole:p.cards.map(c=>({...c})),board:state.board.map(c=>({...c})),
+   position:posFor(p.seat),phase:state.phase,pot:pot(),toCall,
+   stack:p.stack,currentBet:state.currentBet,minRaiseTarget:currentMinRaise(p),
+   maxTotal:p.bet+p.stack,canRaise:mayRaise(p),
+   effectiveStack:Math.min(p.stack,...state.players.filter(q=>q.seat!==p.seat&&!q.folded).map(q=>q.stack+q.bet)),
+   raiseCount:state.handEvents.filter(e=>e.street==='preflop'&&['sube hasta','apuesta'].includes(e.kind)).length,
+   opponents:state.players.filter(q=>q.seat!==p.seat).map(q=>({seat:q.seat,folded:q.folded,stack:q.stack,bet:q.bet,action:q.action}))
+  };
+  return bot.chooseAction(ctx);
+ }
+
  const toCall=Math.max(0,state.currentBet-p.bet),total=p.bet+p.stack,canRaise=mayRaise(p),stackBB=p.stack/2;
  const costRatio=toCall/Math.max(1,pot()+toCall),risk=Math.min(3,toCall/Math.max(2,pot()));
  if(state.phase==='preflop'){
@@ -725,20 +743,25 @@ function restoreSession(){
   return true;
  }catch(e){return false}
 }
+function setBotDifficulty(v){if(!['beginner','intermediate','advanced','expert'].includes(v))return;state.botDifficulty=v;prefWrite('botDifficulty',v)}
+function setBotLearning(v){state.botLearning=v==='yes';prefWrite('botLearning',state.botLearning?'1':'0');window.RiverlabBots?.setLearning(state.botLearning)}
+function resetBotLearning(){if(!confirm(tr('botResetConfirm')))return;window.RiverlabBots?.resetMemory();openSettings()}
 function changeSpeed(value){state.botSpeed=value==='fast'?'fast':'normal';prefWrite('speed',state.botSpeed);const sel=$('speed-choice');if(sel)sel.value=state.botSpeed}
 function updateSettingHint(value){const enabled=value==='yes';if(state.hintsEnabled!==enabled)toggleHints();const sel=$('hint-choice');if(sel)sel.value=state.hintsEnabled?'yes':'no'}
 function settingsAuto(value){state.autoplay=value==='yes';prefWrite('autoplay',state.autoplay?'1':'0');updateStaticLabels();if(state.phase==='complete'){clearTimeout(nextTimer);if(state.autoplay&&state.view==='table')nextTimer=setTimeout(()=>newHand(),6800)}}
 function resetSession(){if(!confirm(tr('resetWarning')))return;clearTimers();gameToken++;try{localStorage.removeItem(SESSION_KEY)}catch(e){}state.players.forEach(p=>p.stack=BUYIN);state.hand=0;state.button=5;state.heroBank=20;state.stats={hands:0,wins:0,vpip:0,pfr:0};state.buyIns=BUYIN;state.handHistory=[];state.recovered=false;state.storageStatus='ok';closeModal();showView('table');newHand()}
 function downloadSession(){
- const data={app:'RIVERLAB',version:'0.3.5',exportedAt:new Date().toISOString(),blinds:{small:0.5,big:1},units:'half_big_blind',stats:state.stats,hands:state.handHistory};
+ const data={app:'RIVERLAB',version:'0.4.0',exportedAt:new Date().toISOString(),blinds:{small:0.5,big:1},units:'half_big_blind',stats:state.stats,hands:state.handHistory};
  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='RIVERLAB_session_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
 }
 function openSettings(){
+ const bots='<div class="setting-block"><label for="bot-difficulty">'+tr('botDifficulty')+'</label><select id="bot-difficulty" onchange="setBotDifficulty(this.value)">'+[['beginner','difficultyBeginner'],['intermediate','difficultyIntermediate'],['advanced','difficultyAdvanced'],['expert','difficultyExpert']].map(x=>'<option value="'+x[0]+'">'+tr(x[1])+'</option>').join('')+'</select><p>'+tr('botDifficultyHelp')+'</p><label for="bot-learning" style="margin-top:12px">'+tr('botLearning')+'</label><select id="bot-learning" onchange="setBotLearning(this.value)"><option value="yes">'+tr('on')+'</option><option value="no">'+tr('off')+'</option></select><p>'+tr('botLearningHelp')+'</p><div class="settings-actions"><button class="btn small ghost" onclick="resetBotLearning()">'+tr('botReset')+'</button></div></div>';
+
  const speed='<div class="setting-block"><label for="speed-choice">'+tr('settingsSpeed')+'</label><select id="speed-choice" onchange="changeSpeed(this.value)"><option value="normal">'+tr('speedNormal')+'</option><option value="fast">'+tr('speedFast')+'</option></select><p>'+tr('settingsSpeedHelp')+'</p></div>';
  const hints='<div class="setting-block"><label for="hint-choice">'+tr('settingsHint')+'</label><select id="hint-choice" onchange="updateSettingHint(this.value)"><option value="no">'+tr('off')+'</option><option value="yes">'+tr('on')+'</option></select><p>'+tr('settingsHintHelp')+'</p></div>';
  const sound='<div class="setting-block"><label for="sound-choice">'+tr('soundTitle')+'</label><select id="sound-choice" onchange="setSoundEnabled(this.value===&quot;yes&quot;)"><option value="yes">'+tr('on')+'</option><option value="no">'+tr('off')+'</option></select><p>'+tr('soundHelp')+'</p><p id="sound-status" role="status" aria-live="polite"></p><div class="sound-volume-row"><label for="sound-volume">'+tr('soundVolume')+'</label><input id="sound-volume" type="range" min="0" max="100" step="1" value="55" aria-label="'+tr('soundVolume')+'" oninput="setSoundVolume(this.value)" onchange="previewSound()"><output id="sound-volume-value" for="sound-volume">55 %</output></div><div class="sound-options"><button id="sound-preview" class="btn small" onclick="previewSound()">'+tr('soundPreview')+'</button></div>'+renderSoundLab()+'</div>';
  const data='<div class="setting-block"><strong>'+tr('settingsData')+'</strong><p>'+tr('storageNote')+'</p><p>'+tr('exportHelp')+'</p><div class="settings-actions"><button class="btn" onclick="downloadSession()">'+tr('export')+'</button><button class="btn ghost" onclick="resetSession()">'+tr('settingsReset')+'</button></div></div>';
- openModal('<h2>'+tr('settingsTitle')+'</h2><p>'+tr(state.storageStatus==='failed'?'sessionNotSaved':state.storageStatus==='partial'?'sessionLimited':'sessionStorage')+'</p><div class="settings-grid">'+speed+hints+sound+data+'</div>');$('speed-choice').value=state.botSpeed;$('hint-choice').value=state.hintsEnabled?'yes':'no';updateSoundUI();
+ openModal('<h2>'+tr('settingsTitle')+'</h2><p>'+tr(state.storageStatus==='failed'?'sessionNotSaved':state.storageStatus==='partial'?'sessionLimited':'sessionStorage')+'</p><div class="settings-grid">'+speed+bots+hints+sound+data+'</div>');$('speed-choice').value=state.botSpeed;$('hint-choice').value=state.hintsEnabled?'yes':'no';$('bot-difficulty').value=state.botDifficulty;$('bot-learning').value=state.botLearning?'yes':'no';updateSoundUI();
 }
 
 function rebuy(){if(state.players[0].stack>0)return;state.players[0].stack=BUYIN;state.buyIns+=BUYIN;newHand()}
@@ -807,13 +830,13 @@ function openHand(n){
  const h=state.handHistory.find(x=>x.number===n);if(!h)return;
  activeReplayHand=n;activeReplayIndex=-1;openModal('<div id="replay-content"></div>');$('modal-root').querySelector('.modal').classList.add('replay-modal');renderReplay();
 }
-function openModal(content){pauseGameplay();clearTimeout(nextTimer);$('modal-root').innerHTML='<div class="modal-cover" onclick="closeModal(event)"><div class="modal" role="dialog" aria-modal="true" aria-label="RIVERLAB"><div class="modal-header"><div class="eyebrow">RIVERLAB / V0.3.5</div><button class="btn small ghost" onclick="closeModal()">'+tr('modalClose')+'</button></div>'+content+'</div></div>'}
+function openModal(content){pauseGameplay();clearTimeout(nextTimer);$('modal-root').innerHTML='<div class="modal-cover" onclick="closeModal(event)"><div class="modal" role="dialog" aria-modal="true" aria-label="RIVERLAB"><div class="modal-header"><div class="eyebrow">RIVERLAB / V0.4.0</div><button class="btn small ghost" onclick="closeModal()">'+tr('modalClose')+'</button></div>'+content+'</div></div>'}
 function closeModal(ev){if(ev&&ev.target!==ev.currentTarget)return;$('modal-root').innerHTML='';if(state.view==='table'&&!document.hidden)resumeGameplay();if(state.autoplay&&state.phase==='complete'&&state.view==='table'){clearTimeout(nextTimer);nextTimer=setTimeout(()=>newHand(),3500)}}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('modal-root').innerHTML)closeModal()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseGameplay();else if(state.view==='table'&&!$('modal-root').innerHTML)resumeGameplay()});
-window.__riverlab={state,rank5,best7,compareRank,splitPots,act,newHand,showView,fmt,chooseBotAction,evaluateVisibleHand,handHintLabel,detectHandDraws,startingHandHint,setLanguage,toggleHints,changeSpeed,openHand,changeReplay,jumpHero,derivedPerformance,saveSession,restoreSession,resetSession,renderAnalytics,pauseGameplay,resumeGameplay};
+window.__riverlab={state,botEngine:window.RiverlabBots,rank5,best7,compareRank,splitPots,act,newHand,showView,fmt,chooseBotAction,evaluateVisibleHand,handHintLabel,detectHandDraws,startingHandHint,setLanguage,toggleHints,changeSpeed,openHand,changeReplay,jumpHero,derivedPerformance,saveSession,restoreSession,resetSession,renderAnalytics,pauseGameplay,resumeGameplay};
 if(typeof window.addEventListener==='function')window.addEventListener('riverlab-audio-state',updateSoundUI);
-restoreSession();newHand();
+window.RiverlabBots?.setLearning(state.botLearning);restoreSession();newHand();
 </script>
 <script>
 // Only HTTPS (or localhost) can register offline support; core poker logic remains local.
