@@ -12,10 +12,10 @@
 - **20 torneos con motor real de seis plazas**, 900 manos por cada uno de tres comportamientos rivales (oponentes mixtos, cinco calling stations y cinco overfolders): **54.000 manos completas**. Incluyen rotación de posiciones, ciegas, rondas de apuesta, reparto y cierre de botes; se comprueba conservación de fichas en todas las manos y legalidad en cada decisión.
 - Los torneos reinician el stack a 100 BB por mano y emplean un reparto determinista independiente de las decisiones. No son una cash game continuada con efectos de bankroll a largo plazo.
 - **Un mismo conjunto de semillas** se utiliza en los distintos niveles para reducir variabilidad, aunque las secuencias de apuestas pueden divergir. Los IC95 son aproximaciones de bloques de 60 manos, no pruebas definitivas de superioridad.
-- **Aprendizaje:** tras 600 observaciones sintéticas se comparan 240 oportunidades de apertura por personalidad con aprendizaje activado y desactivado. Esta comprobación mide **sensibilidad conductual**, no rentabilidad ni historias plenamente representativas de partidas reales.
-- **Nueva comprobación independiente:** \`tests/benchmark_v041_evaluator.test.cjs\` compara el evaluador de bots con el evaluador exhaustivo del propio juego en 12.000 muestras, comprueba nuts frente a 1–5 rivales y ausencia de dependencia respecto a datos privados inyectados. Debe ejecutarse junto a las regresiones en GitHub Actions.
+- **Aprendizaje:** tras 600 manos sintéticas con secuencias públicas **legalmente coherentes** (si el rival se retira preflop, no actúa después), se comparan 240 oportunidades de apertura por personalidad con aprendizaje activado y desactivado. Mide **sensibilidad conductual**, no rentabilidad; no se ha acreditado mediante torneos de aprendizaje activado.
+- **Nueva comprobación independiente:** \`tests/benchmark_v041_evaluator.test.cjs\` compara el evaluador de bots con el evaluador exhaustivo del propio juego en 12.000 muestras, comprueba nuts frente a 1–5 rivales y ausencia de dependencia respecto a datos privados inyectados. Se ejecutó con éxito como parte de las regresiones de GitHub Actions.
 
-**Fuentes reproducibles:** [torneos / GitHub Actions](https://github.com/kergamer/riverlab-poker/actions/runs/39782443742); [primera matriz de decisiones](https://github.com/kergamer/riverlab-poker/actions/runs/39764863417); [test de aprendizaje](https://github.com/kergamer/riverlab-poker/blob/audit/v041-bot-performance/tests/benchmark_v041_learning.cjs).
+**Fuentes reproducibles:** [torneos, evaluador y matriz de decisiones / GitHub Actions](https://github.com/kergamer/riverlab-poker/actions/runs/39789739795); [auditoría de aprendizaje con trayectorias válidas](https://github.com/kergamer/riverlab-poker/blob/audit/v041-bot-performance/tests/benchmark_v041_learning_valid.cjs); [ejecución de validación adicional](https://github.com/kergamer/riverlab-poker/actions/runs/39834618565).
 
 ## 2. Resultados de partidas completas — bb/100
 
@@ -59,17 +59,19 @@ Los resultados son más estables en este escenario y confirman una mayor capacid
 
 ## 3. Aprendizaje: evidencia de reacción, no de ventaja
 
-En el test sintético, después de 600 observaciones, de 240 decisiones comparables:
+En la prueba revisada, después de 600 manos por estilo con secuencias públicas posibles y 240 decisiones pareadas por bot:
 
 | Bot | Subidas sin/con aprendizaje frente a overfolder | Subidas sin/con aprendizaje frente a calling station |
 |---|---:|---:|
-| KAI | 91 → 93 | 91 → 87 |
-| MARC | 43 → 50 | 43 → 34 |
-| ALEX | 110 → 142 | 110 → 76 |
-| NOVA | 150 → 166 | 150 → 123 |
-| LEO | 117 → 141 | 117 → 83 |
+| KAI | 94 → 95 | 94 → 91 |
+| MARC | 63 → 68 | 63 → 58 |
+| ALEX | 92 → 115 | 92 → 69 |
+| NOVA | 136 → 152 | 136 → 110 |
+| LEO | 95 → 115 | 95 → 74 |
 
-La respuesta sigue una dirección intuitiva: más presión contra quien abandona demasiado y más selectividad contra quien iguala en exceso. **No está acreditado que ello aumente el EV o bb/100**. El historial sintético registra acciones en varias calles de una misma mano sin garantizar siempre una trayectoria de juego físicamente realizable; por eso estas cifras no deben considerarse una prueba de aprendizaje en partida real.
+La respuesta sigue una dirección intuitiva: más presión contra quien abandona demasiado y más selectividad contra quien iguala en exceso. En la prueba revisada, una retirada preflop impide expresamente cualquier acción posterior. **No está acreditado que la adaptación aumente el EV o bb/100**: las trayectorias son posibles, pero los perfiles siguen siendo sintéticos y no proceden de torneos completos.
+
+**Hallazgo técnico para V0.4.2:** el estadístico `foldRate` que utiliza el aprendizaje agrega folds preflop y postflop. Puede interpretar como excesivo abandono una selección preflop normal; para evitar falsos positivos habrá que separar las oportunidades por calle y situación antes de recalibrar el sistema.
 
 ## 4. Dictamen por criterio
 
@@ -81,7 +83,7 @@ La respuesta sigue una dirección intuitiva: más presión contra quien abandona
 | Cuatro niveles de dificultad configurables y estables | **APTO funcional** |
 | Superioridad estratégica creciente Inicial → Intermedio → Avanzado → Experto | **NO ACREDITADA** |
 | Dominio real del nivel Experto | **NO ACREDITADO** |
-| Aprendizaje cambia decisiones ante tendencias | **APTO conductual en prueba sintética** |
+| Aprendizaje cambia decisiones ante tendencias | **APTO conductual con trayectorias sintéticas posibles** |
 | Aprendizaje aumenta el rendimiento frente a estilos explotables | **NO ACREDITADO** |
 | Calidad GTO / rendimiento comparable a un solver profesional | **FUERA DE ALCANCE** |
 | Compatibilidad en navegadores físicos y continuidad real de sesión prolongada | **VERIFICACIÓN ADICIONAL RECOMENDADA** |
@@ -91,7 +93,7 @@ La respuesta sigue una dirección intuitiva: más presión contra quien abandona
 ## 5. Requisitos de aceptación para V0.4.2
 
 1. Afinar ventaja de rangos, equity estimada y tamaños de apuesta contra rivales muy pasivos: el aumento de cómputo no debe degradar sistemáticamente la extracción de valor.
-2. Separar aprendizaje por **tipo de oportunidad** y por calle (fold ante apuesta en flop/turn/river frente a fold preflop), y obtener muestras representativas sin mezclar oportunidades.
+2. **Prioridad alta:** separar aprendizaje por **tipo de oportunidad** y por calle (fold ante apuesta en flop/turn/river frente a fold preflop) para evitar que la selección inicial normal se confunda con sobrefoldear frente a presión.
 3. Probar adaptación con el **motor real**: jugador guionizado en asiento humano, cinco bots que solo ven acciones públicas, con y sin aprendizaje, mismas barajas y semillas.
 4. Repetir torneos con reparto pareado, mayor muestra, intervalos de confianza para diferencias entre niveles y al menos dos tipos de rivales adicionales.
 5. Aprobar integridad de reglas, PWA/audio, regresiones de historial y pruebas móviles antes de proponer publicación.
