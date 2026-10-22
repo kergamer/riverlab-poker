@@ -8,6 +8,7 @@ on:
       - fix/v034-audio-activation
       - feat/v035-sonic-atelier
       - dev/v040-strategy-learning
+      - audit/v041-bot-performance
   pull_request:
     branches:
       - main
@@ -25,3 +26,24 @@ jobs:
         run: node --version
       - name: Regresiones de reglas y datos
         run: node --test tests/smoke.test.cjs tests/sound.test.cjs tests/bots.test.cjs tests/bots.stress.test.cjs tests/bots.game-sim.test.cjs
+
+  bot-audit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        difficulty: [beginner, intermediate, advanced, expert]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Benchmark paired scenarios
+        env:
+          BENCH_LEVEL: ${{ matrix.difficulty }}
+        run: node tests/benchmark_v041_scenarios.cjs | tee benchmark-output.log
+      - name: Upload raw audit results
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: bot-audit-${{ matrix.difficulty }}
+          path: benchmark-output.log
+          retention-days: 14
