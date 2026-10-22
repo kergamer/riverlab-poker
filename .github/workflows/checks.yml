@@ -47,3 +47,26 @@ jobs:
           name: bot-audit-${{ matrix.difficulty }}
           path: benchmark-output.log
           retention-days: 14
+
+  tournament-audit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [loose-passive, tight-passive, tag, lag, balanced]
+        level: [beginner, intermediate, advanced, expert]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: 900 independent hands per opponent style
+        env:
+          BOT_KIND: ${{ matrix.kind }}
+          BOT_LEVEL: ${{ matrix.level }}
+          BENCH_HANDS: "900"
+        run: node tests/benchmark_v041_tournament.cjs | tee tournament.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: tournament-${{ matrix.kind }}-${{ matrix.level }}
+          path: tournament.log
+          retention-days: 14
