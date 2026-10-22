@@ -16,6 +16,7 @@ const PROFILE={
 const POSITION_OPEN={UTG:.17,HJ:.22,CO:.31,BTN:.47,SB:.42,BB:.50};
 const POSITION_ORDER=['UTG','HJ','CO','BTN','SB','BB'];
 const MEMORY_KEY='riverlab.v04.botMemory';
+const POLICY_VERSION='0.4.2';
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const randomDefault=()=>Math.random();
 function roll(rng){return clamp(Number(rng()),0,0.9999999999)}
@@ -173,6 +174,7 @@ function equitySample(context,rng=randomDefault,samples=24){
 }
 function emptyRecord(){
  return {hands:0,vpip:0,pfr:0,threeBet:0,threeBetOpportunities:0,
+  flopFaced:0,flopFold:0,turnFaced:0,turnFold:0,riverFaced:0,riverFold:0,
   actions:0,bets:0,raises:0,calls:0,checks:0,folds:0,facedBets:0,foldToBet:0,showdowns:0,showdownWins:0};
 }
 const stats=Object.create(null),pending=Object.create(null);
@@ -209,7 +211,14 @@ function observe(a){
  if(a.kind==='check')r.checks++;
  if(a.kind==='call')r.calls++;
  if(a.kind==='raise'){r.raises++;r.bets++;}
- if(a.toCall>0){r.facedBets++;if(a.kind==='fold')r.foldToBet++}
+ if(a.toCall>0){
+  r.facedBets++;if(a.kind==='fold')r.foldToBet++;
+  if(a.street!=='preflop'){
+   const street=a.street;
+   r[street+'Faced']++;
+   if(a.kind==='fold')r[street+'Fold']++;
+  }
+ }
  if(a.street==='preflop'){
   if(!p.vpip&&Number(a.paid)>0&&['call','raise'].includes(a.kind)){p.vpip=true;r.vpip++}
   if(!p.pfr&&a.kind==='raise'){p.pfr=true;r.pfr++}
@@ -243,17 +252,26 @@ function metrics(seat){
  const r={...record(seat)},smooth=(value,n,prior)=>clamp((value+prior*24)/(n+24),0,1);
  return {...r,vpipRate:smooth(r.vpip,r.hands,.26),pfrRate:smooth(r.pfr,r.hands,.16),
   foldRate:smooth(r.foldToBet,r.facedBets,.42),
+  flopFoldRate:smooth(r.flopFold,r.flopFaced,.42),
+  turnFoldRate:smooth(r.turnFold,r.turnFaced,.42),
+  riverFoldRate:smooth(r.riverFold,r.riverFaced,.42),
   aggressionRate:smooth(r.raises,r.raises+r.calls,.43),
   reliability:clamp(r.hands/65,0,1)};
 }
 function setLearning(flag){learnEnabled=!!flag}
 function adjustRead(context){
  if(!learnEnabled||!context.learning)return {pressure:0,calling:0,confidence:0};
- const hero=metrics(0),c=hero.reliability;
- // Bots learn only from PUBLIC observed behaviour of the human opponent.
- return {pressure:clamp((hero.foldRate-.42)*.32*c,-.11,.11),
-  calling:clamp((hero.vpipRate-.26)*.29*c,-.12,.12),
-  confidence:c};
+ const hero=metrics(0);
+ const street=['flop','turn','river'].includes(context.phase)?context.phase:null;
+ const denom=street?hero[street+'Faced']:hero.facedBets;
+ const falls=street?hero[street+'Fold']:hero.foldToBet;
+ // Use street-specific public opportunities; reliability grows with real sample size.
+ const foldRate=(falls+24*.42)/(denom+24);
+ const confidence=clamp(denom/65,0,1);
+ const vpipConfidence=clamp(hero.hands/65,0,1);
+ return {pressure:clamp((foldRate-.42)*.32*confidence,-.11,.11),
+  calling:clamp((hero.vpipRate-.26)*.29*vpipConfidence,-.12,.12),
+  confidence};
 }
 function sanitizedContext(context){
  if(!context||!Array.isArray(context.hole)||context.hole.length!==2||
@@ -329,6 +347,8 @@ function postflop(context,rng){
   if(mc!==null)equity=clamp(mc*(levelIndex===3?.64:.48)+made*(levelIndex===3?.36:.52),.015,.99);
  }
  const read=adjustRead(context),toCall=context.toCall,pot=context.pot;
+ const passiveOpponents=context.opponents.filter(p=>!p.folded&&p.seat!==context.seat&&p.action==='call').length;
+ const facingStation=multi>0&&passiveOpponents>=Math.ceil(multi*.65);
  const odds=toCall/Math.max(1,pot+toCall);
  const spr=context.effectiveStack/Math.max(2,pot);
  const inPosition=['BTN','CO'].includes(context.position);
@@ -336,12 +356,16 @@ function postflop(context,rng){
  const opponentsFactor=multi>2?.080:multi===2?.045:0;
  const textureRisk=(tex.monotone&&rank[0]<5?.045:0)+(tex.connected&&rank[0]===1?.025:0);
  const uncertain=(roll(rng)-.5)*(beginner?.23:levelIndex===1?.11:levelIndex===2?.057:.028);
- const adjusted=clamp(equity+uncertain-opponentsFactor-textureRisk,0,1);
+ // Against stations, a strong made hand is a reliable value bet even when
+ // Monte Carlo against random opponent cards is pessimistic multiway.
+ const adjusted=clamp((facingStation&&rank[0]>=2?Math.max(equity,made*.86):equity)+uncertain-opponentsFactor-textureRisk,0,1);
  const strongDraw=(d.flush||d.open)&&board.length<5;
  const semiBluff=strongDraw&&(equity>.19);
- const valueThreshold=clamp(.63-prof.aggression*.065+(multi>1?.04:0)+(spr>8?.02:0),.55,.80);
- const bluffRate=prof.bluff*(beginner?.45:levelIndex===1?.75:levelIndex===2?1:1.08);
- const potSize=clamp((rank[0]>=2?.58:.38)+tex.wet*.34+(prof.aggression-.4)*.15,.26,.9);
+ const valueThreshold=clamp(.63-prof.aggression*.065+(multi>1?.04:0)+(spr>8?.02:0)
+  -(facingStation&&levelIndex>=2?.055:0),.51,.80);
+ const bluffRate=prof.bluff*(beginner?.85:levelIndex===1?.95:levelIndex===2?1:1.02)*(facingStation&&levelIndex>=2?.30:1);
+ const potSize=clamp((rank[0]>=2?.58:.38)+tex.wet*.34+(prof.aggression-.4)*.15
+  +(facingStation&&rank[0]>=2&&levelIndex>=2?.14:0),.26,1.05);
  if(!toCall){
   if(context.canRaise){
    if(adjusted>valueThreshold){
@@ -362,7 +386,7 @@ function postflop(context,rng){
    (strongDraw&&odds<.33&&board.length<5&&adjusted>threshold-.075);
  if(!defending&&potCommit>.24)return {kind:'fold',reason:'postflop-unfavourable-price'};
  if(!defending&&adjusted<threshold-.08)return {kind:'fold',reason:'postflop-fold-vs-bet'};
- const valueRaise=adjusted>valueThreshold+.09&&rank[0]>=2;
+ const valueRaise=adjusted>valueThreshold+(facingStation&&levelIndex>=2?.045:.09)&&rank[0]>=2;
  const pressureRaise=semiBluff&&adjusted>threshold+.14&&roll(rng)<bluffRate*.70;
  if(context.canRaise&&(valueRaise||pressureRaise)){
   const chance=clamp((valueRaise?.21+prof.aggression*.64:prof.aggression*.15)+read.pressure*.16,.08,.85);
@@ -394,6 +418,6 @@ function delay(context,speed='normal',rng=randomDefault){
 }
 const api={LEVELS,PROFILE,catalog,classOf,evaluate,compare,boardTexture,draws,baseEquity,equitySample,
  chooseAction,delay,observe,startHand,finishHand,saveMemory,resetMemory,metrics,setLearning,
- memoryKey:MEMORY_KEY,positionOpen:POSITION_OPEN};
+ memoryKey:MEMORY_KEY,positionOpen:POSITION_OPEN,policyVersion:POLICY_VERSION};
 root.RiverlabBots=Object.freeze(api);
 })(typeof window!=='undefined'?window:globalThis);
