@@ -14,11 +14,11 @@ function start(seed){
  sandbox.globalThis=sandbox;vm.createContext(sandbox);vm.runInContext(bots,sandbox);vm.runInContext(game,sandbox);
  return {sandbox,state:window.__riverlab.state,app:window.__riverlab,rnd};
 }
-test('2.000 manos integradas de 6 jugadores: finalización, fichas y botes',()=>{
+test('10.000 manos integradas de 6 jugadores: finalización, fichas y botes',()=>{
  const e=start(20261022),{app,state}=e;
  state.autoplay=false;state.botSpeed='fast';state.botDifficulty='intermediate';
  let finishes=0,showdowns=0;
- for(let h=0;h<2000;h++){
+ for(let h=0;h<10000;h++){
   let rebuys=0;
   for(let seat=0;seat<6;seat++)if(state.players[seat].stack===0){
    state.players[seat].stack=200;state.buyIns+=seat===0?200:0;rebuys+=200;
@@ -43,5 +43,5 @@ test('2.000 manos integradas de 6 jugadores: finalización, fichas y botes',()=>
   if(state.didShowdown)showdowns++;
   finishes++;
  }
- assert.equal(finishes,2000);assert.ok(showdowns>0);
+ assert.equal(finishes,10000);assert.ok(showdowns>0);
 });
