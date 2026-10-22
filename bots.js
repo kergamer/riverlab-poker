@@ -174,7 +174,7 @@ function equitySample(context,rng=randomDefault,samples=24){
 }
 function emptyRecord(){
  return {hands:0,vpip:0,pfr:0,threeBet:0,threeBetOpportunities:0,
-  flopFaced:0,flopFold:0,turnFaced:0,turnFold:0,riverFaced:0,riverFold:0,
+  preflopFaced:0,preflopFold:0,flopFaced:0,flopFold:0,turnFaced:0,turnFold:0,riverFaced:0,riverFold:0,
   actions:0,bets:0,raises:0,calls:0,checks:0,folds:0,facedBets:0,foldToBet:0,showdowns:0,showdownWins:0};
 }
 const stats=Object.create(null),pending=Object.create(null);
@@ -213,11 +213,9 @@ function observe(a){
  if(a.kind==='raise'){r.raises++;r.bets++;}
  if(a.toCall>0){
   r.facedBets++;if(a.kind==='fold')r.foldToBet++;
-  if(a.street!=='preflop'){
-   const street=a.street;
-   r[street+'Faced']++;
-   if(a.kind==='fold')r[street+'Fold']++;
-  }
+  const street=a.street;
+  r[street+'Faced']++;
+  if(a.kind==='fold')r[street+'Fold']++;
  }
  if(a.street==='preflop'){
   if(!p.vpip&&Number(a.paid)>0&&['call','raise'].includes(a.kind)){p.vpip=true;r.vpip++}
@@ -252,6 +250,7 @@ function metrics(seat){
  const r={...record(seat)},smooth=(value,n,prior)=>clamp((value+prior*24)/(n+24),0,1);
  return {...r,vpipRate:smooth(r.vpip,r.hands,.26),pfrRate:smooth(r.pfr,r.hands,.16),
   foldRate:smooth(r.foldToBet,r.facedBets,.42),
+  preflopFoldRate:smooth(r.preflopFold,r.preflopFaced,.42),
   flopFoldRate:smooth(r.flopFold,r.flopFaced,.42),
   turnFoldRate:smooth(r.turnFold,r.turnFaced,.42),
   riverFoldRate:smooth(r.riverFold,r.riverFaced,.42),
@@ -262,9 +261,9 @@ function setLearning(flag){learnEnabled=!!flag}
 function adjustRead(context){
  if(!learnEnabled||!context.learning)return {pressure:0,calling:0,confidence:0};
  const hero=metrics(0);
- const street=['flop','turn','river'].includes(context.phase)?context.phase:null;
- const denom=street?hero[street+'Faced']:hero.facedBets;
- const falls=street?hero[street+'Fold']:hero.foldToBet;
+ const street=['preflop','flop','turn','river'].includes(context.phase)?context.phase:'preflop';
+ const denom=hero[street+'Faced'];
+ const falls=hero[street+'Fold'];
  // Use street-specific public opportunities; reliability grows with real sample size.
  const foldRate=(falls+24*.42)/(denom+24);
  const confidence=clamp(denom/65,0,1);
