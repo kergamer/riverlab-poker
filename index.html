@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RIVERLAB | Poker Room v0.4.0</title>
+<title>RIVERLAB | Poker Room v0.4.2</title>
 <style>
 :root{--bg:#0a1119;--panel:#131f2a;--panel2:#192934;--line:#30414a;--text:#f0efe9;--muted:#a2b3bb;--muted2:#748c95;--gold:#c6a56c;--felt:#175246;--felt2:#0e3c34;--danger:#e18b75;--good:#83c1a9;font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--text);color-scheme:dark}
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 76% 22%,#182c35 0%,#0a1119 60%);font-size:14px}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.34;cursor:not-allowed}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
@@ -120,7 +120,7 @@ const SYMBOL={s:'\u2660',h:'\u2665',d:'\u2666',c:'\u2663'};
 const I18N = {
  es: {
   experience:'EXPERIENCIA', pokerRoom:'Sala de póker', history:'Historial', mySession:'MI SESIÓN', engineReady:'Motor local activo',
-  prototypeFoot:'PROTOTIPO V0.4.0 · Fichas ficticias · Sin dinero real', noRealMoney:'SIN DINERO REAL',
+  prototypeFoot:'PROTOTIPO V0.4.2 · Fichas ficticias · Sin dinero real', noRealMoney:'SIN DINERO REAL',
   theFelt:'THE FELT / NO-LIMIT HOLD\'EM', roomMeta:'0,5 / 1 BB · 100 BB iniciales · 6 jugadores',
   rules:'REGLAS', hintsOn:'PISTAS: ACTIVADAS', hintsOff:'PISTAS: DESACTIVADAS',
   activity:'ACTIVIDAD DE LA MANO', studyWhilePlaying:'APRENDE MIENTRAS JUEGAS',
@@ -181,7 +181,7 @@ const I18N = {
  },
  en: {
   experience:'EXPERIENCE', pokerRoom:'Poker Room', history:'Hand History', mySession:'MY SESSION', engineReady:'Local engine running',
-  prototypeFoot:'PROTOTYPE V0.4.0 · Play-money chips · No real money', noRealMoney:'NO REAL MONEY',
+  prototypeFoot:'PROTOTYPE V0.4.2 · Play-money chips · No real money', noRealMoney:'NO REAL MONEY',
   theFelt:'THE FELT / NO-LIMIT HOLD\'EM',roomMeta:'0.5 / 1 BB · 100 BB starting stack · 6 players',
   rules:'RULES',hintsOn:'HINTS: ON',hintsOff:'HINTS: OFF',
   activity:'HAND ACTIVITY',studyWhilePlaying:'LEARN AS YOU PLAY',
@@ -861,7 +861,7 @@ function openHand(n){
  const h=state.handHistory.find(x=>x.number===n);if(!h)return;
  activeReplayHand=n;activeReplayIndex=-1;openModal('<div id="replay-content"></div>');$('modal-root').querySelector('.modal').classList.add('replay-modal');renderReplay();
 }
-function openModal(content){pauseGameplay();clearTimeout(nextTimer);$('modal-root').innerHTML='<div class="modal-cover" onclick="closeModal(event)"><div class="modal" role="dialog" aria-modal="true" aria-label="RIVERLAB"><div class="modal-header"><div class="eyebrow">RIVERLAB / V0.4.0</div><button class="btn small ghost" onclick="closeModal()">'+tr('modalClose')+'</button></div>'+content+'</div></div>'}
+function openModal(content){pauseGameplay();clearTimeout(nextTimer);$('modal-root').innerHTML='<div class="modal-cover" onclick="closeModal(event)"><div class="modal" role="dialog" aria-modal="true" aria-label="RIVERLAB"><div class="modal-header"><div class="eyebrow">RIVERLAB / V0.4.2</div><button class="btn small ghost" onclick="closeModal()">'+tr('modalClose')+'</button></div>'+content+'</div></div>'}
 function closeModal(ev){if(ev&&ev.target!==ev.currentTarget)return;$('modal-root').innerHTML='';if(state.view==='table'&&!document.hidden)resumeGameplay();if(state.autoplay&&state.phase==='complete'&&state.view==='table'){clearTimeout(nextTimer);nextTimer=setTimeout(()=>newHand(),3500)}}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('modal-root').innerHTML)closeModal()});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseGameplay();else if(state.view==='table'&&!$('modal-root').innerHTML)resumeGameplay()});
