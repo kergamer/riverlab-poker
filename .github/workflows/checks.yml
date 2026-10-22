@@ -7,6 +7,7 @@ on:
       - feat/v033-sound-design
       - fix/v034-audio-activation
       - feat/v035-sonic-atelier
+      - dev/v040-strategy-learning
   pull_request:
     branches:
       - main
@@ -23,4 +24,4 @@ jobs:
       - name: Verificar Node.js
         run: node --version
       - name: Regresiones de reglas y datos
-        run: node --test tests/smoke.test.cjs tests/sound.test.cjs
+        run: node --test tests/smoke.test.cjs tests/sound.test.cjs tests/bots.test.cjs
