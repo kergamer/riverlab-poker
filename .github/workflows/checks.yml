@@ -78,4 +78,4 @@ jobs:
         with:
           persist-credentials: false
       - name: Compare learning enabled and disabled after 600 observations
-        run: node tests/benchmark_v041_learning.cjs
+        run: node tests/benchmark_v041_learning.cjs && node tests/benchmark_v041_learning_valid.cjs
