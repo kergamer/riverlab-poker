@@ -9,6 +9,7 @@ on:
       - feat/v035-sonic-atelier
       - dev/v040-strategy-learning
       - audit/v041-bot-performance
+      - feat/v042-strategy-calibration
   pull_request:
     branches:
       - main
