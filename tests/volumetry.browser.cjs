@@ -10,11 +10,14 @@ const engine = process.env.BROWSER_ENGINE || 'chromium';
 const evidence = path.resolve(process.env.VOLUMETRY_EVIDENCE || 'test-results/volumetry', engine);
 const currentWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 const cacheName = currentWorker.match(/const CACHE\s*=\s*'([^']+)'/)[1];
-let browser, server, origin, legacy = false;
+let browser, server, origin, legacy = false, disconnected = false, droppedRequests = 0;
 
 before(async () => {
  fs.mkdirSync(evidence, {recursive:true});
  server = http.createServer((req, res) => {
+  // A real connection failure also works in WebKit, whose offline emulation
+  // can reject navigation before allowing its service worker to respond.
+  if (disconnected) {droppedRequests++; res.destroy(); return;}
   const pathname = new URL(req.url, 'http://localhost').pathname;
   const file = path.resolve(root, '.' + (pathname === '/' ? '/index.html' : pathname));
   if (!file.startsWith(root + path.sep)) {res.writeHead(403).end(); return;}
@@ -179,7 +182,8 @@ test(`${engine}: la actualización PWA elimina caché antigua y funciona offline
   for (const file of ['/index.html','/volumetry.css','/volumetry-mobile.css','/bots.js','/sound.js']) assert(entries.includes(file), 'Missing offline resource ' + file);
   assert(await page.evaluate(() => caches.has('another-app')));
   assert.equal(await page.evaluate(() => localStorage.getItem('riverlab.v03.session')), saved);
-  await context.setOffline(true);
+  // Make the server unreachable, so the worker must serve every resource.
+  droppedRequests = 0; disconnected = true;
   await page.reload(); await ready(page);
   assert.equal(await page.locator('link[href="./volumetry-mobile.css"]').count(), 1);
   await scene(page, 'flop');
@@ -187,6 +191,7 @@ test(`${engine}: la actualización PWA elimina caché antigua y funciona offline
   assert.equal(await page.locator('#hand-hints').isVisible(), true);
   assert.equal(await page.locator('.hint-card').count(), 5);
   assert.equal(await page.evaluate(() => !!window.RiverlabBots && !!window.RiverlabAudio), true);
+  assert(droppedRequests > 0, 'Offline verification must include failed network requests');
   fs.writeFileSync(path.join(evidence,'offline-cache.json'), JSON.stringify(entries,null,2));
- } finally {legacy = false; await context.close();}
+ } finally {legacy = false; disconnected = false; await context.close();}
 });
