@@ -30,6 +30,33 @@ jobs:
       - name: Regresiones de reglas y datos
         run: node --test tests/smoke.test.cjs tests/sound.test.cjs tests/bots.test.cjs tests/bots.stress.test.cjs tests/bots.game-sim.test.cjs tests/benchmark_v041_evaluator.test.cjs tests/bots.v042.test.cjs tests/volumetry.test.cjs
 
+  mobile-volumetry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Instalar navegador de pruebas
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Comprobar composición móvil y actualización PWA offline
+        env:
+          BROWSER_ENGINE: ${{ matrix.browser }}
+        run: node --test tests/volumetry.browser.cjs
+      - name: Guardar capturas y medidas
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: volumetry-${{ matrix.browser }}
+          path: test-results/volumetry
+          retention-days: 14
+
   bot-audit:
     runs-on: ubuntu-latest
     strategy:

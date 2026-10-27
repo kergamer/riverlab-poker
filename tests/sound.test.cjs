@@ -56,8 +56,9 @@ function makeContext(initial={}){
 test('PWA incluye sonido sintetizado offline y carga antes del motor',()=>{
  assert.ok(html.includes('<script src="./sound.js"></script>\n<script src="./bots.js"></script>\n<script>'));
  assert.ok(sw.includes("'./sound.js'"));
- assert.ok(sw.includes('riverlab-v2-volumetry-1'));
+ assert.match(sw,/const CACHE\s*=\s*'riverlab-v2-volumetry-\d+'/);
  assert.ok(sw.includes("'./volumetry.css'"));
+ assert.ok(sw.includes("'./volumetry-mobile.css'"));
 });
 test('Sonido no se reproduce sin gesto del usuario',async()=>{
  const e=makeContext();
